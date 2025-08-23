@@ -15,6 +15,7 @@ model User {
   email         String    @unique
   name          String?
   image         String?
+  password      String?   // For credentials authentication
   role          UserRole  @default(TRAVELER)
   emailVerified DateTime?
   createdAt     DateTime  @default(now())

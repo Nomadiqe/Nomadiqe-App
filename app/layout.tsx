@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: 'Nomadiqe - Fairer Stays, Deeper Connections',
   description: 'Revolutionary travel booking platform with blockchain integration, low fees, and authentic local experiences.',
   keywords: 'travel, booking, blockchain, crypto, accommodation, local experiences',

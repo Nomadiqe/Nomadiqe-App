@@ -1,245 +1,113 @@
-# Nomadiqe Platform
+# Nomadiqe App
 
-**Fairer Stays, Deeper Connections**
+A modern travel platform built with Next.js, Prisma, and NextAuth.
 
-A revolutionary travel booking platform with blockchain integration, low fees, and authentic local experiences.
-
-## 🚀 Features
-
-### Core Features
-- **Low Commission Model**: Only 5% commission vs 15-30% on traditional platforms
-- **Crypto Payments**: Support for Bitcoin, Ethereum, and other cryptocurrencies
-- **Social Features**: Follow hosts, like properties, and connect with local communities
-- **Local Experiences**: Discover authentic local activities and artisans
-- **AI Chatbot**: Intelligent assistance for onboarding and support
-- **Dark Mode**: Modern, tech-oriented interface design
-
-### Technical Features
-- **Next.js 14**: Modern React framework with App Router
-- **TypeScript**: Full type safety
-- **Prisma**: Type-safe database ORM
-- **NextAuth.js**: Authentication with Google OAuth and credentials
-- **Stripe Integration**: Fiat payment processing
-- **Coinbase Commerce**: Cryptocurrency payment processing
-- **Tailwind CSS**: Utility-first styling with dark mode
-- **Responsive Design**: Mobile-first approach
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js
-- **Payments**: Stripe (fiat), Coinbase Commerce (crypto)
-- **Deployment**: Vercel (recommended)
-
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js 18+ 
-- pnpm (recommended) or npm
+- pnpm
 - PostgreSQL database
-- Google OAuth credentials
-- Stripe account
-- Coinbase Commerce account
 
-## 🚀 Quick Start
+## Setup
 
-### 1. Clone the repository
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd Nomadiqe-App
+   ```
 
-```bash
-git clone <repository-url>
-cd nomadiqe-platform
-```
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-### 2. Install dependencies
+3. **Set up environment variables**
+   ```bash
+   cp env.example .env.local
+   ```
+   
+   Fill in your environment variables in `.env.local`:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `NEXTAUTH_SECRET`: A random string for NextAuth
+   - `GOOGLE_CLIENT_ID`: Google OAuth client ID
+   - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
 
-```bash
-pnpm install
-```
+4. **Generate Prisma client**
+   ```bash
+   pnpm prisma generate
+   ```
 
-### 3. Set up environment variables
+5. **Push database schema**
+   ```bash
+   pnpm prisma db push
+   ```
 
-Copy the example environment file:
+6. **Seed the database (optional)**
+   ```bash
+   pnpm db:seed
+   ```
 
-```bash
-cp env.example .env.local
-```
-
-Fill in your environment variables:
-
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/nomadiqe"
-
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-
-# OAuth Providers
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-
-# Stripe (Fiat Payments)
-STRIPE_PUBLISHABLE_KEY="pk_test_your-stripe-publishable-key"
-STRIPE_SECRET_KEY="sk_test_your-stripe-secret-key"
-STRIPE_WEBHOOK_SECRET="whsec_your-stripe-webhook-secret"
-
-# Coinbase Commerce (Crypto Payments)
-COINBASE_COMMERCE_API_KEY="your-coinbase-commerce-api-key"
-COINBASE_COMMERCE_WEBHOOK_SECRET="your-coinbase-webhook-secret"
-```
-
-### 4. Set up the database
-
-```bash
-# Generate Prisma client
-pnpm db:generate
-
-# Push schema to database
-pnpm db:push
-
-# (Optional) Seed the database
-pnpm db:seed
-```
-
-### 5. Run the development server
+## Development
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+## Building for Production
 
-## 📁 Project Structure
-
-```
-nomadiqe-platform/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── auth/              # Authentication pages
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Homepage
-├── components/            # React components
-│   ├── ui/               # Reusable UI components
-│   ├── auth-provider.tsx # Authentication provider
-│   └── theme-provider.tsx # Theme provider
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions
-├── prisma/               # Database schema and migrations
-└── public/               # Static assets
+### Local Build
+```bash
+pnpm build
 ```
 
-## 🔧 Available Scripts
+### Vercel Deployment
+The app is configured for Vercel deployment with automatic Prisma client generation.
+
+## Troubleshooting
+
+### Prisma Client Issues
+If you encounter "Module '@prisma/client' has no exported member 'PrismaClient'" errors:
+
+1. **Regenerate Prisma client:**
+   ```bash
+   pnpm prisma generate
+   ```
+
+2. **Clear Next.js cache:**
+   ```bash
+   rm -rf .next
+   pnpm build
+   ```
+
+3. **Reinstall dependencies:**
+   ```bash
+   rm -rf node_modules pnpm-lock.yaml
+   pnpm install
+   ```
+
+### Build Issues
+If the build fails during deployment:
+
+1. Ensure `DATABASE_URL` is set in your environment variables
+2. Check that Prisma client is generated before build
+3. Verify all dependencies are properly installed
+
+## Scripts
 
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
 - `pnpm db:generate` - Generate Prisma client
-- `pnpm db:push` - Push schema to database
+- `pnpm db:push` - Push database schema
 - `pnpm db:studio` - Open Prisma Studio
-- `pnpm db:seed` - Seed database with sample data
+- `pnpm db:seed` - Seed database
 
-## 🌟 Key Features Implementation
+## Tech Stack
 
-### Authentication
-- Google OAuth integration
-- Email/password authentication
-- Role-based access (Host/Traveler)
-- Protected routes
-
-### Property Management
-- CRUD operations for properties
-- Image upload and management
-- Availability calendar
-- Pricing management
-
-### Booking System
-- Real-time availability checking
-- Booking confirmation flow
-- Payment processing (fiat + crypto)
-- Escrow system for security
-
-### Social Features
-- Follow/unfollow hosts
-- Like/unlike properties
-- Review and rating system
-- Social feed
-
-### Payment Integration
-- Stripe for fiat payments
-- Coinbase Commerce for crypto
-- Multi-currency support
-- Automatic conversion
-
-## 🔒 Security Features
-
-- JWT-based authentication
-- Password hashing with bcrypt
-- CSRF protection
-- Rate limiting
-- Input validation with Zod
-- SQL injection prevention with Prisma
-
-## 🎨 Design System
-
-The platform uses a custom design system with:
-- Dark mode as default
-- Nomadiqe brand colors
-- Responsive components
-- Accessibility features
-- Smooth animations
-
-## 📱 Responsive Design
-
-- Mobile-first approach
-- Tablet and desktop optimized
-- Touch-friendly interactions
-- Progressive Web App features
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Other Platforms
-
-The application can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support, email support@nomadiqe.com or create an issue in the repository.
-
-## 🔮 Roadmap
-
-### Phase 2 (Future)
-- Mobile app (React Native)
-- Nomadiqe token ($NOMADIQE) launch
-- DAO governance system
-- Advanced AI features
-- VR property tours
-- Blockchain-based reviews
-
----
-
-**Built with ❤️ by the Nomadiqe Team**
+- **Framework:** Next.js 14
+- **Database:** PostgreSQL with Prisma ORM
+- **Authentication:** NextAuth.js
+- **Styling:** Tailwind CSS
+- **UI Components:** Radix UI
+- **Package Manager:** pnpm

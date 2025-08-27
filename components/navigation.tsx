@@ -45,16 +45,16 @@ export function Navigation() {
               Explore
             </Link>
             <Link 
+              href="/about" 
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              About
+            </Link>
+            <Link 
               href="/host" 
               className="text-foreground hover:text-primary transition-colors"
             >
               Become a Host
-            </Link>
-            <Link 
-              href="/experiences" 
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              Local Experiences
             </Link>
           </div>
 
@@ -152,18 +152,18 @@ export function Navigation() {
                 Explore
               </Link>
               <Link 
+                href="/about" 
+                className="text-foreground hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
                 href="/host" 
                 className="text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Become a Host
-              </Link>
-              <Link 
-                href="/experiences" 
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Local Experiences
               </Link>
               {session ? (
                 <>

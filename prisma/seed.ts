@@ -19,6 +19,10 @@ async function main() {
       role: 'HOST',
       password: hostPassword,
       isVerified: true,
+      bio: 'Passionate about sharing the beauty of the Alps with travelers from around the world. Local expert and mountain enthusiast.',
+      location: 'Zermatt, Switzerland',
+      phone: '+41 27 966 81 00',
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
       hostProfile: {
         create: {
           businessName: 'Alpine Retreats',
@@ -37,6 +41,10 @@ async function main() {
       role: 'HOST',
       password: hostPassword,
       isVerified: true,
+      bio: 'Architecture lover and city explorer. I help travelers discover the best urban experiences in Barcelona.',
+      location: 'Barcelona, Spain',
+      phone: '+34 93 285 38 32',
+      image: 'https://images.unsplash.com/photo-1494790108755-2616b332c7e0?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
       hostProfile: {
         create: {
           businessName: 'Urban Escapes',
@@ -55,6 +63,10 @@ async function main() {
       role: 'TRAVELER',
       password: travelerPassword,
       isVerified: true,
+      bio: 'Digital nomad and adventure seeker. Love exploring new cultures and sharing travel experiences.',
+      location: 'Currently in Europe',
+      phone: '+1 555 123 4567',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
       travelerProfile: {
         create: {
           preferences: {
@@ -62,6 +74,54 @@ async function main() {
             budget: { min: 50, max: 200 },
             amenities: ['WiFi', 'Kitchen', 'Parking']
           }
+        }
+      }
+    },
+  })
+
+  // Create more sample users
+  const traveler2 = await prisma.user.upsert({
+    where: { email: 'traveler2@nomadiqe.com' },
+    update: {},
+    create: {
+      email: 'traveler2@nomadiqe.com',
+      name: 'Emma Wilson',
+      role: 'TRAVELER',
+      password: travelerPassword,
+      isVerified: true,
+      bio: 'Travel photographer and storyteller. Capturing memories one destination at a time.',
+      location: 'London, UK',
+      phone: '+44 20 7946 0958',
+      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      travelerProfile: {
+        create: {
+          preferences: {
+            preferredDestinations: ['South America', 'Africa'],
+            budget: { min: 30, max: 150 },
+            amenities: ['WiFi', 'Natural Light', 'Photography Equipment Storage']
+          }
+        }
+      }
+    },
+  })
+
+  const host3 = await prisma.user.upsert({
+    where: { email: 'host3@nomadiqe.com' },
+    update: {},
+    create: {
+      email: 'host3@nomadiqe.com',
+      name: 'Raj Patel',
+      role: 'HOST',
+      password: hostPassword,
+      isVerified: true,
+      bio: 'Beachfront property owner with deep knowledge of Balinese culture and hidden gems.',
+      location: 'Ubud, Bali',
+      phone: '+62 361 123456',
+      image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      hostProfile: {
+        create: {
+          businessName: 'Tropical Retreats Bali',
+          commission: 0.05,
         }
       }
     },
@@ -145,7 +205,7 @@ async function main() {
       rules: ['No smoking', 'No pets', 'Respect quiet hours'],
       isActive: true,
       isVerified: true,
-      hostId: host1.id,
+      hostId: host3.id,
     },
   })
 
@@ -239,6 +299,148 @@ async function main() {
     },
   })
 
+  await prisma.follow.create({
+    data: {
+      followerId: traveler2.id,
+      followingId: host2.id,
+    },
+  })
+
+  await prisma.follow.create({
+    data: {
+      followerId: traveler1.id,
+      followingId: traveler2.id,
+    },
+  })
+
+  // Create sample posts
+  const post1 = await prisma.post.create({
+    data: {
+      content: 'Just had the most incredible stay at this mountain cabin! The views were absolutely breathtaking and the fresh Alpine air was exactly what I needed. Thanks @Marco for being such an amazing host! 🏔️',
+      images: [
+        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Zermatt, Switzerland',
+      propertyId: property1.id,
+      authorId: traveler1.id,
+    },
+  })
+
+  const post2 = await prisma.post.create({
+    data: {
+      content: 'Barcelona never fails to amaze me! From the stunning architecture to the vibrant street life, this city has my heart. Currently exploring the Gothic Quarter and discovering hidden gems around every corner. 🏛️✨',
+      images: [
+        'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Barcelona, Spain',
+      authorId: host2.id,
+    },
+  })
+
+  const post3 = await prisma.post.create({
+    data: {
+      content: 'Sunset from our beachfront villa in Bali 🌅 There\'s something magical about the way the light dances on the water here. Grateful to share this slice of paradise with travelers from around the world.',
+      images: [
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Ubud, Bali',
+      propertyId: property3.id,
+      authorId: host3.id,
+    },
+  })
+
+  const post4 = await prisma.post.create({
+    data: {
+      content: 'Photography tip of the day: Golden hour lighting makes every travel photo 10x better! 📸 Currently capturing the magic of European countryside and loving every moment of this nomadic lifestyle.',
+      images: [
+        'https://images.unsplash.com/photo-1516680224141-86bc862537ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Tuscany, Italy',
+      authorId: traveler2.id,
+    },
+  })
+
+  // Create post likes
+  await prisma.postLike.create({
+    data: {
+      userId: traveler2.id,
+      postId: post1.id,
+    },
+  })
+
+  await prisma.postLike.create({
+    data: {
+      userId: host1.id,
+      postId: post2.id,
+    },
+  })
+
+  await prisma.postLike.create({
+    data: {
+      userId: traveler1.id,
+      postId: post3.id,
+    },
+  })
+
+  // Create post comments
+  await prisma.postComment.create({
+    data: {
+      content: 'This looks absolutely magical! Adding it to my wishlist 😍',
+      authorId: traveler2.id,
+      postId: post1.id,
+    },
+  })
+
+  await prisma.postComment.create({
+    data: {
+      content: 'Love your photography! The composition is perfect.',
+      authorId: host2.id,
+      postId: post4.id,
+    },
+  })
+
+  // Create sample ads
+  await prisma.ad.create({
+    data: {
+      title: 'Featured: Alpine Mountain Cabin',
+      description: 'Experience the Swiss Alps like never before! Book now for 20% off your first stay.',
+      images: [
+        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      link: '/property/1',
+      priority: 10,
+      propertyId: property1.id,
+    },
+  })
+
+  await prisma.ad.create({
+    data: {
+      title: 'New in Barcelona: Modern City Loft',
+      description: 'Discover Barcelona from this stylish loft in the heart of the city.',
+      images: [
+        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      link: '/property/2',
+      priority: 8,
+      propertyId: property2.id,
+    },
+  })
+
+  await prisma.ad.create({
+    data: {
+      title: 'Paradise Found: Bali Villa',
+      description: 'Escape to tropical bliss with private beach access and luxury amenities.',
+      images: [
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      link: '/property/3',
+      priority: 9,
+      propertyId: property3.id,
+    },
+  })
+
   console.log('✅ Database seeded successfully!')
   console.log(`Created ${await prisma.user.count()} users`)
   console.log(`Created ${await prisma.property.count()} properties`)
@@ -247,6 +449,10 @@ async function main() {
   console.log(`Created ${await prisma.review.count()} reviews`)
   console.log(`Created ${await prisma.like.count()} likes`)
   console.log(`Created ${await prisma.follow.count()} follows`)
+  console.log(`Created ${await prisma.post.count()} posts`)
+  console.log(`Created ${await prisma.postLike.count()} post likes`)
+  console.log(`Created ${await prisma.postComment.count()} post comments`)
+  console.log(`Created ${await prisma.ad.count()} ads`)
 }
 
 main()

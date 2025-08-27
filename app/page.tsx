@@ -1,193 +1,209 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { SearchBar } from '@/components/search-bar'
-import { FeatureCard } from '@/components/feature-card'
-import { PropertyCard } from '@/components/property-card'
-import { 
-  Globe, 
-  Shield, 
-  Users, 
-  Zap, 
-  Star, 
-  MapPin,
-  CreditCard,
-  Bitcoin
-} from 'lucide-react'
+import { PostCard } from '@/components/post-card'
+import { AdCard } from '@/components/ad-card'
+import { Plus, Users, TrendingUp } from 'lucide-react'
 
 export default function HomePage() {
+  // Mock data - in real app, this would come from the database
+  const posts = [
+    {
+      id: '1',
+      content: 'Just had the most incredible stay at this mountain cabin! The views were absolutely breathtaking and the fresh Alpine air was exactly what I needed. Thanks @Marco for being such an amazing host! 🏔️',
+      images: [
+        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Zermatt, Switzerland',
+      createdAt: '2024-01-15T10:30:00Z',
+      author: {
+        id: 'user1',
+        name: 'Alex Johnson',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      },
+      property: {
+        id: 'prop1',
+        title: 'Cozy Mountain Cabin'
+      },
+      likes: 24,
+      comments: 5,
+      isLiked: false
+    },
+    {
+      id: '2',
+      content: 'Barcelona never fails to amaze me! From the stunning architecture to the vibrant street life, this city has my heart. Currently exploring the Gothic Quarter and discovering hidden gems around every corner. 🏛️✨',
+      images: [
+        'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      location: 'Barcelona, Spain',
+      createdAt: '2024-01-14T16:45:00Z',
+      author: {
+        id: 'user2',
+        name: 'Sophie Chen',
+        image: 'https://images.unsplash.com/photo-1494790108755-2616b332c7e0?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      },
+      likes: 18,
+      comments: 3,
+      isLiked: true
+    }
+  ]
+
+  const ads = [
+    {
+      id: 'ad1',
+      title: 'Featured: Alpine Mountain Cabin',
+      description: 'Experience the Swiss Alps like never before! Book now for 20% off your first stay.',
+      images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
+      property: {
+        id: 'prop1',
+        title: 'Cozy Mountain Cabin',
+        city: 'Zermatt',
+        country: 'Switzerland',
+        price: 120,
+        currency: 'EUR',
+        maxGuests: 4,
+        bedrooms: 2
+      }
+    },
+    {
+      id: 'ad2',
+      title: 'Paradise Found: Bali Villa',
+      description: 'Escape to tropical bliss with private beach access and luxury amenities.',
+      images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
+      property: {
+        id: 'prop3',
+        title: 'Beachfront Villa',
+        city: 'Ubud',
+        country: 'Bali',
+        price: 200,
+        currency: 'EUR',
+        maxGuests: 6,
+        bedrooms: 3
+      }
+    }
+  ]
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-nomadiqe-900/90 via-nomadiqe-800/80 to-purple-900/90" />
-          <img
-            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
-            alt="Travel background"
-            className="w-full h-full object-cover"
+      {/* Header */}
+      <section className="bg-card border-b border-border py-6">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Welcome to Nomadiqe</h1>
+              <p className="text-muted-foreground">Connect, explore, and share your travel experiences</p>
+            </div>
+            <Button asChild className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
+              <Link href="/create-post" className="flex items-center space-x-2">
+                <Plus className="w-4 h-4" />
+                <span>Create Post</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Stats */}
+      {/* <section className="py-6 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <Users className="w-6 h-6 mx-auto mb-2 text-nomadiqe-500" />
+              <p className="text-2xl font-bold">1,247</p>
+              <p className="text-sm text-muted-foreground">Active travelers</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <TrendingUp className="w-6 h-6 mx-auto mb-2 text-nomadiqe-500" />
+              <p className="text-2xl font-bold">3,891</p>
+              <p className="text-sm text-muted-foreground">Properties shared</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className="w-6 h-6 mx-auto mb-2 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded flex items-center justify-center">
+                <span className="text-white font-bold text-xs">N</span>
+              </div>
+              <p className="text-2xl font-bold">156</p>
+              <p className="text-sm text-muted-foreground">Countries covered</p>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+      {/* Main Feed */}
+      <section className="py-6 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Render posts and ads mixed together */}
+          <PostCard {...posts[0]} />
+          
+          <AdCard {...ads[0]} />
+          
+          <PostCard {...posts[1]} />
+          
+          {/* More posts would be loaded here */}
+          <PostCard
+            id="3"
+            content="Sunset from our beachfront villa in Bali 🌅 There's something magical about the way the light dances on the water here. Grateful to share this slice of paradise with travelers from around the world."
+            images={[
+              'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            ]}
+            location="Ubud, Bali"
+            createdAt="2024-01-13T18:20:00Z"
+            author={{
+              id: 'user3',
+              name: 'Raj Patel',
+              image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+            }}
+            property={{
+              id: 'prop3',
+              title: 'Beachfront Villa'
+            }}
+            likes={32}
+            comments={8}
+            isLiked={false}
           />
-        </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            <span className="gradient-text">Nomadiqe</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in">
-            Fairer Stays, Deeper Connections
-          </p>
-          <p className="text-lg md:text-xl mb-12 text-gray-300 max-w-2xl mx-auto animate-fade-in">
-            Revolutionize your travel experience with blockchain-powered bookings, 
-            lower fees, and authentic local connections.
-          </p>
+          <AdCard {...ads[1]} />
 
-          {/* Search Bar */}
-          <div className="mb-8 animate-fade-in">
-            <SearchBar />
-          </div>
+          <PostCard
+            id="4"
+            content="Photography tip of the day: Golden hour lighting makes every travel photo 10x better! 📸 Currently capturing the magic of European countryside and loving every moment of this nomadic lifestyle."
+            images={[
+              'https://images.unsplash.com/photo-1516680224141-86bc862537ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            ]}
+            location="Tuscany, Italy"
+            createdAt="2024-01-12T14:15:00Z"
+            author={{
+              id: 'user4',
+              name: 'Emma Wilson',
+              image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+            }}
+            likes={15}
+            comments={2}
+            isLiked={true}
+          />
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-            <Button asChild size="lg" className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
-              <Link href="/search">
-                Start Exploring
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-nomadiqe-900">
-              <Link href="/host">
-                Become a Host
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-card">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose Nomadiqe?</h2>
-            <p className="text-xl text-muted-foreground">
-              Experience the future of travel booking
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<Shield className="w-8 h-8" />}
-              title="Lower Fees"
-              description="Only 5% commission vs 15-30% on traditional platforms"
-            />
-            <FeatureCard
-              icon={<Bitcoin className="w-8 h-8" />}
-              title="Crypto Payments"
-              description="Pay with Bitcoin, Ethereum, and other cryptocurrencies"
-            />
-            <FeatureCard
-              icon={<Users className="w-8 h-8" />}
-              title="Local Connections"
-              description="Connect with hosts and discover authentic experiences"
-            />
-            <FeatureCard
-              icon={<Zap className="w-8 h-8" />}
-              title="Instant Booking"
-              description="Book instantly with secure blockchain escrow"
-            />
-            <FeatureCard
-              icon={<Globe className="w-8 h-8" />}
-              title="Global Network"
-              description="Properties and experiences worldwide"
-            />
-            <FeatureCard
-              icon={<Star className="w-8 h-8" />}
-              title="Verified Hosts"
-              description="All hosts are verified and reviewed by our community"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Properties Section */}
-      <section className="py-20 px-4 bg-background">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Featured Properties</h2>
-            <p className="text-xl text-muted-foreground">
-              Discover unique stays from our verified hosts
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Sample properties - in real app, these would come from the database */}
-            <PropertyCard
-              id="1"
-              title="Cozy Mountain Cabin"
-              location="Swiss Alps"
-              price={120}
-              rating={4.8}
-              image="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={4}
-              bedrooms={2}
-            />
-            <PropertyCard
-              id="2"
-              title="Modern City Loft"
-              location="Barcelona, Spain"
-              price={85}
-              rating={4.9}
-              image="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={2}
-              bedrooms={1}
-            />
-            <PropertyCard
-              id="3"
-              title="Beachfront Villa"
-              location="Bali, Indonesia"
-              price={200}
-              rating={4.7}
-              image="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={6}
-              bedrooms={3}
-            />
-          </div>
-
-          <div className="text-center mt-12">
-            <Button asChild size="lg">
-              <Link href="/search">
-                View All Properties
-              </Link>
+          {/* Load More */}
+          <div className="text-center pt-8">
+            <Button variant="outline" size="lg">
+              Load More Posts
             </Button>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 gradient-bg">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Start Your Journey?
-          </h2>
-          <p className="text-xl mb-8 text-gray-200">
-            Join thousands of travelers and hosts already using Nomadiqe
-          </p>
+      {/* Quick Links Footer */}
+      <section className="py-12 px-4 border-t border-border bg-card/50">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <h3 className="text-xl font-semibold">New to Nomadiqe?</h3>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/auth/signup">
-                Get Started
-              </Link>
+            <Button asChild variant="outline">
+              <Link href="/about">Learn About Us</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-nomadiqe-900">
-              <Link href="/about">
-                Learn More
-              </Link>
+            <Button asChild variant="outline">
+              <Link href="/search">Find Properties</Link>
+            </Button>
+            <Button asChild className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
+              <Link href="/auth/signup">Join Community</Link>
             </Button>
           </div>
         </div>

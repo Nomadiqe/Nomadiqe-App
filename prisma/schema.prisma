@@ -42,6 +42,9 @@ model User {
   likes         Like[]
   accounts      Account[]
   sessions      Session[]
+  posts         Post[]
+  postLikes     PostLike[]
+  postComments  PostComment[]
 
   @@map("users")
 }
@@ -102,6 +105,8 @@ model Property {
   reviews     Review[]
   likes       Like[]
   availability Availability[]
+  posts       Post[]
+  ads         Ad[]
 
   @@map("properties")
 }
@@ -223,6 +228,73 @@ model LocalExperience {
   updatedAt   DateTime @updatedAt
 
   @@map("local_experiences")
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  content     String
+  images      String[]
+  location    String?
+  propertyId  String?    // Optional link to property for property posts
+  property    Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relationships
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes       PostLike[]
+  comments    PostComment[]
+
+  @@map("posts")
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relationships
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_comments")
+}
+
+model Ad {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  images      String[]
+  link        String?  // URL link for the ad
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0) // Higher priority shows first
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships - could be property ad or experience ad
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@map("ads")
 }
 
 // NextAuth.js models

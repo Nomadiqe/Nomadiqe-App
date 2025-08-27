@@ -24,6 +24,11 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 199 89% 48%;
     --radius: 0.5rem;
+    
+    /* Nomadiqe brand colors */
+    --nomadiqe-500: 199 89% 48%;
+    --nomadiqe-600: 199 89% 38%;
+    --nomadiqe-700: 199 89% 28%;
   }
 
   .dark {
@@ -46,6 +51,11 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 199 89% 48%;
+    
+    /* Nomadiqe brand colors */
+    --nomadiqe-500: 199 89% 48%;
+    --nomadiqe-600: 199 89% 38%;
+    --nomadiqe-700: 199 89% 28%;
   }
 }
 

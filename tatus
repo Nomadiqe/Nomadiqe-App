@@ -1,4 +1,0 @@
-[33mb3c5d58[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Fix NextAuth configuration: remove invalid signUp page and add password field to User model
-[33m71e89a4[m Fix TypeScript errors: use type assertion for user.role and clean up next.config.js
-[33mc9eaf00[m Fix TypeScript errors and update Next.js config for deployment
-[33ma02e75f[m Nomadiqe App

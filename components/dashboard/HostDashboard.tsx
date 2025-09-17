@@ -109,16 +109,16 @@ export default function HostDashboard({ user }: HostDashboardProps) {
   const isNewHost = !properties.length || properties.every((p: any) => new Date(p.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000))
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-foreground">
                 Welcome back, {user.fullName || user.name}! 👋
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {isNewHost ? 'Thanks for joining as a host! Here\'s your dashboard.' : 'Manage your properties and bookings'}
               </p>
             </div>
@@ -271,10 +271,10 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                         </div>
                         <div>
                           <p className="font-medium">{booking.guest}</p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
                           </p>
-                          <p className="text-xs text-gray-500">{booking.guests} guest{booking.guests > 1 ? 's' : ''}</p>
+                          <p className="text-xs text-muted-foreground">{booking.guests} guest{booking.guests > 1 ? 's' : ''}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -386,7 +386,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold">Your Properties</h2>
-                <p className="text-gray-600">Manage your listings and availability</p>
+                <p className="text-muted-foreground">Manage your listings and availability</p>
               </div>
               <Button asChild>
                 <Link href="/host/create-property">

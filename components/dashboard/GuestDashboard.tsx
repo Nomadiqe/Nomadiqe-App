@@ -268,7 +268,7 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                           <h3 className="font-semibold text-lg">{property.title}</h3>
                           <div className="text-right">
                             <p className="font-bold text-lg">€{property.price}</p>
-                            <p className="text-xs text-gray-500">per night</p>
+                            <p className="text-xs text-muted-foreground">per night</p>
                           </div>
                         </div>
                         
@@ -334,8 +334,8 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                         />
                         <div className="flex-1">
                           <p className="font-medium text-sm">{property.title}</p>
-                          <p className="text-xs text-gray-600">{property.location}</p>
-                          <p className="text-xs text-gray-500">Saved {property.savedDate}</p>
+                          <p className="text-xs text-muted-foreground">{property.location}</p>
+                          <p className="text-xs text-muted-foreground">Saved {property.savedDate}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-sm">€{property.price}</p>
@@ -352,9 +352,9 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <Bookmark className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">No saved properties yet</p>
-                    <p className="text-xs text-gray-500">Save properties to view them here</p>
+                    <Bookmark className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No saved properties yet</p>
+                    <p className="text-xs text-muted-foreground">Save properties to view them here</p>
                   </div>
                 )}
               </CardContent>
@@ -452,13 +452,13 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                   
                   <CardContent className="p-4">
                     <h3 className="font-semibold text-lg mb-2">{property.title}</h3>
-                    <div className="flex items-center text-gray-600 mb-2">
+                    <div className="flex items-center text-muted-foreground mb-2">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span className="text-sm">{property.location}</span>
                     </div>
                     
                     <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         Hosted by {property.host}
                       </div>
                       <div className="font-bold text-lg">

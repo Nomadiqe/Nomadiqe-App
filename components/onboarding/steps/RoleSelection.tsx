@@ -236,11 +236,11 @@ export default function RoleSelection() {
       </div>
 
       {/* Help Text */}
-      <Card className="bg-gray-50 border-gray-200">
+      <Card className="bg-muted border-border">
         <CardContent className="p-4">
           <div className="flex items-start">
-            <Users className="h-4 w-4 mr-2 mt-0.5 text-gray-500" />
-            <div className="text-sm text-gray-600">
+            <Users className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+            <div className="text-sm text-muted-foreground">
               <p className="font-medium mb-1">Don&#39;t worry, you can switch later!</p>
               <p>
                 You can always change your role or add additional roles in your account settings. 

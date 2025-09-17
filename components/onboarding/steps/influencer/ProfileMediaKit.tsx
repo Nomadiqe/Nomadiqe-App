@@ -175,10 +175,10 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mb-4">
           <User className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-2xl font-semibold text-foreground mb-2">
           Complete Your Profile
         </h3>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-md mx-auto">
           Set up your media kit and collaboration preferences to attract the right host partnerships.
         </p>
       </div>
@@ -186,8 +186,8 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       {/* Content Niches */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">Content Niches *</h4>
-          <p className="text-sm text-gray-600 mb-4">
+          <h4 className="font-medium text-foreground mb-2">Content Niches *</h4>
+          <p className="text-sm text-muted-foreground mb-4">
             Select up to 5 niches that best describe your content style and audience interests.
           </p>
         </div>
@@ -198,8 +198,8 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
               key={niche}
               className={`cursor-pointer transition-all ${
                 formData.contentNiches.includes(niche)
-                  ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'ring-2 ring-primary border-primary bg-primary/10'
+                  : 'border-border hover:border-border/80'
               }`}
               onClick={() => toggleNiche(niche)}
             >
@@ -207,7 +207,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium capitalize">{niche}</span>
                   {formData.contentNiches.includes(niche) && (
-                    <Check className="h-4 w-4 text-blue-600" />
+                    <Check className="h-4 w-4 text-primary" />
                   )}
                 </div>
               </CardContent>
@@ -216,7 +216,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {formData.contentNiches.length}/5 niches selected
           </p>
           {formData.contentNiches.length >= 5 && (
@@ -232,18 +232,18 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       {/* Standard Deliverables */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">Standard Deliverables</h4>
-          <p className="text-sm text-gray-600 mb-4">
+          <h4 className="font-medium text-foreground mb-2">Standard Deliverables</h4>
+          <p className="text-sm text-muted-foreground mb-4">
             Define your typical collaboration package. Hosts will see this when considering partnerships.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {deliverableOptions.map((option) => (
-            <Card key={option.key} className="border-gray-200">
+            <Card key={option.key} className="border-border">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h5 className="font-medium text-gray-900">{option.label}</h5>
+                  <h5 className="font-medium text-foreground">{option.label}</h5>
                   <div className="flex items-center space-x-2">
                     <Button
                       type="button"
@@ -276,7 +276,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
                     </Button>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Max {option.max} {option.unit}
                 </p>
               </CardContent>
@@ -285,12 +285,12 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         </div>
 
         {/* Blog Post Toggle */}
-        <Card className="border-gray-200">
+        <Card className="border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-gray-900">Blog Post/Article</h5>
-                <p className="text-sm text-gray-600">Written content for blog or website</p>
+                <h5 className="font-medium text-foreground">Blog Post/Article</h5>
+                <p className="text-sm text-muted-foreground">Written content for blog or website</p>
               </div>
               <Button
                 type="button"
@@ -305,7 +305,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         </Card>
 
         {/* Custom Deliverables */}
-        <Card className="border-gray-200">
+        <Card className="border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Custom Deliverables</CardTitle>
             <CardDescription className="text-xs">
@@ -333,7 +333,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
             {formData.deliverables.customDeliverables.length > 0 && (
               <div className="space-y-2">
                 {formData.deliverables.customDeliverables.map((deliverable, index) => (
-                  <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                  <div key={index} className="flex items-center justify-between bg-muted px-3 py-2 rounded">
                     <span className="text-sm">{deliverable}</span>
                     <Button
                       type="button"
@@ -354,14 +354,14 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       {/* Portfolio URL */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">Portfolio Link (Optional)</h4>
-          <p className="text-sm text-gray-600 mb-4">
+          <h4 className="font-medium text-foreground mb-2">Portfolio Link (Optional)</h4>
+          <p className="text-sm text-muted-foreground mb-4">
             Share a link to your portfolio, media kit, or website to showcase your work.
           </p>
         </div>
 
         <div className="relative">
-          <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={formData.portfolioUrl}
             onChange={(e) => updateFormData({ portfolioUrl: e.target.value })}
@@ -378,8 +378,8 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       {/* Collaboration Terms */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">Collaboration Terms *</h4>
-          <p className="text-sm text-gray-600 mb-4">
+          <h4 className="font-medium text-foreground mb-2">Collaboration Terms *</h4>
+          <p className="text-sm text-muted-foreground mb-4">
             Describe your collaboration style, content quality standards, and any special requirements.
           </p>
         </div>
@@ -390,12 +390,12 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
           placeholder="Describe your collaboration approach, content quality, turnaround times, etc."
           rows={4}
           className={`w-full px-3 py-2 border rounded-md resize-none ${
-            errors.collaborationTerms ? 'border-red-500' : 'border-gray-300'
+            errors.collaborationTerms ? 'border-red-500' : 'border-border'
           }`}
         />
         
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {formData.collaborationTerms.length}/10 characters minimum
           </p>
           {errors.collaborationTerms && (
@@ -436,19 +436,19 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       </div>
 
       {/* Success Preview */}
-      <Card className="bg-green-50 border-green-200">
+      <Card className="bg-nomadiqe-success/10 border-nomadiqe-success/20">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-green-800 flex items-center">
+          <CardTitle className="text-sm font-medium text-nomadiqe-success flex items-center">
             <Hash className="h-4 w-4 mr-2" />
             Your Unique Profile Link
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <p className="text-sm text-green-700 mb-2">
+          <p className="text-sm text-nomadiqe-success mb-2">
             After completing setup, you&#39;ll receive a unique link to share on your social media:
           </p>
-          <div className="bg-white px-3 py-2 rounded border border-green-200">
-            <code className="text-xs text-green-800">
+          <div className="bg-card px-3 py-2 rounded border border-green-200">
+            <code className="text-xs text-nomadiqe-success">
               https://nomadiqe.com/profile/your-unique-link
             </code>
           </div>

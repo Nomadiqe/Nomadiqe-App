@@ -29,8 +29,8 @@ export default function OnboardingLayout({
   const stepDescription = getStepDescription(currentStep)
 
   return (
-    <div className="min-h-screen nomadiqe-gradient-bg">
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -78,7 +78,7 @@ export default function OnboardingLayout({
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <Card className="nomadiqe-gradient-card shadow-lg">
+          <Card className="bg-card border-border shadow-lg">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-foreground">
                 {stepTitle}

@@ -43,12 +43,12 @@ function StepIndicator({ steps, currentStep, completedSteps, role }: StepIndicat
             <div
               className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                 isCompleted
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-nomadiqe-success text-white'
                   : isCurrent
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-primary text-primary-foreground'
                   : isPast
-                  ? 'bg-gray-300 text-gray-600'
-                  : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                  ? 'bg-muted text-muted-foreground'
+                  : 'bg-background text-muted-foreground border-2 border-border'
               }`}
             >
               {isCompleted ? (
@@ -61,7 +61,7 @@ function StepIndicator({ steps, currentStep, completedSteps, role }: StepIndicat
             {/* Step Label */}
             <div className="hidden md:block ml-2 mr-4">
               <div className={`text-xs font-medium ${
-                isCurrent ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'
+                isCurrent ? 'text-primary' : isCompleted ? 'text-nomadiqe-success' : 'text-muted-foreground'
               }`}>
                 {getStepTitle(step)}
               </div>
@@ -71,7 +71,7 @@ function StepIndicator({ steps, currentStep, completedSteps, role }: StepIndicat
             {index < steps.length - 1 && (
               <div
                 className={`hidden md:block w-12 h-0.5 mx-2 ${
-                  isPast || isCompleted ? 'bg-green-300' : 'bg-gray-200'
+                  isPast || isCompleted ? 'bg-nomadiqe-success' : 'bg-muted'
                 }`}
               />
             )}
@@ -107,14 +107,14 @@ function WizardHeader({ currentStep, role, completedSteps }: { currentStep: stri
   const stepDescription = getStepDescription(currentStep)
 
   return (
-    <div className="border-b bg-white/95 backdrop-blur-sm sticky top-0 z-10">
+    <div className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 py-6">
         {/* Top Navigation */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-blue-600">Nomadiqe</h1>
-            <div className="hidden md:block w-px h-6 bg-gray-300"></div>
-            <span className="text-sm font-medium text-gray-600">Setup Wizard</span>
+            <h1 className="text-2xl font-bold text-primary">Nomadiqe</h1>
+            <div className="hidden md:block w-px h-6 bg-muted"></div>
+            <span className="text-sm font-medium text-muted-foreground">Setup Wizard</span>
           </div>
           
           <Button variant="ghost" size="sm" asChild>
@@ -130,8 +130,8 @@ function WizardHeader({ currentStep, role, completedSteps }: { currentStep: stri
           {/* Overall Progress Bar */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-              <span className="text-sm text-gray-500">{progress}% Complete</span>
+              <span className="text-sm font-medium text-foreground">Overall Progress</span>
+              <span className="text-sm text-muted-foreground">{progress}% Complete</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -148,8 +148,8 @@ function WizardHeader({ currentStep, role, completedSteps }: { currentStep: stri
 
           {/* Current Step Info */}
           <div className="text-center py-4">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">{stepTitle}</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">{stepDescription}</p>
+            <h2 className="text-3xl font-bold text-foreground mb-2">{stepTitle}</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{stepDescription}</p>
           </div>
         </div>
       </div>
@@ -182,14 +182,14 @@ export default function OnboardingWizard({
   // Error boundary for runtime errors
   if (hasError) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md mx-auto">
           <CardContent className="p-8 text-center">
-            <div className="text-red-500 mb-4">
+            <div className="text-destructive mb-4">
               <AlertCircle className="h-12 w-12 mx-auto" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Something went wrong</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               We encountered an error loading the onboarding wizard. Please try refreshing the page.
             </p>
             <Button onClick={() => window.location.reload()}>
@@ -236,7 +236,7 @@ export default function OnboardingWizard({
   const showNext = !isLastStep && showNavigation
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Wizard Header */}
       <WizardHeader 
         currentStep={currentStep} 
@@ -247,12 +247,12 @@ export default function OnboardingWizard({
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <Card className="shadow-xl border-0">
+          <Card className="shadow-xl border-border bg-card">
             <CardContent className="p-8">
               {/* Error Display */}
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-700">{error}</p>
+                <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <p className="text-sm text-destructive">{error}</p>
                 </div>
               )}
 
@@ -308,9 +308,9 @@ export default function OnboardingWizard({
 
           {/* Help Text */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Need help? Contact our support team at{' '}
-              <a href="mailto:support@nomadiqe.com" className="text-blue-600 hover:text-blue-700">
+              <a href="mailto:support@nomadiqe.com" className="text-primary hover:text-primary/80">
                 support@nomadiqe.com
               </a>
             </p>
@@ -323,7 +323,7 @@ export default function OnboardingWizard({
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
           <Card className="p-6">
             <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="text-sm font-medium">Loading...</span>
             </div>
           </Card>

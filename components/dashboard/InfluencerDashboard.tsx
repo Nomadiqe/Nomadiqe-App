@@ -114,16 +114,16 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-foreground">
                 Welcome, {user.fullName || user.name}! ✨
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {isNewInfluencer ? 'Your influencer profile is ready! Start exploring collaborations.' : 'Manage your collaborations and content'}
               </p>
             </div>
@@ -260,7 +260,7 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold">Collaboration Opportunities</h2>
-                <p className="text-gray-600">Discover amazing properties looking for content creators</p>
+                <p className="text-muted-foreground">Discover amazing properties looking for content creators</p>
               </div>
               <Button asChild>
                 <Link href="/influencer/browse">
@@ -346,7 +346,7 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold">My Collaborations</h2>
-                <p className="text-gray-600">Track your active and completed partnerships</p>
+                <p className="text-muted-foreground">Track your active and completed partnerships</p>
               </div>
             </div>
 

@@ -199,14 +199,14 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Home className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <Home className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Basic Information</h3>
-              <p className="text-gray-600">Tell us about your property</p>
+              <p className="text-muted-foreground">Tell us about your property</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Property Title *</label>
+                <label className="text-sm font-medium text-foreground">Property Title *</label>
                 <Input
                   value={formData.title}
                   onChange={(e) => updateFormData({ title: e.target.value })}
@@ -217,15 +217,15 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Property Type *</label>
+                <label className="text-sm font-medium text-foreground">Property Type *</label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {propertyTypes.slice(0, 6).map((type) => (
                     <Card
                       key={type.id}
                       className={`cursor-pointer transition-all ${
                         formData.propertyType === type.id
-                          ? 'ring-2 ring-blue-500 border-blue-500'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'ring-2 ring-primary border-primary'
+                          : 'border-border hover:border-border/80'
                       }`}
                       onClick={() => updateFormData({ propertyType: type.id })}
                     >
@@ -239,18 +239,18 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Description *</label>
+                <label className="text-sm font-medium text-foreground">Description *</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => updateFormData({ description: e.target.value })}
                   placeholder="Describe your property, its features, and what makes it special..."
                   rows={4}
                   className={`w-full px-3 py-2 border rounded-md resize-none ${
-                    errors.description ? 'border-red-500' : 'border-gray-300'
+                    errors.description ? 'border-red-500' : 'border-border'
                   }`}
                 />
                 {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description}</p>}
-                <p className="text-xs text-gray-500 mt-1">{formData.description.length}/50 characters minimum</p>
+                <p className="text-xs text-muted-foreground mt-1">{formData.description.length}/50 characters minimum</p>
               </div>
             </div>
           </div>
@@ -260,14 +260,14 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <MapPin className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <MapPin className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Location Details</h3>
-              <p className="text-gray-600">Where is your property located?</p>
+              <p className="text-muted-foreground">Where is your property located?</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Street Address *</label>
+                <label className="text-sm font-medium text-foreground">Street Address *</label>
                 <Input
                   value={formData.location.address}
                   onChange={(e) => updateNestedData('location', 'address', e.target.value)}
@@ -279,7 +279,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">City *</label>
+                  <label className="text-sm font-medium text-foreground">City *</label>
                   <Input
                     value={formData.location.city}
                     onChange={(e) => updateNestedData('location', 'city', e.target.value)}
@@ -290,7 +290,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Country *</label>
+                  <label className="text-sm font-medium text-foreground">Country *</label>
                   <Input
                     value={formData.location.country}
                     onChange={(e) => updateNestedData('location', 'country', e.target.value)}
@@ -308,14 +308,14 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Home className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <Home className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Property Details</h3>
-              <p className="text-gray-600">Tell us about the space</p>
+              <p className="text-muted-foreground">Tell us about the space</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="text-sm font-medium text-gray-700">Max Guests</label>
+                <label className="text-sm font-medium text-foreground">Max Guests</label>
                 <div className="flex items-center mt-2">
                   <Button
                     type="button"
@@ -338,7 +338,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Bedrooms</label>
+                <label className="text-sm font-medium text-foreground">Bedrooms</label>
                 <div className="flex items-center mt-2">
                   <Button
                     type="button"
@@ -361,7 +361,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Bathrooms</label>
+                <label className="text-sm font-medium text-foreground">Bathrooms</label>
                 <div className="flex items-center mt-2">
                   <Button
                     type="button"
@@ -390,9 +390,9 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Wifi className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <Wifi className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Amenities</h3>
-              <p className="text-gray-600">What does your property offer?</p>
+              <p className="text-muted-foreground">What does your property offer?</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -401,8 +401,8 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                   key={key}
                   className={`cursor-pointer transition-all ${
                     formData.amenities[key]
-                      ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'ring-2 ring-primary border-primary bg-primary/10'
+                      : 'border-border hover:border-border/80'
                   }`}
                   onClick={() => updateFormData({
                     amenities: { ...formData.amenities, [key]: !formData.amenities[key] }
@@ -412,7 +412,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{label}</span>
                       {formData.amenities[key] && (
-                        <Check className="h-4 w-4 text-blue-600" />
+                        <Check className="h-4 w-4 text-primary" />
                       )}
                     </div>
                   </CardContent>
@@ -420,7 +420,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               ))}
             </div>
 
-            <p className="text-sm text-gray-500 text-center">
+            <p className="text-sm text-muted-foreground text-center">
               Select all amenities that apply. This helps guests find properties that meet their needs.
             </p>
           </div>
@@ -430,20 +430,20 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Camera className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <Camera className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Property Photos</h3>
-              <p className="text-gray-600">Show off your space</p>
+              <p className="text-muted-foreground">Show off your space</p>
             </div>
 
-            <Card className="border-dashed border-2 border-gray-300">
+            <Card className="border-dashed border-2 border-border">
               <CardContent className="p-8 text-center">
-                <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h4 className="text-lg font-medium mb-2">Photo Upload Coming Soon</h4>
-                <p className="text-gray-600 mb-4">
+                <p className="text-muted-foreground mb-4">
                   In the full version, you&#39;ll be able to upload up to 20 high-quality photos of your property.
                 </p>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <p className="text-sm text-primary">
                     <strong>Demo:</strong> We&#39;ve included a sample photo for this demo listing.
                   </p>
                 </div>
@@ -460,7 +460,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                     className="w-full h-32 object-cover rounded-lg"
                   />
                   <div className="absolute top-2 right-2">
-                    <div className="bg-green-500 text-white px-2 py-1 rounded text-xs">
+                    <div className="bg-nomadiqe-success text-white px-2 py-1 rounded text-xs">
                       Demo
                     </div>
                   </div>
@@ -474,17 +474,17 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Euro className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+              <Euro className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Pricing</h3>
-              <p className="text-gray-600">Set your nightly rate</p>
+              <p className="text-muted-foreground">Set your nightly rate</p>
             </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Base Price per Night *</label>
+                  <label className="text-sm font-medium text-foreground">Base Price per Night *</label>
                   <div className="relative mt-1">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">€</span>
                     <Input
                       type="number"
                       value={formData.pricing.basePrice}
@@ -498,9 +498,9 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Cleaning Fee</label>
+                  <label className="text-sm font-medium text-foreground">Cleaning Fee</label>
                   <div className="relative mt-1">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">€</span>
                     <Input
                       type="number"
                       value={formData.pricing.cleaningFee}
@@ -514,10 +514,10 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                 </div>
               </div>
 
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-primary/10 border-primary/20">
                 <CardContent className="p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Pricing Tips</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
+                  <h4 className="font-medium text-primary mb-2">Pricing Tips</h4>
+                  <ul className="text-sm text-primary space-y-1">
                     <li>• Research similar properties in your area</li>
                     <li>• Consider seasonal demand fluctuations</li>
                     <li>• Start competitive and adjust based on bookings</li>
@@ -553,13 +553,13 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
     <div className="space-y-6">
       {/* Progress Indicator */}
       <div className="mb-8">
-        <div className="flex justify-between text-xs font-medium text-gray-500 mb-2">
+        <div className="flex justify-between text-xs font-medium text-muted-foreground mb-2">
           <span>Step {['basic', 'location', 'details', 'amenities', 'photos', 'pricing'].indexOf(currentStep) + 1} of 6</span>
           <span>{Math.round(getProgressPercentage())}% Complete</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-muted rounded-full h-2">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{ width: `${getProgressPercentage()}%` }}
           />
         </div>

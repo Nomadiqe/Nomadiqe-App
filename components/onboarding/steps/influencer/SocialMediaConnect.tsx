@@ -35,8 +35,8 @@ const platforms: PlatformConfig[] = [
     id: 'TIKTOK',
     name: 'TikTok',
     icon: Music,
-    color: 'text-black',
-    bgColor: 'bg-gray-50 border-gray-200',
+    color: 'text-foreground',
+    bgColor: 'bg-muted border-border',
     description: 'Link your TikTok for short-form video content collaborations',
     minFollowers: 1000
   },
@@ -162,10 +162,10 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mb-4">
           <Instagram className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-2xl font-semibold text-foreground mb-2">
           Connect Your Social Media
         </h3>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-md mx-auto">
           Connect at least one social media account to start collaborating with hosts. 
           You need a minimum of 1,000 followers on each platform.
         </p>
@@ -181,36 +181,36 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
               key={platform.id}
               className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                 isConnected
-                  ? 'ring-2 ring-green-500 border-green-500 bg-green-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'ring-2 ring-nomadiqe-success border-nomadiqe-success bg-nomadiqe-success/10'
+                  : 'border-border hover:border-border/80'
               }`}
               onClick={() => !isConnected && handlePlatformSelect(platform.id)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
                   <div className={`p-3 rounded-lg ${
-                    isConnected ? 'bg-green-100' : platform.bgColor
+                    isConnected ? 'bg-nomadiqe-success/10' : platform.bgColor
                   }`}>
                     <Icon className={`h-6 w-6 ${
-                      isConnected ? 'text-green-600' : platform.color
+                      isConnected ? 'text-nomadiqe-success' : platform.color
                     }`} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <h4 className="font-semibold text-gray-900">{platform.name}</h4>
+                      <h4 className="font-semibold text-foreground">{platform.name}</h4>
                       {isConnected && (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CheckCircle className="h-5 w-5 text-nomadiqe-success" />
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{platform.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{platform.description}</p>
                     {isConnected && (
-                      <p className="text-sm text-green-600 mt-1">
+                      <p className="text-sm text-nomadiqe-success mt-1">
                         Connected as @{connectedAccounts.find(acc => acc.platform === platform.id)?.username}
                       </p>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500">Min. {platform.minFollowers.toLocaleString()} followers</p>
+                    <p className="text-xs text-muted-foreground">Min. {platform.minFollowers.toLocaleString()} followers</p>
                     {!isConnected && (
                       <Button size="sm" className="mt-2">
                         Connect
@@ -253,17 +253,17 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
           <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${platform.bgColor}`}>
             <Icon className={`h-8 w-8 ${platform.color}`} />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Connect {platform.name}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Enter your {platform.name} details for this demo
           </p>
         </div>
 
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-primary/10 border-primary/20">
           <CardContent className="p-4">
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-primary">
               <strong>Demo Mode:</strong> In the full version, you would be redirected to {platform.name} 
               to authorize the connection. For this demo, please enter your account details manually.
             </p>
@@ -272,7 +272,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700">Username *</label>
+            <label className="text-sm font-medium text-foreground">Username *</label>
             <Input
               value={mockData.username}
               onChange={(e) => setMockData(prev => ({ ...prev, username: e.target.value }))}
@@ -282,7 +282,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Follower Count *</label>
+            <label className="text-sm font-medium text-foreground">Follower Count *</label>
             <Input
               type="number"
               value={mockData.followerCount}
@@ -291,7 +291,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
               className="mt-1"
               min="1000"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Minimum 1,000 followers required
             </p>
           </div>
@@ -322,14 +322,14 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
 
   const renderConnecting = () => (
     <div className="text-center space-y-6">
-      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+      <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
       </div>
       <div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-foreground mb-2">
           Connecting Your Account
         </h3>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Please wait while we connect your {selectedPlatform?.toLowerCase()} account...
         </p>
       </div>
@@ -343,26 +343,26 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
 
     return (
       <div className="text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
-          <CheckCircle className="h-8 w-8 text-green-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-nomadiqe-success/10 rounded-full">
+          <CheckCircle className="h-8 w-8 text-nomadiqe-success" />
         </div>
         
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Successfully Connected!
           </h3>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Your {platform.name} account has been connected to Nomadiqe.
           </p>
         </div>
 
-        <Card className="bg-green-50 border-green-200">
+        <Card className="bg-nomadiqe-success/10 border-nomadiqe-success/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-center space-x-4">
               <Icon className={`h-8 w-8 ${platform.color}`} />
               <div className="text-left">
-                <p className="font-medium text-gray-900">@{connectedAccount.username}</p>
-                <p className="text-sm text-gray-600 flex items-center">
+                <p className="font-medium text-foreground">@{connectedAccount.username}</p>
+                <p className="text-sm text-muted-foreground flex items-center">
                   <Users className="h-4 w-4 mr-1" />
                   {connectedAccount.followerCount.toLocaleString()} followers
                 </p>
@@ -392,9 +392,9 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
 
       {/* Connected Accounts Summary */}
       {connectedAccounts.length > 0 && connectionStep === 'select' && (
-        <Card className="mt-6 bg-gray-50 border-gray-200">
+        <Card className="mt-6 bg-muted border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-800">
+            <CardTitle className="text-sm font-medium text-foreground">
               Connected Accounts ({connectedAccounts.length})
             </CardTitle>
           </CardHeader>
@@ -408,10 +408,10 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
                   <div key={index} className="flex items-center space-x-3">
                     <Icon className={`h-5 w-5 ${platform.color}`} />
                     <span className="text-sm font-medium">@{account.username}</span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       {account.followerCount.toLocaleString()} followers
                     </span>
-                    <CheckCircle className="h-4 w-4 text-green-600 ml-auto" />
+                    <CheckCircle className="h-4 w-4 text-nomadiqe-success ml-auto" />
                   </div>
                 )
               })}

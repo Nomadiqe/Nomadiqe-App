@@ -130,10 +130,10 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
         </div>
         
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Verification in Progress
           </h3>
-          <p className="text-gray-600 max-w-md mx-auto">
+          <p className="text-muted-foreground max-w-md mx-auto">
             {verificationResult.message}
           </p>
         </div>
@@ -164,10 +164,10 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mb-4">
           <Shield className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-foreground mb-2">
           Verify Your Identity
         </h3>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-md mx-auto">
           {userType === 'host' 
             ? 'To ensure the safety of our community, we need to verify your identity before you can list properties.'
             : 'Identity verification helps build trust with hosts and ensures authentic collaborations.'
@@ -177,7 +177,7 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
 
       {/* Document Type Selection */}
       <div className="space-y-4">
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-sm font-medium text-foreground">
           Select Document Type *
         </label>
         
@@ -191,35 +191,35 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
                 key={type.id}
                 className={`cursor-pointer transition-all duration-200 ${
                   isSelected
-                    ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'ring-2 ring-primary border-primary bg-primary/10'
+                    : 'border-border hover:border-border/80'
                 }`}
                 onClick={() => handleInputChange('documentType', type.id)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <div className={`p-2 rounded-lg ${
-                      isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                      isSelected ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
                     }`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
                       <h4 className={`font-medium ${
-                        isSelected ? 'text-blue-900' : 'text-gray-900'
+                        isSelected ? 'text-primary' : 'text-foreground'
                       }`}>
                         {type.label}
                       </h4>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         {type.description}
                       </p>
                     </div>
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-300'
+                        ? 'border-primary bg-primary'
+                        : 'border-border'
                     }`}>
                       {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary-foreground"></div>
                       )}
                     </div>
                   </div>
@@ -232,7 +232,7 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
 
       {/* Document Number Input */}
       <div className="space-y-2">
-        <label htmlFor="documentNumber" className="text-sm font-medium text-gray-700">
+        <label htmlFor="documentNumber" className="text-sm font-medium text-foreground">
           Document Number *
         </label>
         <Input
@@ -250,19 +250,19 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
             {errors.documentNumber}
           </p>
         )}
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           This information is encrypted and stored securely. We only use it for identity verification.
         </p>
       </div>
 
       {/* File Upload Placeholder */}
-      <Card className="border-dashed border-2 border-gray-300">
+      <Card className="border-dashed border-2 border-border">
         <CardContent className="p-6 text-center">
-          <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600 mb-1">
+          <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground mb-1">
             Document Upload (Coming Soon)
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             In the full version, you&#39;ll be able to upload a photo of your document for faster verification.
           </p>
         </CardContent>
@@ -309,15 +309,15 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
       </div>
 
       {/* Security Notice */}
-      <Card className="bg-green-50 border-green-200">
+      <Card className="bg-nomadiqe-success/10 border-nomadiqe-success/20">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-green-800 flex items-center">
+          <CardTitle className="text-sm font-medium text-nomadiqe-success flex items-center">
             <CheckCircle className="h-4 w-4 mr-2" />
             Your Data is Secure
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <CardDescription className="text-sm text-green-700">
+          <CardDescription className="text-sm text-nomadiqe-success">
             We use bank-level encryption to protect your personal information. 
             Your document details are never shared with other users and are only used for verification purposes.
           </CardDescription>

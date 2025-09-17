@@ -19,8 +19,8 @@ function InterestItem({ interest, isSelected, onToggle }: InterestItemProps) {
     <Card
       className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
         isSelected
-          ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50'
-          : 'border-gray-200 hover:border-gray-300'
+          ? 'ring-2 ring-primary border-primary bg-primary/10'
+          : 'border-border hover:border-border/80'
       }`}
       onClick={() => onToggle(interest)}
     >
@@ -28,12 +28,12 @@ function InterestItem({ interest, isSelected, onToggle }: InterestItemProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className={`p-2 rounded-lg ${
-              isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+              isSelected ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
             }`}>
               <Heart className="h-4 w-4" />
             </div>
             <span className={`font-medium ${
-              isSelected ? 'text-blue-900' : 'text-gray-700'
+              isSelected ? 'text-primary' : 'text-foreground'
             }`}>
               {interest}
             </span>
@@ -41,8 +41,8 @@ function InterestItem({ interest, isSelected, onToggle }: InterestItemProps) {
           
           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
             isSelected
-              ? 'border-blue-500 bg-blue-500'
-              : 'border-gray-300'
+              ? 'border-primary bg-primary'
+              : 'border-border'
           }`}>
             {isSelected && <Check className="h-3 w-3 text-white" />}
           </div>
@@ -109,10 +109,10 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mb-4">
           <MapPin className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-foreground mb-2">
           What interests you most when traveling?
         </h3>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-md mx-auto">
           Select your travel interests to help us personalize your experience. 
           You can always change these later.
         </p>
@@ -132,7 +132,7 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
 
       {/* Selection Counter */}
       <div className="text-center">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           {selectedInterests.length > 0 
             ? `${selectedInterests.length} interest${selectedInterests.length > 1 ? 's' : ''} selected`
             : 'Select at least one interest to continue'
@@ -201,9 +201,9 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
       </div>
 
       {/* Help Text */}
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-primary/10 border-primary/20">
         <CardContent className="p-4">
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-primary">
             <strong>💡 Tip:</strong> Your interests help us show you the most relevant properties 
             and experiences. You can update these anytime in your profile settings.
           </p>

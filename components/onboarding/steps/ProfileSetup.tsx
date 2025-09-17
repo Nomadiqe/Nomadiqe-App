@@ -149,14 +149,14 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
             <Camera className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Upload a profile picture (optional)
         </p>
       </div>
 
       {/* Full Name Input */}
       <div className="space-y-2">
-        <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
+        <label htmlFor="fullName" className="text-sm font-medium text-foreground">
           Full Name *
         </label>
         <Input
@@ -178,11 +178,11 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
 
       {/* Username Input */}
       <div className="space-y-2">
-        <label htmlFor="username" className="text-sm font-medium text-gray-700">
+        <label htmlFor="username" className="text-sm font-medium text-foreground">
           Username *
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
             @
           </span>
           <Input
@@ -201,7 +201,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
             {errors.username}
           </p>
         )}
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           This will be your unique identifier on Nomadiqe. You can use letters, numbers, and underscores.
         </p>
       </div>
@@ -234,15 +234,15 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
       </div>
 
       {/* Help Text */}
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-primary/10 border-primary/20">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-blue-800 flex items-center">
+          <CardTitle className="text-sm font-medium text-primary flex items-center">
             <User className="h-4 w-4 mr-2" />
             Profile Setup
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <CardDescription className="text-sm text-blue-700">
+          <CardDescription className="text-sm text-primary">
             Your profile information helps other users recognize and connect with you. 
             You can always update this information later in your account settings.
           </CardDescription>

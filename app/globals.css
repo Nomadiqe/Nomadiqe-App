@@ -128,17 +128,26 @@
 
 /* Brand gradient backgrounds */
 .nomadiqe-gradient-bg {
-  background: linear-gradient(135deg, hsl(186, 100%, 42%) 0%, hsl(43, 25%, 85%) 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+}
+
+.dark .nomadiqe-gradient-bg {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  opacity: 0.9;
 }
 
 .nomadiqe-gradient-text {
-  background: linear-gradient(135deg, hsl(186, 100%, 42%) 0%, hsl(186, 100%, 35%) 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .nomadiqe-gradient-card {
-  background: linear-gradient(135deg, hsl(197, 100%, 97%) 0%, hsl(0, 0%, 100%) 100%);
-  border: 1px solid hsl(197, 50%, 90%);
+  background: linear-gradient(135deg, hsl(var(--muted)) 0%, hsl(var(--card)) 100%);
+  border: 1px solid hsl(var(--border));
+}
+
+.dark .nomadiqe-gradient-card {
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted) / 0.5) 100%);
 }

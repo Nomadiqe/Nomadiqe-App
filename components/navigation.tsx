@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { 
   Search, 
   User, 
@@ -71,6 +72,7 @@ export function Navigation() {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             {session ? (
               <div className="flex items-center space-x-4">
                 <Link href="/favorites">
@@ -144,6 +146,9 @@ export function Navigation() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-border py-4">
             <div className="flex flex-col space-y-4">
+              <div className="flex justify-center">
+                <ThemeToggle />
+              </div>
               <Link 
                 href="/search" 
                 className="text-foreground hover:text-primary transition-colors"

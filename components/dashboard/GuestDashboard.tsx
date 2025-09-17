@@ -97,7 +97,7 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                 Welcome, {user.fullName || user.name}! 🌍
               </h1>
               <p className="text-gray-600 mt-1">
-                {isNewGuest ? 'Ready to discover amazing places? Let\'s find your perfect stay!' : 'Discover your next adventure'}
+                {isNewGuest ? 'Ready to discover amazing places? Let&apos;s find your perfect stay!' : 'Discover your next adventure'}
               </p>
             </div>
             <div className="flex items-center space-x-3">

@@ -44,15 +44,22 @@ module.exports = {
         },
         nomadiqe: {
           50: '#f0f9ff',
-          100: '#e0f2fe',
+          100: '#e0f2fe', 
           200: '#bae6fd',
           300: '#7dd3fc',
           400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          500: '#06b6d4', // Mediterranean turquoise primary
+          600: '#0891b2', // Deeper turquoise
+          700: '#0e7490', // Dark turquoise
+          800: '#155e75',
+          900: '#164e63',
+          950: '#083344',
+          // Brand semantic colors
+          primary: '#06b6d4',
+          secondary: '#d4bf9a', // Sandy beige
+          success: '#10b981', // Success green with turquoise undertones
+          warning: '#f59e0b', // Warm amber  
+          error: '#ef4444', // Coral-orange
         }
       },
       borderRadius: {

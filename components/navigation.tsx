@@ -30,10 +30,10 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">N</span>
             </div>
-            <span className="text-xl font-bold gradient-text">Nomadiqe</span>
+            <span className="text-xl font-bold nomadiqe-gradient-text">Nomadiqe</span>
           </Link>
 
           {/* Desktop Navigation */}

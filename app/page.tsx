@@ -93,7 +93,7 @@ export default function HomePage() {
               <h1 className="text-2xl font-bold">Welcome to Nomadiqe</h1>
               <p className="text-muted-foreground">Connect, explore, and share your travel experiences</p>
             </div>
-            <Button asChild className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
+            <Button asChild className="bg-primary hover:bg-primary/90">
               <Link href="/create-post" className="flex items-center space-x-2">
                 <Plus className="w-4 h-4" />
                 <span>Create Post</span>
@@ -202,7 +202,7 @@ export default function HomePage() {
             <Button asChild variant="outline">
               <Link href="/search">Find Properties</Link>
             </Button>
-            <Button asChild className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
+            <Button asChild className="bg-primary hover:bg-primary/90">
               <Link href="/auth/signup">Join Community</Link>
             </Button>
           </div>

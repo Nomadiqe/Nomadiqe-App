@@ -110,8 +110,8 @@ export default function RoleSelection() {
                 key={option.id}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                   isSelected
-                    ? 'ring-2 ring-blue-500 border-blue-500 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'ring-2 ring-primary border-primary shadow-md'
+                    : 'border-border hover:border-border/80'
                 }`}
                 onClick={() => handleRoleSelect(option.id)}
               >
@@ -120,8 +120,8 @@ export default function RoleSelection() {
                     <div className="flex items-center space-x-3">
                       <div className={`p-3 rounded-lg ${
                         isSelected
-                          ? 'bg-blue-100 text-blue-600'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted text-muted-foreground'
                       }`}>
                         <Icon className="h-6 w-6" />
                       </div>
@@ -129,7 +129,7 @@ export default function RoleSelection() {
                         <CardTitle className="flex items-center gap-2">
                           {option.title}
                           {option.isPopular && (
-                            <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            <span className="bg-nomadiqe-success/10 text-nomadiqe-success text-xs font-medium px-2.5 py-0.5 rounded-full">
                               Popular
                             </span>
                           )}
@@ -142,11 +142,11 @@ export default function RoleSelection() {
                     
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-300'
+                        ? 'border-primary bg-primary'
+                        : 'border-border'
                     }`}>
                       {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary-foreground"></div>
                       )}
                     </div>
                   </div>
@@ -155,8 +155,8 @@ export default function RoleSelection() {
                 <CardContent className="pt-0">
                   <ul className="space-y-2">
                     {option.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mr-3"></div>
+                      <li key={index} className="flex items-center text-sm text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary mr-3"></div>
                         {feature}
                       </li>
                     ))}
@@ -169,17 +169,17 @@ export default function RoleSelection() {
         {/* Show Influencer Option Toggle */}
         {!showInfluencerOption && (
           <Card
-            className="cursor-pointer transition-all duration-200 hover:shadow-md border-gray-200 hover:border-gray-300 border-dashed"
+            className="cursor-pointer transition-all duration-200 hover:shadow-md border-border hover:border-border/80 border-dashed"
             onClick={() => setShowInfluencerOption(true)}
           >
             <CardContent className="p-6 text-center">
               <div className="flex items-center justify-center space-x-3">
-                <div className="p-3 rounded-lg bg-gray-100 text-gray-600">
+                <div className="p-3 rounded-lg bg-muted text-muted-foreground">
                   <Plus className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">More Options</h4>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h4 className="font-semibold text-foreground">More Options</h4>
+                  <p className="text-sm text-muted-foreground mt-1">
                     Are you a content creator or influencer?
                   </p>
                 </div>
@@ -191,9 +191,9 @@ export default function RoleSelection() {
 
       {/* Special Note for Influencer */}
       {selectedRole === 'INFLUENCER' && (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-nomadiqe-warning/30 bg-nomadiqe-warning/10">
           <CardContent className="p-4">
-            <p className="text-sm text-orange-700 flex items-start">
+            <p className="text-sm text-nomadiqe-warning flex items-start">
               <Camera className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
               <span>
                 <strong>Note:</strong> The Influencer role is currently in beta. 
@@ -206,9 +206,9 @@ export default function RoleSelection() {
 
       {/* Error Display */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/30 bg-destructive/10">
           <CardContent className="p-4">
-            <p className="text-sm text-red-700">
+            <p className="text-sm text-destructive">
               {error}
             </p>
           </CardContent>

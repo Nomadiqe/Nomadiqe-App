@@ -65,17 +65,17 @@ function WelcomeStep() {
   return (
     <div className="text-center space-y-6">
       <div className="space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">
+        <h2 className="text-3xl font-bold text-foreground">
           Welcome to Nomadiqe! 👋
         </h2>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-muted-foreground">
           Hi {session?.user?.name?.split(' ')[0] || 'there'}! Let&apos;s get you set up in just a few quick steps.
         </p>
       </div>
 
-      <div className="bg-blue-50 p-6 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">What to expect:</h3>
-        <ul className="text-sm text-blue-800 space-y-1 text-left max-w-md mx-auto">
+      <div className="bg-muted p-6 rounded-lg border border-border">
+        <h3 className="font-semibold text-foreground mb-2">What to expect:</h3>
+        <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
           <li>• Set up your profile (2 minutes)</li>
           <li>• Choose your role on the platform</li>
           <li>• Customize your experience</li>
@@ -85,7 +85,7 @@ function WelcomeStep() {
 
       <button
         onClick={handleGetStarted}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 px-8 rounded-lg transition-colors"
       >
         Get Started
       </button>
@@ -140,17 +140,17 @@ function OnboardingComplete() {
     <div className="text-center space-y-6">
       <div className="text-6xl">{dashboardInfo.emoji}</div>
       <div className="space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">
+        <h2 className="text-3xl font-bold text-foreground">
           {dashboardInfo.title}
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {dashboardInfo.description}
         </p>
       </div>
 
       <button
         onClick={handleGoToDashboard}
-        className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+        className="bg-nomadiqe-success hover:bg-nomadiqe-success/90 text-white font-medium py-3 px-8 rounded-lg transition-colors"
       >
         Go to {role ? `${role.charAt(0) + role.slice(1).toLowerCase()} ` : ''}Dashboard
       </button>

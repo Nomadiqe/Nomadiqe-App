@@ -68,7 +68,7 @@ export function PostCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link href={`/profile/${author.id}`}>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 flex items-center justify-center">
               {author.image ? (
                 <img 
                   src={author.image} 
@@ -159,7 +159,7 @@ export function PostCard({
             size="sm"
             onClick={handleLike}
             className={`flex items-center space-x-2 ${
-              liked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-foreground'
+              liked ? 'text-nomadiqe-error hover:text-nomadiqe-error/80' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />

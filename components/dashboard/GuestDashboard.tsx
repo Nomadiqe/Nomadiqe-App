@@ -88,16 +88,16 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
   const isNewGuest = interests.length === 0 || new Date(user.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-foreground">
                 Welcome, {user.fullName || user.name}! 🌍
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {isNewGuest ? 'Ready to discover amazing places? Let&apos;s find your perfect stay!' : 'Discover your next adventure'}
               </p>
             </div>
@@ -122,27 +122,27 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
       <div className="container mx-auto px-4 py-8">
         {/* New Guest Welcome Banner */}
         {isNewGuest && (
-          <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
+          <Card className="mb-8 nomadiqe-gradient-bg text-white border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold mb-2">🎉 Welcome to the Nomadiqe Community!</h2>
-                  <p className="text-blue-100 mb-4">
+                  <p className="text-primary-foreground/80 mb-4">
                     Your profile is set up and ready. Start exploring unique properties and amazing experiences 
                     curated just for you{interests.length > 0 ? ' based on your interests' : ''}.
                   </p>
                   <div className="flex items-center space-x-4">
-                    <div className="flex items-center text-blue-100">
+                    <div className="flex items-center text-primary-foreground/80">
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Profile Complete
                     </div>
                     {interests.length > 0 && (
-                      <div className="flex items-center text-blue-100">
+                      <div className="flex items-center text-primary-foreground/80">
                         <Heart className="h-4 w-4 mr-2" />
                         {interests.length} Interest{interests.length > 1 ? 's' : ''} Selected
                       </div>
                     )}
-                    <div className="flex items-center text-blue-100">
+                    <div className="flex items-center text-primary-foreground/80">
                       <Compass className="h-4 w-4 mr-2" />
                       Ready to Explore
                     </div>
@@ -172,22 +172,22 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700">Destination</label>
+                <label className="text-sm font-medium text-foreground">Destination</label>
                 <div className="mt-1 relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Where do you want to go?"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 border border-border rounded-md focus:ring-2 focus:ring-ring focus:border-ring bg-input text-foreground"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Check-in</label>
+                <label className="text-sm font-medium text-foreground">Check-in</label>
                 <div className="mt-1">
                   <input
                     type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-ring focus:border-ring bg-input text-foreground"
                   />
                 </div>
               </div>
@@ -272,18 +272,18 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                           </div>
                         </div>
                         
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <div className="flex items-center text-muted-foreground mb-2">
                           <MapPin className="h-4 w-4 mr-1" />
                           <span className="text-sm">{property.location}</span>
                         </div>
 
                         <div className="flex items-center mb-3">
                           <div className="flex items-center mr-4">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                            <Star className="h-4 w-4 fill-nomadiqe-warning text-nomadiqe-warning mr-1" />
                             <span className="text-sm font-medium">{property.rating}</span>
-                            <span className="text-sm text-gray-500 ml-1">({property.reviews} reviews)</span>
+                            <span className="text-sm text-muted-foreground ml-1">({property.reviews} reviews)</span>
                           </div>
-                          <span className="text-xs text-gray-500">{property.distance}</span>
+                          <span className="text-xs text-muted-foreground">{property.distance}</span>
                         </div>
 
                         <div className="flex flex-wrap gap-1 mb-3">

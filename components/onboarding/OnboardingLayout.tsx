@@ -29,8 +29,8 @@ export default function OnboardingLayout({
   const stepDescription = getStepDescription(currentStep)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen nomadiqe-gradient-bg">
+      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -45,8 +45,8 @@ export default function OnboardingLayout({
                 </Button>
               )}
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-blue-600">Nomadiqe</h1>
-                <span className="text-sm text-gray-500">Getting Started</span>
+                <h1 className="text-xl font-bold text-primary">Nomadiqe</h1>
+                <span className="text-sm text-muted-foreground">Getting Started</span>
               </div>
             </div>
             
@@ -63,10 +63,10 @@ export default function OnboardingLayout({
           {role && (
             <div className="mt-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-xs font-medium text-muted-foreground">
                   Progress
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {progress}% Complete
                 </span>
               </div>
@@ -78,12 +78,12 @@ export default function OnboardingLayout({
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <Card className="shadow-lg">
+          <Card className="nomadiqe-gradient-card shadow-lg">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-gray-900">
+              <CardTitle className="text-2xl font-bold text-foreground">
                 {stepTitle}
               </CardTitle>
-              <CardDescription className="text-gray-600">
+              <CardDescription className="text-muted-foreground">
                 {stepDescription}
               </CardDescription>
             </CardHeader>
@@ -99,7 +99,7 @@ export default function OnboardingLayout({
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
           <Card className="p-6">
             <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="text-sm font-medium">Processing...</span>
             </div>
           </Card>

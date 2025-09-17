@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth"
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import AppleProvider from "next-auth/providers/apple"
+import FacebookProvider from "next-auth/providers/facebook"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/db"
@@ -9,11 +11,23 @@ import bcrypt from "bcryptjs"
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    // Only include Google provider if credentials are configured
+    // Social Authentication Providers
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      })
+    ] : []),
+    ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
+      AppleProvider({
+        clientId: process.env.APPLE_ID,
+        clientSecret: process.env.APPLE_SECRET,
+      })
+    ] : []),
+    ...(process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET ? [
+      FacebookProvider({
+        clientId: process.env.FACEBOOK_CLIENT_ID,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       })
     ] : []),
     CredentialsProvider({
@@ -94,7 +108,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user, account, profile }) {
-      if (account?.provider === 'google') {
+      if (account?.provider && ['google', 'apple', 'facebook'].includes(account.provider)) {
         try {
           // Check if user exists, if not create with default role
           const existingUser = await prisma.user.findUnique({
@@ -102,32 +116,20 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (!existingUser) {
-            // Create user with Google OAuth
-            const newUser = await prisma.user.create({
+            // Create user with social OAuth - start with GUEST role and onboarding
+            await prisma.user.create({
               data: {
                 email: user.email!,
                 name: user.name || '',
                 image: user.image || '',
-                role: 'TRAVELER',
+                role: 'GUEST',
                 emailVerified: new Date(),
-              }
-            })
-            
-            // Create default traveler profile
-            await prisma.travelerProfile.create({
-              data: {
-                userId: newUser.id,
-                preferences: {
-                  travelStyle: [],
-                  interests: [],
-                  budgetRange: null,
-                  accommodationTypes: []
-                }
+                onboardingStatus: 'PENDING'
               }
             })
           }
         } catch (error) {
-          console.error('Error in Google signIn callback:', error)
+          console.error(`Error in ${account.provider} signIn callback:`, error)
           return false
         }
       }
@@ -138,6 +140,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
+    newUser: "/onboarding/welcome", // Redirect new users to onboarding
   },
   events: {
     async signIn(message) {

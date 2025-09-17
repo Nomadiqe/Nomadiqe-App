@@ -1,0 +1,249 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { OnboardingProvider, useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
+import OnboardingWizard from './OnboardingWizard'
+import ProfileSetup from './steps/ProfileSetup'
+import RoleSelection from './steps/RoleSelection'
+import InterestSelection from './steps/guest/InterestSelection'
+import IdentityVerification from './steps/IdentityVerification'
+import ListingWizard from './steps/host/ListingWizard'
+import CollaborationSetup from './steps/host/CollaborationSetup'
+import SocialMediaConnect from './steps/influencer/SocialMediaConnect'
+import ProfileMediaKit from './steps/influencer/ProfileMediaKit'
+import { getPreviousStep, getNextStep } from '@/lib/onboarding'
+
+interface OnboardingFlowProps {
+  step: string
+}
+
+function OnboardingStepRenderer({ step }: { step: string }) {
+  const { role } = useOnboarding()
+
+  switch (step) {
+    case 'welcome':
+      return <WelcomeStep />
+    case 'profile-setup':
+      return <ProfileSetup />
+    case 'role-selection':
+      return <RoleSelection />
+    case 'interest-selection':
+      return <InterestSelection />
+    case 'identity-verification':
+      return (
+        <IdentityVerification 
+          userType={role === 'HOST' ? 'host' : 'influencer'} 
+        />
+      )
+    case 'listing-creation':
+      return <ListingWizard />
+    case 'collaboration-setup':
+      return <CollaborationSetup />
+    case 'social-connect':
+      return <SocialMediaConnect />
+    case 'media-kit-setup':
+      return <ProfileMediaKit />
+    case 'complete':
+      return <OnboardingComplete />
+    default:
+      return <ProfileSetup />
+  }
+}
+
+function WelcomeStep() {
+  const { data: session } = useSession()
+  const { setStep } = useOnboarding()
+  const router = useRouter()
+
+  const handleGetStarted = () => {
+    setStep('profile-setup')
+    router.push('/onboarding/profile-setup')
+  }
+
+  return (
+    <div className="text-center space-y-6">
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold text-gray-900">
+          Welcome to Nomadiqe! 👋
+        </h2>
+        <p className="text-lg text-gray-600">
+          Hi {session?.user?.name?.split(' ')[0] || 'there'}! Let&apos;s get you set up in just a few quick steps.
+        </p>
+      </div>
+
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="font-semibold text-blue-900 mb-2">What to expect:</h3>
+        <ul className="text-sm text-blue-800 space-y-1 text-left max-w-md mx-auto">
+          <li>• Set up your profile (2 minutes)</li>
+          <li>• Choose your role on the platform</li>
+          <li>• Customize your experience</li>
+          <li>• Start connecting with the community</li>
+        </ul>
+      </div>
+
+      <button
+        onClick={handleGetStarted}
+        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+      >
+        Get Started
+      </button>
+    </div>
+  )
+}
+
+function OnboardingComplete() {
+  const { role } = useOnboarding()
+  const router = useRouter()
+
+  const getDashboardInfo = () => {
+    switch (role) {
+      case 'HOST':
+        return {
+          url: '/dashboard/host',
+          title: 'Welcome to Nomadiqe Host Community!',
+          description: 'Your host account is ready. Start managing your properties and welcoming guests!',
+          emoji: '🏠'
+        }
+      case 'INFLUENCER':
+        return {
+          url: '/dashboard/influencer',
+          title: 'Your Influencer Profile is Live!',
+          description: 'Start collaborating with amazing hosts and sharing your travel experiences!',
+          emoji: '✨'
+        }
+      case 'GUEST':
+        return {
+          url: '/dashboard/guest',
+          title: 'Welcome to Nomadiqe!',
+          description: 'Your account is ready. Start discovering amazing places and unique experiences!',
+          emoji: '🌍'
+        }
+      default:
+        return {
+          url: '/dashboard',
+          title: 'Welcome to Nomadiqe!',
+          description: 'Your account has been set up successfully. You\'re ready to start exploring!',
+          emoji: '🎉'
+        }
+    }
+  }
+
+  const dashboardInfo = getDashboardInfo()
+
+  const handleGoToDashboard = () => {
+    router.push(dashboardInfo.url)
+  }
+
+  return (
+    <div className="text-center space-y-6">
+      <div className="text-6xl">{dashboardInfo.emoji}</div>
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold text-gray-900">
+          {dashboardInfo.title}
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          {dashboardInfo.description}
+        </p>
+      </div>
+
+      <button
+        onClick={handleGoToDashboard}
+        className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+      >
+        Go to {role ? `${role.charAt(0) + role.slice(1).toLowerCase()} ` : ''}Dashboard
+      </button>
+    </div>
+  )
+}
+
+function OnboardingFlowContent({ step }: OnboardingFlowProps) {
+  const { setStep, role, completedSteps } = useOnboarding()
+  const { fetchProgress } = useOnboardingApi()
+  const router = useRouter()
+
+  // Load initial progress on mount
+  useEffect(() => {
+    fetchProgress().catch(console.error)
+  }, [])
+
+  const handleNext = async () => {
+    // Most steps handle their own navigation
+    // This is mainly for steps that need wizard navigation
+    if (step === 'welcome') {
+      setStep('profile-setup')
+      router.push('/onboarding/profile-setup')
+    } else if (role) {
+      const nextStep = getNextStep(step, role)
+      setStep(nextStep)
+      
+      if (nextStep === 'complete') {
+        // Handle completion based on role
+        const dashboardUrl = getDashboardUrl(role)
+        router.push(dashboardUrl)
+      } else {
+        router.push(`/onboarding/${nextStep}`)
+      }
+    }
+  }
+
+  const handlePrevious = async () => {
+    if (role) {
+      const previousStep = getPreviousStep(step, role)
+      setStep(previousStep)
+      router.push(`/onboarding/${previousStep}`)
+    }
+  }
+
+  const getDashboardUrl = (userRole: string) => {
+    switch (userRole) {
+      case 'HOST':
+        return '/dashboard/host'
+      case 'INFLUENCER':
+        return '/dashboard/influencer'
+      case 'GUEST':
+        return '/dashboard/guest'
+      default:
+        return '/dashboard'
+    }
+  }
+
+  const canProceed = () => {
+    // Check if current step allows proceeding
+    switch (step) {
+      case 'profile-setup':
+        // Will be validated by the ProfileSetup component
+        return true
+      case 'role-selection':
+        // Role must be selected and be a valid onboarding role
+        return !!role && ['GUEST', 'HOST', 'INFLUENCER'].includes(role.toUpperCase())
+      default:
+        return true
+    }
+  }
+
+  const isLastStep = step === 'complete'
+  // Steps handle their own navigation, wizard only shows header/progress
+  const showNavigation = false
+
+  return (
+    <OnboardingWizard
+      canProceed={canProceed()}
+      onNext={handleNext}
+      onPrevious={handlePrevious}
+      showNavigation={showNavigation}
+      isLastStep={isLastStep}
+    >
+      <OnboardingStepRenderer step={step} />
+    </OnboardingWizard>
+  )
+}
+
+export default function OnboardingFlow({ step }: OnboardingFlowProps) {
+  return (
+    <OnboardingProvider>
+      <OnboardingFlowContent step={step} />
+    </OnboardingProvider>
+  )
+}

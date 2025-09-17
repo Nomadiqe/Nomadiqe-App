@@ -14,12 +14,19 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String?
+  username      String?   @unique // Added for onboarding
   image         String?
   password      String?   // For credentials authentication
-  role          UserRole  @default(TRAVELER)
+  role          UserRole  @default(GUEST)
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // Onboarding fields
+  onboardingStatus OnboardingStatus @default(PENDING)
+  onboardingStep   String?
+  fullName         String?
+  profilePictureUrl String?
 
   // Profile fields
   bio           String?
@@ -27,39 +34,53 @@ model User {
   phone         String?
   isVerified    Boolean   @default(false)
 
-  // Host specific fields
-  hostProfile   HostProfile?
-
-  // Traveler specific fields
-  travelerProfile TravelerProfile?
+  // Profile relationships
+  hostProfile       HostProfile?
+  travelerProfile   TravelerProfile?
+  guestPreferences  GuestPreferences?
+  influencerProfile InfluencerProfile?
 
   // Relationships
-  properties    Property[]
-  bookings      Booking[]
-  reviews       Review[]
-  followers     Follow[]   @relation("UserFollowers")
-  following     Follow[]   @relation("UserFollowing")
-  likes         Like[]
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  postLikes     PostLike[]
-  postComments  PostComment[]
+  properties        Property[]
+  bookings          Booking[]
+  reviews           Review[]
+  followers         Follow[]   @relation("UserFollowers")
+  following         Follow[]   @relation("UserFollowing")
+  likes             Like[]
+  accounts          Account[]
+  sessions          Session[]
+  posts             Post[]
+  postLikes         PostLike[]
+  postComments      PostComment[]
+  
+  // Onboarding relationships
+  onboardingProgress OnboardingProgress?
+  socialConnections  SocialConnection[]
 
   @@map("users")
 }
 
 model HostProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  businessName String?
-  taxId       String?
-  bankAccount String?
-  cryptoWallet String?
-  commission  Float    @default(0.05) // 5% commission
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName     String?
+  taxId            String?
+  bankAccount      String?
+  cryptoWallet     String?
+  commission       Float             @default(0.05) // 5% commission
+  
+  // Onboarding fields
+  identityVerified Boolean           @default(false)
+  verificationStatus VerificationStatus @default(PENDING)
+  verificationDate DateTime?
+  standardOffer    Json?             // Collaboration offer details
+  minFollowerCount Int?
+  preferredNiches  String[]
+  referralCode     String?           @unique
+  
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@map("host_profiles")
 }
@@ -73,6 +94,70 @@ model TravelerProfile {
   updatedAt   DateTime @updatedAt
 
   @@map("traveler_profiles")
+}
+
+// Onboarding progress tracking
+model OnboardingProgress {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStep    String
+  completedSteps Json      @default("[]") // Array of completed step names
+  metadata       Json?
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  
+  @@map("onboarding_progress")
+}
+
+// Guest preferences
+model GuestPreferences {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  travelInterests String[] // Array of interest tags
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("guest_preferences")
+}
+
+// Influencer profiles
+model InfluencerProfile {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  identityVerified Boolean           @default(false)
+  verificationStatus VerificationStatus @default(PENDING)
+  verificationDate DateTime?
+  contentNiches    String[]          // Required field
+  deliverables     Json?             // Standard deliverables and terms
+  portfolioUrl     String?
+  profileLink      String?           @unique // Unique link for promotion
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@map("influencer_profiles")
+}
+
+// Social media connections
+model SocialConnection {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform         SocialPlatform
+  platformUserId   String
+  username         String?
+  followerCount    Int?
+  accessToken      String?   // Encrypted
+  refreshToken     String?   // Encrypted
+  tokenExpiresAt   DateTime?
+  isPrimary        Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([userId, platform])
+  @@map("social_connections")
 }
 
 model Property {
@@ -339,9 +424,29 @@ model VerificationToken {
 
 // Enums
 enum UserRole {
+  GUEST
   HOST
+  INFLUENCER
   TRAVELER
   ADMIN
+}
+
+enum OnboardingStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  TIKTOK
+  YOUTUBE
 }
 
 enum PropertyType {

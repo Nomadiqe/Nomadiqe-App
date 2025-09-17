@@ -6,6 +6,22 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
 
+    // Skip middleware for onboarding-related paths
+    if (pathname.startsWith('/onboarding') || pathname.startsWith('/api/onboarding')) {
+      return NextResponse.next()
+    }
+
+    // Check if authenticated user needs onboarding
+    if (token && !pathname.startsWith('/onboarding')) {
+      // If user has GUEST role (new users start as GUEST), redirect to onboarding
+      if (token.role === 'GUEST') {
+        return NextResponse.redirect(new URL('/onboarding/welcome', req.url))
+      }
+      
+      // TODO: Add check for onboarding completion status from database
+      // For now, we assume users with specific roles have completed onboarding
+    }
+
     // Check if user is trying to access admin routes
     if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
@@ -28,6 +44,8 @@ export default withAuth(
           pathname === '/' ||
           pathname.startsWith('/auth') ||
           pathname.startsWith('/api/auth') ||
+          pathname.startsWith('/onboarding') ||
+          pathname.startsWith('/api/onboarding') ||
           pathname.startsWith('/search') ||
           pathname.startsWith('/experiences') ||
           pathname.startsWith('/property/') ||

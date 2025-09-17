@@ -114,7 +114,8 @@ export default function SignUpPage() {
           title: "Welcome to Nomadiqe!",
           description: "Your account has been created successfully.",
         })
-        router.push('/dashboard')
+        // New users will be redirected to onboarding by middleware
+        router.push('/onboarding/welcome')
         router.refresh()
       } else {
         toast({
@@ -137,7 +138,8 @@ export default function SignUpPage() {
   const handleGoogleSignUp = async () => {
     setIsLoading(true)
     try {
-      await signIn('google', { callbackUrl: '/dashboard' })
+      // New users will be automatically redirected to onboarding by NextAuth and middleware
+      await signIn('google', { callbackUrl: '/onboarding/welcome' })
     } catch (error) {
       toast({
         title: "Error",

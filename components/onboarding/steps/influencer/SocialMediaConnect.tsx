@@ -444,7 +444,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
           <CardDescription className="text-sm text-purple-700 space-y-1">
             <p>• Ensure your profiles are public and professional</p>
             <p>• High-quality content increases collaboration opportunities</p>
-            <p>• Regular posting shows you're an active creator</p>
+            <p>• Regular posting shows you&#39;re an active creator</p>
             <p>• Authentic engagement matters more than follower count</p>
           </CardDescription>
         </CardContent>

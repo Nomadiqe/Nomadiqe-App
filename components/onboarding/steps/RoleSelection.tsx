@@ -197,7 +197,7 @@ export default function RoleSelection() {
               <Camera className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
               <span>
                 <strong>Note:</strong> The Influencer role is currently in beta. 
-                You'll need to connect at least one social media account and have a minimum of 1,000 followers.
+                You&#39;ll need to connect at least one social media account and have a minimum of 1,000 followers.
               </span>
             </p>
           </CardContent>
@@ -241,7 +241,7 @@ export default function RoleSelection() {
           <div className="flex items-start">
             <Users className="h-4 w-4 mr-2 mt-0.5 text-gray-500" />
             <div className="text-sm text-gray-600">
-              <p className="font-medium mb-1">Don't worry, you can switch later!</p>
+              <p className="font-medium mb-1">Don&#39;t worry, you can switch later!</p>
               <p>
                 You can always change your role or add additional roles in your account settings. 
                 Many users start as guests and become hosts over time.

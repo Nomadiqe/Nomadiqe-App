@@ -144,7 +144,7 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
               <strong>Verification ID:</strong> {verificationResult.verificationId}
             </p>
             <p className="text-sm text-yellow-700 mt-2">
-              We'll notify you via email once the verification is complete. 
+              We&#39;ll notify you via email once the verification is complete. 
               This usually takes 1-2 business days.
             </p>
           </CardContent>
@@ -263,7 +263,7 @@ export default function IdentityVerification({ userType, onComplete }: IdentityV
             Document Upload (Coming Soon)
           </p>
           <p className="text-xs text-gray-500">
-            In the full version, you'll be able to upload a photo of your document for faster verification.
+            In the full version, you&#39;ll be able to upload a photo of your document for faster verification.
           </p>
         </CardContent>
       </Card>

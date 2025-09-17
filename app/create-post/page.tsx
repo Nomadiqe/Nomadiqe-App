@@ -86,7 +86,7 @@ export default function CreatePostPage() {
             {/* Content */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
-                What's on your mind?
+                What&#39;s on your mind?
               </label>
               <textarea
                 value={content}

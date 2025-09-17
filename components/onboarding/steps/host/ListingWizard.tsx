@@ -440,11 +440,11 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                 <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h4 className="text-lg font-medium mb-2">Photo Upload Coming Soon</h4>
                 <p className="text-gray-600 mb-4">
-                  In the full version, you'll be able to upload up to 20 high-quality photos of your property.
+                  In the full version, you&#39;ll be able to upload up to 20 high-quality photos of your property.
                 </p>
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Demo:</strong> We've included a sample photo for this demo listing.
+                    <strong>Demo:</strong> We&#39;ve included a sample photo for this demo listing.
                   </p>
                 </div>
               </CardContent>

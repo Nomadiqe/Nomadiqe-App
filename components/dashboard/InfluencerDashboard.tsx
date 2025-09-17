@@ -27,7 +27,8 @@ import {
   Heart,
   ExternalLink,
   Zap,
-  Award
+  Award,
+  Calendar
 } from 'lucide-react'
 import Link from 'next/link'
 

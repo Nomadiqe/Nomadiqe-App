@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PROPERTY_AMENITIES } from '@/lib/onboarding'
 import { Home, MapPin, Camera, Euro, Wifi, Car, Utensils, AlertCircle, Check, Plus, Minus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { getNextStep } from '@/lib/onboarding'
 
 type PropertyType = 'APARTMENT' | 'HOUSE' | 'VILLA' | 'BNB' | 'HOTEL' | 'HOSTEL' | 'CABIN' | 'TENT' | 'OTHER'
@@ -432,41 +433,55 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
             <div className="text-center mb-6">
               <Camera className="h-12 w-12 text-primary mx-auto mb-3" />
               <h3 className="text-xl font-semibold">Property Photos</h3>
-              <p className="text-muted-foreground">Show off your space</p>
+              <p className="text-muted-foreground">Show off your space with high-quality photos</p>
             </div>
 
-            <Card className="border-dashed border-2 border-border">
-              <CardContent className="p-8 text-center">
-                <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h4 className="text-lg font-medium mb-2">Photo Upload Coming Soon</h4>
-                <p className="text-muted-foreground mb-4">
-                  In the full version, you&#39;ll be able to upload up to 20 high-quality photos of your property.
-                </p>
-                <div className="bg-primary/10 p-4 rounded-lg">
-                  <p className="text-sm text-primary">
-                    <strong>Demo:</strong> We&#39;ve included a sample photo for this demo listing.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <ImageUpload
+              multiple={true}
+              maxFiles={20}
+              maxSizeInMB={15}
+              placeholder="Upload property photos - first image will be your main photo"
+              onUploadComplete={(images) => {
+                const urls = images.map(img => img.url)
+                setFormData(prev => ({
+                  ...prev,
+                  photos: [...prev.photos, ...urls]
+                }))
+              }}
+              disabled={isSubmitting}
+            />
 
-            {/* Show demo photo */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {formData.photos.map((photo, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={photo}
-                    alt={`Property photo ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                  <div className="absolute top-2 right-2">
-                    <div className="bg-nomadiqe-success text-white px-2 py-1 rounded text-xs">
-                      Demo
-                    </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-medium text-blue-900 mb-2">Photo Tips:</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Upload at least 5 photos for better visibility</li>
+                <li>• Include photos of all main areas (living room, bedrooms, kitchen, bathroom)</li>
+                <li>• Take photos during the day with natural lighting</li>
+                <li>• The first photo will be your main listing image</li>
+              </ul>
+            </div>
+
+            {/* Show existing demo photos if any */}
+            {formData.photos.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {formData.photos.map((photo, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={photo}
+                      alt={`Property photo ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    {photo.includes('unsplash') && (
+                      <div className="absolute top-2 right-2">
+                        <div className="bg-green-500 text-white px-2 py-1 rounded text-xs">
+                          Demo
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )
 

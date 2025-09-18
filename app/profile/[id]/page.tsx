@@ -1,19 +1,21 @@
 import { Button } from '@/components/ui/button'
 import { PostCard } from '@/components/post-card'
-import { PropertyCard } from '@/components/property-card'
 import { 
   MapPin, 
   Calendar, 
   Phone, 
   Mail, 
-  Users, 
   UserPlus,
   MessageCircle,
   Star,
-  Home,
   Camera,
   Settings
 } from 'lucide-react'
+import { prisma } from '@/lib/db'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
 
 interface ProfilePageProps {
   params: {
@@ -21,62 +23,87 @@ interface ProfilePageProps {
   }
 }
 
-export default function ProfilePage({ params }: ProfilePageProps) {
-  // Mock data - in real app, this would come from the database based on params.id
-  const user = {
-    id: params.id,
-    name: 'Alex Johnson',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    bio: 'Digital nomad and adventure seeker. Love exploring new cultures and sharing travel experiences.',
-    location: 'Currently in Europe',
-    phone: '+1 555 123 4567',
-    email: 'alex@example.com',
-    role: 'TRAVELER',
-    joinedDate: '2023-06-15',
-    isVerified: true,
-    stats: {
-      posts: 24,
-      followers: 186,
-      following: 92,
-      properties: 0
+export default async function ProfilePage({ params }: ProfilePageProps) {
+  const session = await getServerSession(authOptions)
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: params.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      fullName: true,
+      username: true,
+      image: true,
+      profilePictureUrl: true,
+      bio: true,
+      location: true,
+      phone: true,
+      isVerified: true,
+      role: true,
+      createdAt: true,
     }
+  })
+
+  if (!dbUser) {
+    notFound()
   }
 
-  const posts = [
-    {
-      id: '1',
-      content: 'Just had the most incredible stay at this mountain cabin! The views were absolutely breathtaking and the fresh Alpine air was exactly what I needed. Thanks @Marco for being such an amazing host! 🏔️',
-      images: [
-        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
-      location: 'Zermatt, Switzerland',
-      createdAt: '2024-01-15T10:30:00Z',
-      author: user,
-      property: {
-        id: 'prop1',
-        title: 'Cozy Mountain Cabin'
+  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount] = await Promise.all([
+    prisma.post.findMany({
+      where: { authorId: dbUser.id, isActive: true },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        property: { select: { id: true, title: true } },
+        ...(session?.user?.id ? { likes: { where: { userId: session.user.id }, select: { id: true } } } : {}),
+        _count: { select: { likes: true, comments: true } },
       },
-      likes: 24,
-      comments: 5,
-      isLiked: false
-    },
-    {
-      id: '2',
-      content: 'Amazing weekend in Prague! The architecture here is absolutely stunning and the local food scene is incredible. Already planning my next visit! 🏰',
-      images: [
-        'https://images.unsplash.com/photo-1541849546-216549ae216d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
-      location: 'Prague, Czech Republic',
-      createdAt: '2024-01-10T14:20:00Z',
-      author: user,
-      likes: 31,
-      comments: 8,
-      isLiked: true
-    }
-  ]
+    }),
+    prisma.post.count({ where: { authorId: dbUser.id, isActive: true } }),
+    prisma.follow.count({ where: { followingId: dbUser.id } }),
+    prisma.follow.count({ where: { followerId: dbUser.id } }),
+    prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
+  ])
 
-  const isOwnProfile = true // In real app, check if current user is viewing their own profile
+  const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
+  const avatarUrl = dbUser.image || dbUser.profilePictureUrl || undefined
+  const isOwnProfile = session?.user?.id === dbUser.id
+
+  const posts = postsRaw.map((p: any) => ({
+    id: p.id,
+    content: p.content,
+    images: p.images as string[],
+    location: p.location || undefined,
+    createdAt: p.createdAt.toISOString(),
+    author: {
+      id: dbUser.id,
+      name: displayName,
+      image: avatarUrl,
+    },
+    property: p.property ? { id: p.property.id, title: p.property.title } : undefined,
+    likes: p._count?.likes || 0,
+    comments: p._count?.comments || 0,
+    isLiked: Array.isArray(p.likes) ? p.likes.length > 0 : false,
+  }))
+
+  const user = {
+    id: dbUser.id,
+    name: displayName,
+    image: avatarUrl,
+    bio: dbUser.bio || '',
+    location: dbUser.location || '',
+    phone: dbUser.phone || '',
+    email: dbUser.email,
+    role: dbUser.role,
+    joinedDate: dbUser.createdAt.toISOString(),
+    isVerified: dbUser.isVerified,
+    stats: {
+      posts: postsCount,
+      followers: followersCount,
+      following: followingCount,
+      properties: propertiesCount,
+    },
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,9 +142,11 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                 <div className="flex items-center space-x-3">
                   {isOwnProfile ? (
                     <>
-                      <Button variant="outline" className="flex items-center space-x-2">
-                        <Settings className="w-4 h-4" />
-                        <span>Edit Profile</span>
+                      <Button asChild variant="outline">
+                        <Link href="/profile/edit" className="flex items-center space-x-2">
+                          <Settings className="w-4 h-4" />
+                          <span>Edit Profile</span>
+                        </Link>
                       </Button>
                       <Button className="bg-nomadiqe-600 hover:bg-nomadiqe-700 flex items-center space-x-2">
                         <Camera className="w-4 h-4" />

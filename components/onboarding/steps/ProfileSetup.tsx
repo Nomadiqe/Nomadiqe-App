@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { User, Camera, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { SingleImageUpload } from '@/components/ui/single-image-upload'
 
 interface FormData {
   fullName: string
@@ -125,30 +126,20 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
     <div className="space-y-6">
       {/* Profile Picture Section */}
       <div className="text-center">
-        <div className="relative inline-block">
-          {formData.profilePicture ? (
-            <img
-              src={formData.profilePicture}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-            />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center border-4 border-white shadow-lg">
-              <User className="h-12 w-12 text-white" />
-            </div>
-          )}
-          <Button
-            type="button"
-            size="sm"
-            className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
-            onClick={() => {
-              // TODO: Implement image upload
-              alert('Image upload will be implemented in the next phase')
-            }}
-          >
-            <Camera className="h-4 w-4" />
-          </Button>
-        </div>
+        <SingleImageUpload
+          value={formData.profilePicture}
+          onChange={(url) => handleInputChange('profilePicture', url || '')}
+          variant="avatar"
+          size="lg"
+          placeholder="Upload profile picture"
+          disabled={isSubmitting}
+          maxSizeInMB={5}
+          onUploadComplete={(images) => {
+            if (images.length > 0) {
+              handleInputChange('profilePicture', images[0].url)
+            }
+          }}
+        />
         <p className="text-sm text-muted-foreground mt-2">
           Upload a profile picture (optional)
         </p>

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CONTENT_NICHES } from '@/lib/onboarding'
 import { User, Camera, Link as LinkIcon, Check, AlertCircle, ExternalLink, Star, Hash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ImageUpload } from '@/components/ui/image-upload'
 
 interface FormData {
   contentNiches: string[]
@@ -20,6 +21,7 @@ interface FormData {
     customDeliverables: string[]
   }
   portfolioUrl: string
+  portfolioImages: string[]
   collaborationTerms: string
 }
 
@@ -53,6 +55,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       customDeliverables: []
     },
     portfolioUrl: '',
+    portfolioImages: [],
     collaborationTerms: 'I create high-quality, authentic content that showcases travel experiences in an engaging way. I ensure all content aligns with brand values and includes proper attribution and hashtags.'
   })
   
@@ -351,12 +354,46 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         </Card>
       </div>
 
+      {/* Portfolio Images */}
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-medium text-foreground mb-2">Portfolio Images</h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            Upload your best work samples - these will be displayed in your influencer profile.
+          </p>
+        </div>
+
+        <ImageUpload
+          multiple={true}
+          maxFiles={10}
+          maxSizeInMB={8}
+          placeholder="Upload portfolio images showcasing your content creation skills"
+          onUploadComplete={(images) => {
+            const urls = images.map(img => img.url)
+            updateFormData({ 
+              portfolioImages: [...formData.portfolioImages, ...urls] 
+            })
+          }}
+          disabled={isSubmitting}
+        />
+
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h5 className="font-medium text-amber-900 mb-2">Portfolio Tips:</h5>
+          <ul className="text-sm text-amber-800 space-y-1">
+            <li>• Include your best travel content and collaborations</li>
+            <li>• Show variety in your content style and destinations</li>
+            <li>• High-quality images perform better with hosts</li>
+            <li>• Include before/after examples if available</li>
+          </ul>
+        </div>
+      </div>
+
       {/* Portfolio URL */}
       <div className="space-y-4">
         <div>
           <h4 className="font-medium text-foreground mb-2">Portfolio Link (Optional)</h4>
           <p className="text-sm text-muted-foreground mb-4">
-            Share a link to your portfolio, media kit, or website to showcase your work.
+            Share a link to your portfolio, media kit, or website to showcase additional work.
           </p>
         </div>
 

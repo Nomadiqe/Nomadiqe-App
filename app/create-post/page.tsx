@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { 
   MapPin, 
   Image as ImageIcon, 
@@ -15,7 +16,7 @@ export default function CreatePostPage() {
   const router = useRouter()
   const [content, setContent] = useState('')
   const [location, setLocation] = useState('')
-  const [images, setImages] = useState<string[]>([])
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -25,20 +26,6 @@ export default function CreatePostPage() {
     { id: '2', title: 'City Loft', location: 'Barcelona, Spain' }
   ]
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      // In real app, upload files to storage and get URLs
-      const mockUrls = Array.from(files).map((file, index) => 
-        `https://images.unsplash.com/photo-${Date.now() + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
-      )
-      setImages([...images, ...mockUrls])
-    }
-  }
-
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,7 +38,7 @@ export default function CreatePostPage() {
     console.log('Post submitted:', {
       content,
       location,
-      images,
+      images: uploadedImages,
       selectedProperty
     })
 
@@ -139,51 +126,17 @@ export default function CreatePostPage() {
                 <span>Add photos</span>
               </label>
               
-              {/* Image Upload */}
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <label 
-                  htmlFor="image-upload"
-                  className="cursor-pointer flex flex-col items-center space-y-2"
-                >
-                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    Click to upload photos or drag and drop
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG, GIF up to 10MB each
-                  </p>
-                </label>
-              </div>
-
-              {/* Image Preview */}
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 gap-4">
-                  {images.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={image}
-                        alt={`Upload ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg border border-border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ImageUpload
+                multiple={true}
+                maxFiles={5}
+                maxSizeInMB={10}
+                placeholder="Click to upload photos or drag and drop"
+                onUploadComplete={(images) => {
+                  const urls = images.map(img => img.url)
+                  setUploadedImages(prev => [...prev, ...urls])
+                }}
+                disabled={isSubmitting}
+              />
             </div>
 
             {/* Submit Button */}

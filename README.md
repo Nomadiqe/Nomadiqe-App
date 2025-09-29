@@ -1,6 +1,18 @@
 # Nomadiqe App
 
-A modern travel platform built with Next.js, Prisma, and NextAuth.
+A modern travel platform connecting travelers, hosts, and influencers. Built with Next.js, Prisma, and NextAuth.
+
+## Features
+
+- **Multi-Role User System**: Support for Guests, Hosts, and Influencers with role-specific dashboards
+- **Authentication**: Secure authentication via NextAuth with Google OAuth
+- **Image Management**: Integrated image upload using Vercel Blob storage
+- **Dark Mode**: Full dark mode support with theme toggling
+- **Post Creation & Discovery**: Create and browse travel posts with image galleries
+- **User Profiles**: Comprehensive user profiles with customizable information
+- **Onboarding Flow**: Role-specific onboarding for new users
+- **Search Functionality**: Search for users and posts
+- **Responsive Design**: Mobile-first responsive design with Tailwind CSS
 
 ## Prerequisites
 
@@ -28,9 +40,11 @@ A modern travel platform built with Next.js, Prisma, and NextAuth.
    
    Fill in your environment variables in `.env.local`:
    - `DATABASE_URL`: Your PostgreSQL connection string
+   - `NEXTAUTH_URL`: Your application URL (http://localhost:3000 for development)
    - `NEXTAUTH_SECRET`: A random string for NextAuth
-   - `GOOGLE_CLIENT_ID`: Google OAuth client ID
-   - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
+   - `GOOGLE_CLIENT_ID`: Google OAuth client ID (optional)
+   - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret (optional)
+   - `BLOB_READ_WRITE_TOKEN`: Vercel Blob storage token for image uploads
 
 4. **Generate Prisma client**
    ```bash
@@ -105,9 +119,11 @@ If the build fails during deployment:
 
 ## Tech Stack
 
-- **Framework:** Next.js 14
+- **Framework:** Next.js 14 (App Router)
 - **Database:** PostgreSQL with Prisma ORM
-- **Authentication:** NextAuth.js
-- **Styling:** Tailwind CSS
-- **UI Components:** Radix UI
+- **Authentication:** NextAuth.js with Google OAuth
+- **Styling:** Tailwind CSS with CSS Variables
+- **UI Components:** Radix UI (shadcn/ui)
+- **Image Storage:** Vercel Blob
 - **Package Manager:** pnpm
+- **TypeScript:** Full type safety across the application

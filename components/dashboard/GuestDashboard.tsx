@@ -31,59 +31,13 @@ interface GuestDashboardProps {
 export default function GuestDashboard({ user }: GuestDashboardProps) {
   const guestPreferences = user.guestPreferences
   const interests = guestPreferences?.travelInterests || []
-  
-  // Demo recommended properties based on interests
-  const recommendedProperties = [
-    {
-      id: '1',
-      title: 'Beachfront Villa in Santorini',
-      location: 'Santorini, Greece',
-      image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
-      price: 180,
-      rating: 4.9,
-      reviews: 127,
-      host: 'Maria K.',
-      tags: ['Beach', 'Luxury', 'Romance'],
-      distance: '2.3km from center'
-    },
-    {
-      id: '2',
-      title: 'Mountain Cabin in Swiss Alps',
-      location: 'Zermatt, Switzerland',
-      image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800',
-      price: 120,
-      rating: 4.8,
-      reviews: 89,
-      host: 'Hans M.',
-      tags: ['Nature', 'Adventure', 'Wellness'],
-      distance: 'Mountain view'
-    },
-    {
-      id: '3',
-      title: 'Historic Apartment in Rome',
-      location: 'Rome, Italy',
-      image: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800',
-      price: 95,
-      rating: 4.7,
-      reviews: 203,
-      host: 'Giuseppe R.',
-      tags: ['Culture', 'History', 'City Breaks'],
-      distance: '0.5km from Colosseum'
-    }
-  ]
 
-  // Demo saved properties
-  const savedProperties = [
-    {
-      id: '1',
-      title: 'Artist Loft in Barcelona',
-      location: 'Barcelona, Spain',
-      image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800',
-      price: 75,
-      rating: 4.6,
-      savedDate: '2 days ago'
-    }
-  ]
+  // For now, we'll show empty states until properties are added to database
+  // In production, these would come from actual property listings
+  const recommendedProperties: any[] = []
+
+  // User's saved properties would come from database
+  const savedProperties: any[] = []
 
   const isNewGuest = interests.length === 0 || new Date(user.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
 
@@ -92,26 +46,28 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
       {/* Header */}
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
                 Welcome, {user.fullName || user.name}! 🌍
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm lg:text-base">
                 {isNewGuest ? 'Ready to discover amazing places? Let&apos;s find your perfect stay!' : 'Discover your next adventure'}
               </p>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" asChild>
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full lg:w-auto">
+              <Button variant="outline" asChild className="w-full sm:w-auto">
                 <Link href="/profile">
                   <Users className="h-4 w-4 mr-2" />
-                  Profile
+                  <span className="hidden sm:inline">Profile</span>
+                  <span className="sm:hidden">Profile</span>
                 </Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="w-full sm:w-auto">
                 <Link href="/search">
                   <Search className="h-4 w-4 mr-2" />
-                  Search Properties
+                  <span className="hidden sm:inline">Search Properties</span>
+                  <span className="sm:hidden">Search</span>
                 </Link>
               </Button>
             </div>
@@ -243,10 +199,10 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
             </div>
 
             <div className="space-y-4">
-              {recommendedProperties.map((property) => (
+              {recommendedProperties.length > 0 ? recommendedProperties.map((property) => (
                 <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="md:flex">
-                    <div className="md:w-2/5">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="w-full md:w-2/5">
                       <div className="relative">
                         <img
                           src={property.image}
@@ -262,11 +218,11 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                         </Button>
                       </div>
                     </div>
-                    <div className="md:w-3/5">
+                    <div className="w-full md:w-3/5">
                       <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-lg">{property.title}</h3>
-                          <div className="text-right">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                          <h3 className="font-semibold text-lg flex-1">{property.title}</h3>
+                          <div className="text-left sm:text-right">
                             <p className="font-bold text-lg">€{property.price}</p>
                             <p className="text-xs text-muted-foreground">per night</p>
                           </div>
@@ -287,28 +243,46 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                         </div>
 
                         <div className="flex flex-wrap gap-1 mb-3">
-                          {property.tags.map((tag) => (
+                          {property.tags.map((tag: string) => (
                             <Badge key={tag} variant="outline" className="text-xs">
                               {tag}
                             </Badge>
                           ))}
                         </div>
 
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Button size="sm" className="flex-1" asChild>
                             <Link href={`/property/${property.id}`}>
-                              View Details
+                              <span className="hidden sm:inline">View Details</span>
+                              <span className="sm:hidden">View</span>
                             </Link>
                           </Button>
-                          <Button size="sm" variant="outline">
-                            <Bookmark className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="sm:w-auto">
+                            <Bookmark className="h-4 w-4 sm:mr-0" />
+                            <span className="ml-2 sm:hidden">Save</span>
                           </Button>
                         </div>
                       </CardContent>
                     </div>
                   </div>
                 </Card>
-              ))}
+              )) : (
+                <Card className="p-8">
+                  <div className="text-center">
+                    <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Properties Available Yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Properties will appear here once hosts add their listings.
+                    </p>
+                    <Button asChild>
+                      <Link href="/search">
+                        <Search className="h-4 w-4 mr-2" />
+                        Browse All Properties
+                      </Link>
+                    </Button>
+                  </div>
+                </Card>
+              )}
             </div>
           </div>
 
@@ -421,7 +395,7 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
         </div>
 
         {/* Interest-Based Recommendations */}
-        {interests.length > 0 && (
+        {interests.length > 0 && recommendedProperties.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-6">More {interests[0]} Destinations</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -467,7 +441,7 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {property.tags.slice(0, 2).map((tag) => (
+                      {property.tags.slice(0, 2).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>

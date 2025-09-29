@@ -116,13 +116,6 @@ export function useImageUpload(options: UseImageUploadOptions = {}): UseImageUpl
           const blob = await upload(uniqueFilename, fileToUpload, {
             access: 'public',
             handleUploadUrl: '/api/upload',
-            onUploadProgress: (progressEvent) => {
-              setUploadProgress({
-                fileIndex: i,
-                fileName: file.name,
-                percentage: progressEvent.percentage,
-              })
-            },
           })
 
           const uploadedImage: UploadedImage = {
@@ -215,3 +208,4 @@ export function useImageUpload(options: UseImageUploadOptions = {}): UseImageUpl
     replaceImage,
   }
 }
+

@@ -1,21 +1,18 @@
 import { Button } from '@/components/ui/button'
-import { PostCard } from '@/components/post-card'
-import { 
-  MapPin, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  UserPlus,
-  MessageCircle,
-  Star,
-  Camera,
-  Settings
+import {
+  MapPin,
+  Calendar,
+  Phone,
+  Mail,
+  Star
 } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ProfileActions } from '@/components/profile-actions'
+import { ProfileTabs } from '@/components/profile-tabs'
 
 interface ProfilePageProps {
   params: {
@@ -139,33 +136,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center space-x-3">
-                  {isOwnProfile ? (
-                    <>
-                      <Button asChild variant="outline">
-                        <Link href="/profile/edit" className="flex items-center space-x-2">
-                          <Settings className="w-4 h-4" />
-                          <span>Edit Profile</span>
-                        </Link>
-                      </Button>
-                      <Button className="bg-nomadiqe-600 hover:bg-nomadiqe-700 flex items-center space-x-2">
-                        <Camera className="w-4 h-4" />
-                        <span>Add Photo</span>
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button variant="outline" className="flex items-center space-x-2">
-                        <UserPlus className="w-4 h-4" />
-                        <span>Follow</span>
-                      </Button>
-                      <Button className="bg-nomadiqe-600 hover:bg-nomadiqe-700 flex items-center space-x-2">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>Message</span>
-                      </Button>
-                    </>
-                  )}
-                </div>
+                <ProfileActions
+                  isOwnProfile={isOwnProfile}
+                  userId={user.id}
+                  userName={user.name}
+                />
               </div>
 
               {/* Bio */}
@@ -225,46 +200,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       {/* Content Tabs */}
       <section className="max-w-4xl mx-auto px-4 py-8">
-        <div className="border-b border-border mb-8">
-          <div className="flex items-center space-x-8">
-            <button className="pb-4 border-b-2 border-nomadiqe-500 text-nomadiqe-500 font-medium">
-              Posts
-            </button>
-            {user.role === 'HOST' && (
-              <button className="pb-4 text-muted-foreground hover:text-foreground transition-colors">
-                Properties
-              </button>
-            )}
-            <button className="pb-4 text-muted-foreground hover:text-foreground transition-colors">
-              Photos
-            </button>
-            <button className="pb-4 text-muted-foreground hover:text-foreground transition-colors">
-              Reviews
-            </button>
-          </div>
-        </div>
-
-        {/* Posts Feed */}
-        <div className="space-y-8">
-          {posts.map((post) => (
-            <PostCard key={post.id} {...post} />
-          ))}
-          
-          {posts.length === 0 && (
-            <div className="text-center py-12">
-              <Camera className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No posts yet</h3>
-              <p className="text-muted-foreground">
-                {isOwnProfile ? 'Share your first travel experience!' : `${user.name} hasn't shared any posts yet.`}
-              </p>
-              {isOwnProfile && (
-                <Button className="mt-4 bg-nomadiqe-600 hover:bg-nomadiqe-700">
-                  Create Your First Post
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+        <ProfileTabs
+          posts={posts}
+          userRole={user.role}
+          isOwnProfile={isOwnProfile}
+          userName={user.name}
+        />
       </section>
     </div>
   )

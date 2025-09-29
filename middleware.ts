@@ -15,7 +15,7 @@ export default withAuth(
     if (token && !pathname.startsWith('/onboarding')) {
       // If user has GUEST role (new users start as GUEST), redirect to onboarding
       if (token.role === 'GUEST') {
-        return NextResponse.redirect(new URL('/onboarding/welcome', req.url))
+        return NextResponse.redirect(new URL('/onboarding/profile-setup', req.url))
       }
       
       // TODO: Add check for onboarding completion status from database

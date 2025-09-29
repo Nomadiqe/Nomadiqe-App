@@ -196,3 +196,4 @@ export function getImageInfo(file: File): Promise<{
     img.src = URL.createObjectURL(file)
   })
 }
+

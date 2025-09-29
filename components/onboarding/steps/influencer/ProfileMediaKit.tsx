@@ -47,10 +47,10 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
   const [formData, setFormData] = useState<FormData>({
     contentNiches: [],
     deliverables: {
-      instagramPost: 2,
-      instagramStory: 5,
-      tiktokVideo: 1,
-      youtubeVideo: 0,
+      instagramPost: 1, // Now represents capability (1 = can create, 0 = cannot)
+      instagramStory: 1,
+      tiktokVideo: 0, // Creator cannot create TikTok videos by default
+      youtubeVideo: 0, // Creator cannot create YouTube videos by default
       blogPost: false,
       customDeliverables: []
     },
@@ -232,12 +232,12 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         )}
       </div>
 
-      {/* Standard Deliverables */}
+      {/* Platform Capabilities */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-foreground mb-2">Standard Deliverables</h4>
+          <h4 className="font-medium text-foreground mb-2">Content Creation Capabilities</h4>
           <p className="text-sm text-muted-foreground mb-4">
-            Define your typical collaboration package. Hosts will see this when considering partnerships.
+            Select the types of content you can create on each platform. This helps hosts understand your skills and capabilities.
           </p>
         </div>
 
@@ -247,40 +247,25 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h5 className="font-medium text-foreground">{option.label}</h5>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const current = formData.deliverables[option.key as keyof typeof formData.deliverables] as number || 0
-                        updateDeliverables({ [option.key]: Math.max(0, current - 1) })
-                      }}
-                      disabled={!formData.deliverables[option.key as keyof typeof formData.deliverables]}
-                    >
-                      -
-                    </Button>
-                    <span className="font-medium min-w-[2rem] text-center">
-                      {formData.deliverables[option.key as keyof typeof formData.deliverables] || 0}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const current = formData.deliverables[option.key as keyof typeof formData.deliverables] as number || 0
-                        if (current < option.max) {
-                          updateDeliverables({ [option.key]: current + 1 })
-                        }
-                      }}
-                      disabled={(formData.deliverables[option.key as keyof typeof formData.deliverables] as number || 0) >= option.max}
-                    >
-                      +
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    variant={formData.deliverables[option.key as keyof typeof formData.deliverables] ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const isCurrentlyEnabled = formData.deliverables[option.key as keyof typeof formData.deliverables]
+                      updateDeliverables({
+                        [option.key]: isCurrentlyEnabled ? 0 : 1
+                      })
+                    }}
+                  >
+                    {formData.deliverables[option.key as keyof typeof formData.deliverables] ? 'Can Create' : 'Cannot Create'}
+                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Max {option.max} {option.unit}
+                  {formData.deliverables[option.key as keyof typeof formData.deliverables]
+                    ? `You can create high-quality ${option.unit} for this platform`
+                    : `Mark if you can create ${option.unit} for this platform`
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -292,8 +277,8 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-foreground">Blog Post/Article</h5>
-                <p className="text-sm text-muted-foreground">Written content for blog or website</p>
+                <h5 className="font-medium text-foreground">Blog Post/Article Writing</h5>
+                <p className="text-sm text-muted-foreground">Can you write detailed travel articles or blog posts?</p>
               </div>
               <Button
                 type="button"
@@ -301,18 +286,18 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
                 size="sm"
                 onClick={() => updateDeliverables({ blogPost: !formData.deliverables.blogPost })}
               >
-                {formData.deliverables.blogPost ? 'Included' : 'Add'}
+                {formData.deliverables.blogPost ? 'Can Create' : 'Cannot Create'}
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Custom Deliverables */}
+        {/* Additional Capabilities */}
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Custom Deliverables</CardTitle>
+            <CardTitle className="text-sm font-medium">Additional Content Types</CardTitle>
             <CardDescription className="text-xs">
-              Add any additional services you offer
+              Add any other content types you can create (e.g., Reels, Stories highlights, Live streaming, etc.)
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
@@ -320,7 +305,7 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
               <Input
                 value={customDeliverable}
                 onChange={(e) => setCustomDeliverable(e.target.value)}
-                placeholder="e.g., Reels, Stories highlight, etc."
+                placeholder="e.g., Instagram Reels, Stories highlights, Live streams, etc."
                 className="flex-1"
               />
               <Button
@@ -329,12 +314,13 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
                 onClick={addCustomDeliverable}
                 disabled={!customDeliverable.trim()}
               >
-                Add
+                Add Capability
               </Button>
             </div>
 
             {formData.deliverables.customDeliverables.length > 0 && (
               <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground mb-2">Your Additional Capabilities:</p>
                 {formData.deliverables.customDeliverables.map((deliverable, index) => (
                   <div key={index} className="flex items-center justify-between bg-muted px-3 py-2 rounded">
                     <span className="text-sm">{deliverable}</span>

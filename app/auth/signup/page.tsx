@@ -115,7 +115,7 @@ export default function SignUpPage() {
           description: "Your account has been created successfully.",
         })
         // New users will be redirected to onboarding by middleware
-        router.push('/onboarding/welcome')
+        router.push('/onboarding/profile-setup')
         router.refresh()
       } else {
         toast({
@@ -139,7 +139,7 @@ export default function SignUpPage() {
     setIsLoading(true)
     try {
       // New users will be automatically redirected to onboarding by NextAuth and middleware
-      await signIn('google', { callbackUrl: '/onboarding/welcome' })
+      await signIn('google', { callbackUrl: '/onboarding/profile-setup' })
     } catch (error) {
       toast({
         title: "Error",

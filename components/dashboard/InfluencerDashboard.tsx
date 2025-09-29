@@ -39,67 +39,50 @@ interface InfluencerDashboardProps {
 
 export default function InfluencerDashboard({ user }: InfluencerDashboardProps) {
   const [copiedProfileLink, setCopiedProfileLink] = useState(false)
+  const [appliedOpportunities, setAppliedOpportunities] = useState<string[]>([])
   
   const influencerProfile = user.influencerProfile
   const socialConnections = user.socialConnections || []
   
-  // Demo data for statistics
+  // Real statistics from actual database data
   const stats = {
-    totalCollaborations: 8,
-    avgEngagement: 4.2,
-    totalReach: 125000,
-    completedProjects: 6,
-    pendingRequests: 3,
-    monthlyGrowth: 25
+    socialAccounts: socialConnections.length,
+    totalFollowers: socialConnections.reduce((acc: number, conn: any) => acc + (conn.followerCount || 0), 0),
+    profileViews: 0, // Will be tracked when analytics are implemented
+    contentPieces: 0 // Will count posts when content creation is linked
   }
 
-  // Demo collaboration opportunities
-  const collaborationOpportunities = [
-    {
-      id: '1',
-      property: 'Luxury Villa in Santorini',
-      host: 'Maria Kostas',
-      location: 'Santorini, Greece',
-      image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
-      offer: 'Free 5-night stay',
-      deliverables: ['3 Instagram posts', '10 Stories', 'Reel'],
-      value: '€1,200',
-      posted: '2 hours ago',
-      deadline: '3 days',
-      category: 'Luxury'
-    },
-    {
-      id: '2',
-      property: 'Cozy Cabin in Swiss Alps',
-      host: 'Hans Mueller',
-      location: 'Zermatt, Switzerland',
-      image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800',
-      offer: '50% discount (3 nights)',
-      deliverables: ['2 Instagram posts', '5 Stories', 'YouTube mention'],
-      value: '€800',
-      posted: '1 day ago',
-      deadline: '5 days',
-      category: 'Adventure'
-    }
-  ]
+  // Real collaboration opportunities would come from database
+  // For now, showing empty state until API integration
+  const collaborationOpportunities: any[] = []
 
-  // Demo active collaborations
-  const activeCollaborations = [
-    {
-      id: '1',
-      property: 'Beach House in Mykonos',
-      host: 'Dimitris Papadopoulos',
-      dates: 'Jan 20-25, 2024',
-      status: 'confirmed',
-      deliverables: ['3 posts', '8 stories', 'Reel'],
-      progress: 'Content planned'
-    }
-  ]
+  // Real active collaborations from user data
+  const activeCollaborations = user.collaborations?.filter((c: any) => c.status === 'active') || []
 
   const copyProfileLink = () => {
     navigator.clipboard.writeText(`https://nomadiqe.com/profile/${influencerProfile?.profileLink}`)
     setCopiedProfileLink(true)
     setTimeout(() => setCopiedProfileLink(false), 2000)
+  }
+
+  const handleApplyToOpportunity = (opportunityId: string, opportunityTitle: string) => {
+    if (appliedOpportunities.includes(opportunityId)) {
+      return
+    }
+
+    setAppliedOpportunities(prev => [...prev, opportunityId])
+
+    // Show success feedback (in real app, this would be a toast notification)
+    alert(`Application submitted for "${opportunityTitle}"! The host will review your profile and get back to you soon.`)
+
+    // In real app, this would make an API call to submit the application
+    console.log('Applied to opportunity:', opportunityId)
+  }
+
+  const handleViewOpportunity = (opportunityId: string) => {
+    // In real app, this would navigate to a detailed view
+    console.log('Viewing opportunity details:', opportunityId)
+    alert('Opportunity details coming soon! This would show more information about the collaboration.')
   }
 
   const isNewInfluencer = !activeCollaborations.length
@@ -128,16 +111,16 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild className="hidden sm:flex">
                 <Link href="/profile">
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Link>
               </Button>
-              <Button asChild>
+              <Button size="sm" asChild>
                 <Link href="/influencer/browse-opportunities">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Find Opportunities
+                  <Plus className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Find </span>Opportunities
                 </Link>
               </Button>
             </div>
@@ -150,14 +133,14 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
         {isNewInfluencer && (
           <Card className="mb-8 bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="flex-1">
                   <h2 className="text-xl font-bold mb-2">🌟 Your Influencer Profile is Live!</h2>
                   <p className="text-purple-100 mb-4">
-                    You're all set to start collaborating with amazing hosts worldwide. 
+                    You're all set to start collaborating with amazing hosts worldwide.
                     Share your unique profile link to attract partnership opportunities.
                   </p>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-wrap gap-4">
                     <div className="flex items-center text-purple-100">
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Profile Complete
@@ -172,10 +155,10 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                     </div>
                   </div>
                 </div>
-                <div className="text-center">
-                  <div className="bg-white/20 rounded-lg p-4">
+                <div className="flex-shrink-0">
+                  <div className="bg-white/20 rounded-lg p-4 text-center">
                     <p className="text-xs text-purple-100 mb-1">Your Profile Link</p>
-                    <p className="font-bold text-sm">nomadiqe.com/profile/{influencerProfile?.profileLink}</p>
+                    <p className="font-bold text-sm break-all">nomadiqe.com/profile/{influencerProfile?.profileLink}</p>
                     <Button
                       size="sm"
                       variant="secondary"
@@ -191,28 +174,34 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
           </Card>
         )}
 
-        {/* Stats Overview */}
+        {/* Stats Overview - Only showing real data */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Collaborations</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Connected Platforms</CardTitle>
+              <Share2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalCollaborations}</div>
+              <div className="text-2xl font-bold">{stats.socialAccounts}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.pendingRequests} pending requests
+                Social accounts linked
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Engagement</CardTitle>
-              <Heart className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Followers</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.avgEngagement}%</div>
+              <div className="text-2xl font-bold">
+                {stats.totalFollowers > 0
+                  ? stats.totalFollowers >= 1000
+                    ? `${(stats.totalFollowers / 1000).toFixed(1)}K`
+                    : stats.totalFollowers.toString()
+                  : '0'}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Across all platforms
               </p>
@@ -221,26 +210,26 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{(stats.totalReach / 1000).toFixed(0)}K</div>
+              <div className="text-2xl font-bold">{stats.profileViews}</div>
               <p className="text-xs text-muted-foreground">
-                Monthly impressions
+                This month
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Projects</CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Content Created</CardTitle>
+              <Camera className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completedProjects}</div>
+              <div className="text-2xl font-bold">{stats.contentPieces}</div>
               <p className="text-xs text-muted-foreground">
-                5-star average rating
+                Posts shared
               </p>
             </CardContent>
           </Card>
@@ -263,82 +252,124 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                 <p className="text-muted-foreground">Discover amazing properties looking for content creators</p>
               </div>
               <Button asChild>
-                <Link href="/influencer/browse">
+                <Link href="/search">
                   <Eye className="h-4 w-4 mr-2" />
                   Browse All
                 </Link>
               </Button>
             </div>
 
-            <div className="grid gap-6">
-              {collaborationOpportunities.map((opportunity) => (
-                <Card key={opportunity.id} className="overflow-hidden">
-                  <div className="md:flex">
-                    <div className="md:w-1/3">
-                      <img
-                        src={opportunity.image}
-                        alt={opportunity.property}
-                        className="w-full h-48 md:h-full object-cover"
-                      />
-                    </div>
-                    <div className="md:w-2/3">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h3 className="text-xl font-semibold mb-2">{opportunity.property}</h3>
-                            <div className="flex items-center text-gray-600 mb-2">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              <span className="text-sm">{opportunity.location}</span>
+            {collaborationOpportunities.length > 0 ? (
+              <div className="grid gap-6">
+                {collaborationOpportunities.map((opportunity) => (
+                  <Card key={opportunity.id} className="overflow-hidden">
+                    <div className="md:flex">
+                      <div className="md:w-1/3">
+                        <img
+                          src={opportunity.image}
+                          alt={opportunity.property}
+                          className="w-full h-48 md:h-full object-cover"
+                        />
+                      </div>
+                      <div className="md:w-2/3">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <h3 className="text-xl font-semibold mb-2">{opportunity.property}</h3>
+                              <div className="flex items-center text-gray-600 mb-2">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                <span className="text-sm">{opportunity.location}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">Hosted by {opportunity.host}</p>
                             </div>
-                            <p className="text-sm text-gray-600">Hosted by {opportunity.host}</p>
-                          </div>
-                          <div className="text-right">
-                            <Badge variant="outline" className="mb-2">{opportunity.category}</Badge>
-                            <p className="text-sm text-gray-500">Posted {opportunity.posted}</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">Offer</p>
-                            <p className="text-lg font-bold text-green-600">{opportunity.offer}</p>
-                            <p className="text-xs text-gray-500">Value: {opportunity.value}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">Deliverables</p>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {opportunity.deliverables.map((deliverable, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {deliverable}
-                                </Badge>
-                              ))}
+                            <div className="text-right">
+                              <Badge variant="outline" className="mb-2">{opportunity.category}</Badge>
+                              <p className="text-sm text-gray-500">Posted {opportunity.posted}</p>
                             </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">Deadline</p>
-                            <p className="text-sm text-orange-600 font-medium">
-                              <Clock className="h-3 w-3 inline mr-1" />
-                              {opportunity.deadline} to apply
-                            </p>
-                          </div>
-                        </div>
 
-                        <div className="flex space-x-3">
-                          <Button variant="outline" className="flex-1">
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </Button>
-                          <Button className="flex-1">
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            Apply Now
-                          </Button>
-                        </div>
-                      </CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Offer</p>
+                              <p className="text-lg font-bold text-green-600">{opportunity.offer}</p>
+                              <p className="text-xs text-gray-500">Value: {opportunity.value}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Deliverables</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {opportunity.deliverables.map((deliverable: string, index: number) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {deliverable}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Deadline</p>
+                              <p className="text-sm text-orange-600 font-medium">
+                                <Clock className="h-3 w-3 inline mr-1" />
+                                {opportunity.deadline} to apply
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex space-x-3">
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => handleViewOpportunity(opportunity.id)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </Button>
+                            <Button
+                              className="flex-1"
+                              onClick={() => handleApplyToOpportunity(opportunity.id, opportunity.property)}
+                              disabled={appliedOpportunities.includes(opportunity.id)}
+                            >
+                              {appliedOpportunities.includes(opportunity.id) ? (
+                                <>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Applied
+                                </>
+                              ) : (
+                                <>
+                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                  Apply Now
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="text-center p-12">
+                <Zap className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Opportunities Available</h3>
+                <p className="text-gray-600 mb-6">
+                  Collaboration opportunities will appear here when hosts are looking for content creators.
+                  Meanwhile, you can explore amazing properties and connect with hosts directly!
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button asChild>
+                    <Link href="/search">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Explore Properties
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/profile/edit">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Complete Profile
+                    </Link>
+                  </Button>
+                </div>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Collaborations Tab */}
@@ -352,7 +383,7 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
 
             {activeCollaborations.length > 0 ? (
               <div className="space-y-4">
-                {activeCollaborations.map((collab) => (
+                {activeCollaborations.map((collab: any) => (
                   <Card key={collab.id}>
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
@@ -370,7 +401,7 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                         <div className="text-right">
                           <p className="text-sm text-gray-600 mb-2">Expected:</p>
                           <div className="flex flex-wrap gap-1 justify-end">
-                            {collab.deliverables.map((deliverable, index) => (
+                            {collab.deliverables.map((deliverable: string, index: number) => (
                               <Badge key={index} variant="outline" className="text-xs">
                                 {deliverable}
                               </Badge>

@@ -41,64 +41,42 @@ export default function HostDashboard({ user }: HostDashboardProps) {
   const hostProfile = user.hostProfile
   const properties = user.properties || []
   const activeProperties = properties.filter((p: any) => p.isActive)
-  
-  // Demo data for statistics
+
+  // Calculate real statistics from user data
+  const allBookings = properties.flatMap((p: any) => p.bookings || [])
+  const confirmedBookings = allBookings.filter((b: any) => b.status === 'CONFIRMED')
+  const completedBookings = allBookings.filter((b: any) => b.status === 'COMPLETED')
+  const allReviews = properties.flatMap((p: any) => p.reviews || [])
+
   const stats = {
-    totalBookings: 12,
-    totalRevenue: 2400,
-    avgRating: 4.8,
-    occupancyRate: 78,
-    responseRate: 95,
-    monthlyGrowth: 15
+    totalProperties: activeProperties.length,
+    totalBookings: allBookings.length,
+    totalRevenue: completedBookings.reduce((sum: number, b: any) => sum + (b.totalAmount || 0), 0),
+    totalReviews: allReviews.length
   }
 
-  // Demo bookings data
-  const upcomingBookings = [
-    {
-      id: '1',
-      property: 'Beautiful Apartment in Paris',
-      guest: 'Sarah Johnson',
-      checkIn: '2024-01-15',
-      checkOut: '2024-01-18',
-      guests: 2,
-      total: 450,
-      status: 'confirmed'
-    },
-    {
-      id: '2', 
-      property: 'Beautiful Apartment in Paris',
-      guest: 'Mike Chen',
-      checkIn: '2024-01-22',
-      checkOut: '2024-01-25',
-      guests: 1,
-      total: 375,
-      status: 'pending'
-    }
-  ]
+  // Get real upcoming bookings from user data
+  const now = new Date()
+  const upcomingBookings = allBookings
+    .filter((b: any) => new Date(b.checkIn) > now && (b.status === 'CONFIRMED' || b.status === 'PENDING'))
+    .sort((a: any, b: any) => new Date(a.checkIn).getTime() - new Date(b.checkIn).getTime())
+    .slice(0, 5)
+    .map((booking: any) => {
+      const property = properties.find((p: any) => p.id === booking.propertyId)
+      return {
+        id: booking.id,
+        property: property?.title || 'Property',
+        guest: booking.traveler?.name || 'Guest',
+        checkIn: new Date(booking.checkIn).toLocaleDateString(),
+        checkOut: new Date(booking.checkOut).toLocaleDateString(),
+        guests: booking.guests || 1,
+        total: booking.totalAmount || 0,
+        status: booking.status?.toLowerCase() || 'pending'
+      }
+    })
 
-  // Demo collaboration requests
-  const collaborationRequests = [
-    {
-      id: '1',
-      influencer: 'TravelWithEmma',
-      platform: 'Instagram',
-      followers: '45.2K',
-      niche: 'Luxury Travel',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612c3c4?w=150',
-      requested: '2 days ago',
-      status: 'pending'
-    },
-    {
-      id: '2',
-      influencer: 'AdventureSeeker',
-      platform: 'TikTok',
-      followers: '23.8K', 
-      niche: 'Adventure',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      requested: '5 days ago',
-      status: 'pending'
-    }
-  ]
+  // Get real collaboration requests (for now, empty until we have collaboration data)
+  const collaborationRequests: any[] = [] // Will be populated when collaboration system is built
 
   const copyReferralCode = () => {
     navigator.clipboard.writeText(`https://nomadiqe.com/invite/${hostProfile?.referralCode}`)
@@ -185,8 +163,21 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           </Card>
         )}
 
-        {/* Stats Overview */}
+        {/* Stats Overview - Only showing real data */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Properties</CardTitle>
+              <Home className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalProperties}</div>
+              <p className="text-xs text-muted-foreground">
+                Listed on platform
+              </p>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
@@ -195,7 +186,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalBookings}</div>
               <p className="text-xs text-muted-foreground">
-                +{stats.monthlyGrowth}% from last month
+                All time
               </p>
             </CardContent>
           </Card>
@@ -208,34 +199,20 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             <CardContent>
               <div className="text-2xl font-bold">€{stats.totalRevenue.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                This month
+                From completed bookings
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
+              <CardTitle className="text-sm font-medium">Reviews</CardTitle>
               <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.avgRating}</div>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
-                Based on 24 reviews
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Occupancy Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.occupancyRate}%</div>
+              <div className="text-2xl font-bold">{stats.totalReviews}</div>
               <p className="text-xs text-muted-foreground">
-                Last 30 days
+                Guest feedback
               </p>
             </CardContent>
           </Card>
@@ -263,7 +240,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                   <CardDescription>Your next few reservations</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {upcomingBookings.map((booking) => (
+                  {upcomingBookings.map((booking: any) => (
                     <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -503,7 +480,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             </div>
 
             <div className="grid gap-6">
-              {upcomingBookings.map((booking) => (
+              {upcomingBookings.map((booking: any) => (
                 <Card key={booking.id}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">

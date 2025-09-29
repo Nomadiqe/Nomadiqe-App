@@ -44,51 +44,51 @@ export default async function DashboardPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+          <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
             <div className="flex items-center">
-              <Calendar className="h-8 w-8 text-primary" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+              <Calendar className="h-6 w-6 lg:h-8 lg:w-8 text-primary" />
+              <div className="ml-3 lg:ml-4">
+                <p className="text-xs lg:text-sm font-medium text-muted-foreground">
                   {isHost ? 'Active Bookings' : 'Upcoming Trips'}
                 </p>
-                <p className="text-2xl font-bold text-foreground">0</p>
+                <p className="text-xl lg:text-2xl font-bold text-foreground">0</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
             <div className="flex items-center">
-              <Heart className="h-8 w-8 text-red-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+              <Heart className="h-6 w-6 lg:h-8 lg:w-8 text-red-500" />
+              <div className="ml-3 lg:ml-4">
+                <p className="text-xs lg:text-sm font-medium text-muted-foreground">
                   {isHost ? 'Property Views' : 'Saved Properties'}
                 </p>
-                <p className="text-2xl font-bold text-foreground">0</p>
+                <p className="text-xl lg:text-2xl font-bold text-foreground">0</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
             <div className="flex items-center">
-              <MapPin className="h-8 w-8 text-green-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+              <MapPin className="h-6 w-6 lg:h-8 lg:w-8 text-green-500" />
+              <div className="ml-3 lg:ml-4">
+                <p className="text-xs lg:text-sm font-medium text-muted-foreground">
                   {isHost ? 'Properties Listed' : 'Places Visited'}
                 </p>
-                <p className="text-2xl font-bold text-foreground">0</p>
+                <p className="text-xl lg:text-2xl font-bold text-foreground">0</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
             <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-blue-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+              <TrendingUp className="h-6 w-6 lg:h-8 lg:w-8 text-blue-500" />
+              <div className="ml-3 lg:ml-4">
+                <p className="text-xs lg:text-sm font-medium text-muted-foreground">
                   {isHost ? 'Total Earnings' : 'Total Saved'}
                 </p>
-                <p className="text-2xl font-bold text-foreground">€0</p>
+                <p className="text-xl lg:text-2xl font-bold text-foreground">€0</p>
               </div>
             </div>
           </div>

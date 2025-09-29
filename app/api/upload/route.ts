@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname: string, clientPayload?: any) => {
+      onBeforeGenerateToken: async (pathname: string, clientPayload?: string) => {
         // Validate user is authenticated
         if (!session?.user?.id) {
           throw new Error('Authentication required')
@@ -38,24 +38,25 @@ export async function POST(request: NextRequest) {
         return {
           allowedContentTypes: [
             'image/jpeg',
-            'image/png', 
+            'image/png',
             'image/webp',
             'image/gif'
           ],
-          tokenPayload: {
+          tokenPayload: JSON.stringify({
             userId: session.user.id,
             uploadedAt: new Date().toISOString(),
-          },
+          }),
           addRandomSuffix: true,
           cacheControlMaxAge: 60 * 60 * 24 * 365, // 1 year
         }
       },
-      onUploadCompleted: async ({ blob, tokenPayload }: { blob: any; tokenPayload?: any }) => {
+      onUploadCompleted: async ({ blob, tokenPayload }: { blob: any; tokenPayload?: string }) => {
+        const parsedPayload = tokenPayload ? JSON.parse(tokenPayload) : {}
         console.log('Upload completed:', {
           url: blob.url,
           size: blob.size,
-          uploadedBy: tokenPayload?.userId,
-          uploadedAt: tokenPayload?.uploadedAt,
+          uploadedBy: parsedPayload?.userId,
+          uploadedAt: parsedPayload?.uploadedAt,
         })
 
         // Here you could store upload metadata in your database
@@ -64,8 +65,8 @@ export async function POST(request: NextRequest) {
         //   data: {
         //     url: blob.url,
         //     size: blob.size,
-        //     userId: tokenPayload?.userId,
-        //     uploadedAt: new Date(tokenPayload?.uploadedAt),
+        //     userId: parsedPayload?.userId,
+        //     uploadedAt: new Date(parsedPayload?.uploadedAt),
         //   }
         // })
       },

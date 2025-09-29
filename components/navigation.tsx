@@ -145,45 +145,48 @@ export function Navigation() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-border py-4">
-            <div className="flex flex-col space-y-4">
-              <div className="flex justify-center">
+            <div className="flex flex-col space-y-4 px-2">
+              <div className="flex justify-center mb-2">
                 <ThemeToggle />
               </div>
-              <Link 
-                href="/search" 
-                className="text-foreground hover:text-primary transition-colors"
+              <Link
+                href="/search"
+                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
+                <Search className="h-4 w-4 inline mr-2" />
                 Explore
               </Link>
-              <Link 
-                href="/about" 
-                className="text-foreground hover:text-primary transition-colors"
+              <Link
+                href="/about"
+                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
-              <Link 
-                href="/host" 
-                className="text-foreground hover:text-primary transition-colors"
+              <Link
+                href="/host"
+                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Become a Host
               </Link>
               {session ? (
                 <>
-                  <Link 
-                    href="/favorites" 
-                    className="text-foreground hover:text-primary transition-colors"
+                  <Link
+                    href="/favorites"
+                    className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
+                    <Heart className="h-4 w-4 inline mr-2" />
                     Favorites
                   </Link>
-                  <Link 
-                    href="/dashboard" 
-                    className="text-foreground hover:text-primary transition-colors"
+                  <Link
+                    href="/dashboard"
+                    className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
+                    <User className="h-4 w-4 inline mr-2" />
                     Dashboard
                   </Link>
                   <button
@@ -191,19 +194,20 @@ export function Navigation() {
                       handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors"
+                    className="text-left text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent w-full"
                   >
+                    <LogOut className="h-4 w-4 inline mr-2" />
                     Sign Out
                   </button>
                 </>
               ) : (
-                <div className="flex flex-col space-y-2">
-                  <Button variant="ghost" asChild>
+                <div className="flex flex-col space-y-2 mt-4">
+                  <Button variant="ghost" asChild className="w-full">
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In
                     </Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="w-full">
                     <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign Up
                     </Link>

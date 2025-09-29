@@ -140,7 +140,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
-    newUser: "/onboarding/welcome", // Redirect new users to onboarding
+    newUser: "/onboarding/profile-setup", // Redirect new users to onboarding
   },
   events: {
     async signIn(message) {

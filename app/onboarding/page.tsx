@@ -35,6 +35,6 @@ export default async function OnboardingIndexPage() {
     redirect(`/onboarding/${user.onboardingStep}`)
   }
 
-  // Default: start onboarding
-  redirect('/onboarding/welcome')
+  // Default: start onboarding (skip welcome step)
+  redirect('/onboarding/profile-setup')
 }

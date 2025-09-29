@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { 
-  Heart, 
-  MessageCircle, 
-  MapPin, 
-  MoreHorizontal 
+import {
+  Heart,
+  MessageCircle,
+  MapPin,
+  MoreHorizontal
 } from 'lucide-react'
+import { PostComments } from '@/components/post-comments'
 
 interface PostCardProps {
   id: string
@@ -44,11 +45,39 @@ export function PostCard({
 }: PostCardProps) {
   const [liked, setLiked] = useState(isLiked)
   const [likeCount, setLikeCount] = useState(likes)
+  const [commentCount, setCommentCount] = useState(comments)
+  const [showComments, setShowComments] = useState(false)
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    // Optimistic update
+    const wasLiked = liked
+    const previousCount = likeCount
     setLiked(!liked)
     setLikeCount(liked ? likeCount - 1 : likeCount + 1)
-    // TODO: Implement actual like functionality
+
+    try {
+      const response = await fetch(`/api/posts/${id}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update like')
+      }
+
+      const data = await response.json()
+
+      // Update with server response
+      setLiked(data.liked)
+      setLikeCount(data.likeCount)
+    } catch (error) {
+      // Revert optimistic update on error
+      console.error('Error updating like:', error)
+      setLiked(wasLiked)
+      setLikeCount(previousCount)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -168,13 +197,22 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => setShowComments(true)}
             className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
           >
             <MessageCircle className="w-4 h-4" />
-            <span className="text-sm">{comments}</span>
+            <span className="text-sm">{commentCount}</span>
           </Button>
         </div>
       </div>
+
+      {/* Comments Panel */}
+      <PostComments
+        postId={id}
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+        onCommentAdded={() => setCommentCount(commentCount + 1)}
+      />
     </div>
   )
 }

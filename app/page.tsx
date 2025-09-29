@@ -1,87 +1,70 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Plus, Users, TrendingUp, MapPin, Heart, Camera } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { PostCard } from '@/components/post-card'
-import { AdCard } from '@/components/ad-card'
-import { Plus, Users, TrendingUp } from 'lucide-react'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
-export default function HomePage() {
-  // Mock data - in real app, this would come from the database
-  const posts = [
-    {
-      id: '1',
-      content: 'Just had the most incredible stay at this mountain cabin! The views were absolutely breathtaking and the fresh Alpine air was exactly what I needed. Thanks @Marco for being such an amazing host! 🏔️',
-      images: [
-        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
-      location: 'Zermatt, Switzerland',
-      createdAt: '2024-01-15T10:30:00Z',
-      author: {
-        id: 'user1',
-        name: 'Alex Johnson',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      },
-      property: {
-        id: 'prop1',
-        title: 'Cozy Mountain Cabin'
-      },
-      likes: 24,
-      comments: 5,
-      isLiked: false
-    },
-    {
-      id: '2',
-      content: 'Barcelona never fails to amaze me! From the stunning architecture to the vibrant street life, this city has my heart. Currently exploring the Gothic Quarter and discovering hidden gems around every corner. 🏛️✨',
-      images: [
-        'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
-      location: 'Barcelona, Spain',
-      createdAt: '2024-01-14T16:45:00Z',
-      author: {
-        id: 'user2',
-        name: 'Sophie Chen',
-        image: 'https://images.unsplash.com/photo-1494790108755-2616b332c7e0?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      },
-      likes: 18,
-      comments: 3,
-      isLiked: true
-    }
-  ]
+export default async function HomePage() {
+  const session = await getServerSession(authOptions)
 
-  const ads = [
-    {
-      id: 'ad1',
-      title: 'Featured: Alpine Mountain Cabin',
-      description: 'Experience the Swiss Alps like never before! Book now for 20% off your first stay.',
-      images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      property: {
-        id: 'prop1',
-        title: 'Cozy Mountain Cabin',
-        city: 'Zermatt',
-        country: 'Switzerland',
-        price: 120,
-        currency: 'EUR',
-        maxGuests: 4,
-        bedrooms: 2
+  let posts: any[] = []
+
+  // If user is authenticated, fetch posts for their feed
+  if (session?.user?.id) {
+    // For now, fetch all posts. Later we can filter by following/interests
+    const postsData = await prisma.post.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+      take: 20, // Limit to 20 most recent posts
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            fullName: true,
+            image: true,
+            profilePictureUrl: true,
+          }
+        },
+        property: {
+          select: {
+            id: true,
+            title: true,
+          }
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          }
+        },
+        likes: {
+          where: { userId: session.user.id },
+          select: { id: true }
+        }
       }
-    },
-    {
-      id: 'ad2',
-      title: 'Paradise Found: Bali Villa',
-      description: 'Escape to tropical bliss with private beach access and luxury amenities.',
-      images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      property: {
-        id: 'prop3',
-        title: 'Beachfront Villa',
-        city: 'Ubud',
-        country: 'Bali',
-        price: 200,
-        currency: 'EUR',
-        maxGuests: 6,
-        bedrooms: 3
-      }
-    }
-  ]
+    })
+
+    posts = postsData.map(post => ({
+      id: post.id,
+      content: post.content,
+      images: post.images as string[],
+      location: post.location || undefined,
+      createdAt: post.createdAt.toISOString(),
+      author: {
+        id: post.author.id,
+        name: post.author.fullName || post.author.name || 'User',
+        image: post.author.image || post.author.profilePictureUrl || undefined,
+      },
+      property: post.property ? { id: post.property.id, title: post.property.title } : undefined,
+      likes: post._count.likes,
+      comments: post._count.comments,
+      isLiked: post.likes.length > 0,
+    }))
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,124 +73,210 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Welcome to Nomadiqe</h1>
-              <p className="text-muted-foreground">Connect, explore, and share your travel experiences</p>
+              <h1 className="text-2xl font-bold">
+                {session ? 'Your Feed' : 'Discover Your Next Adventure'}
+              </h1>
+              <p className="text-muted-foreground">
+                {session
+                  ? 'See the latest posts from the community'
+                  : 'Join the community of travelers sharing authentic experiences and unique stays worldwide'}
+              </p>
             </div>
-            <Button asChild className="bg-primary hover:bg-primary/90">
-              <Link href="/create-post" className="flex items-center space-x-2">
-                <Plus className="w-4 h-4" />
-                <span>Create Post</span>
-              </Link>
-            </Button>
+            {session && (
+              <Button asChild className="bg-primary hover:bg-primary/90">
+                <Link href="/create-post" className="flex items-center space-x-2">
+                  <Plus className="w-4 h-4" />
+                  <span>Create Post</span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
-
-      {/* Quick Stats */}
-      {/* <section className="py-6 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-card border border-border rounded-lg p-4 text-center">
-              <Users className="w-6 h-6 mx-auto mb-2 text-nomadiqe-500" />
-              <p className="text-2xl font-bold">1,247</p>
-              <p className="text-sm text-muted-foreground">Active travelers</p>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-4 text-center">
-              <TrendingUp className="w-6 h-6 mx-auto mb-2 text-nomadiqe-500" />
-              <p className="text-2xl font-bold">3,891</p>
-              <p className="text-sm text-muted-foreground">Properties shared</p>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-4 text-center">
-              <div className="w-6 h-6 mx-auto mb-2 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-xs">N</span>
-              </div>
-              <p className="text-2xl font-bold">156</p>
-              <p className="text-sm text-muted-foreground">Countries covered</p>
-            </div>
-          </div>
-        </div>
-      </section> */}
 
       {/* Main Feed */}
       <section className="py-6 px-4">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Render posts and ads mixed together */}
-          <PostCard {...posts[0]} />
-          
-          <AdCard {...ads[0]} />
-          
-          <PostCard {...posts[1]} />
-          
-          {/* More posts would be loaded here */}
-          <PostCard
-            id="3"
-            content="Sunset from our beachfront villa in Bali 🌅 There's something magical about the way the light dances on the water here. Grateful to share this slice of paradise with travelers from around the world."
-            images={[
-              'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-              'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-            ]}
-            location="Ubud, Bali"
-            createdAt="2024-01-13T18:20:00Z"
-            author={{
-              id: 'user3',
-              name: 'Raj Patel',
-              image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-            }}
-            property={{
-              id: 'prop3',
-              title: 'Beachfront Villa'
-            }}
-            likes={32}
-            comments={8}
-            isLiked={false}
-          />
+          {session ? (
+            // Authenticated user: Show posts feed
+            posts.length > 0 ? (
+              <>
+                {posts.map((post) => (
+                  <PostCard key={post.id} {...post} />
+                ))}
+              </>
+            ) : (
+              // No posts yet - show empty state
+              <Card className="border-dashed">
+                <CardContent className="p-12 text-center">
+                  <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Your Feed is Empty</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Start following other users or create your first post to get started!
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button asChild variant="outline">
+                      <Link href="/search">Discover Users</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/create-post">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Your First Post
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          ) : (
+            /* Not authenticated: Show welcome content */
+            <div className="space-y-8">
+              {/* Welcome Card */}
+              <Card className="overflow-hidden">
+                <div className="bg-gradient-to-r from-nomadiqe-500 to-nomadiqe-700 p-8 text-white">
+                  <h2 className="text-3xl font-bold mb-4">Welcome to Nomadiqe</h2>
+                  <p className="text-lg mb-6 text-white/90">
+                    Your gateway to authentic travel experiences and unique stays around the world.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-start space-x-2">
+                      <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold">Discover Unique Stays</p>
+                        <p className="text-white/80">Find properties shared by local hosts</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <Users className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold">Connect with Community</p>
+                        <p className="text-white/80">Share experiences with fellow travelers</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <Camera className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold">Collaborate as Creator</p>
+                        <p className="text-white/80">Partner with hosts for content</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
-          <AdCard {...ads[1]} />
+              {/* Get Started Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                      <MapPin className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">I&apos;m a Traveler</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Find unique places to stay and connect with local hosts.
+                    </p>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/search">Browse Properties</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
 
-          <PostCard
-            id="4"
-            content="Photography tip of the day: Golden hour lighting makes every travel photo 10x better! 📸 Currently capturing the magic of European countryside and loving every moment of this nomadic lifestyle."
-            images={[
-              'https://images.unsplash.com/photo-1516680224141-86bc862537ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-            ]}
-            location="Tuscany, Italy"
-            createdAt="2024-01-12T14:15:00Z"
-            author={{
-              id: 'user4',
-              name: 'Emma Wilson',
-              image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-            }}
-            likes={15}
-            comments={2}
-            isLiked={true}
-          />
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                      <Users className="w-6 h-6 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">I&apos;m a Host</h3>
+                    <p className="text-muted-foreground mb-4">
+                      List your property and welcome travelers from around the world.
+                    </p>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/host">Become a Host</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
 
-          {/* Load More */}
-          <div className="text-center pt-8">
-            <Button variant="outline" size="lg">
-              Load More Posts
-            </Button>
-          </div>
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                      <Camera className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">I&apos;m a Creator</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Partner with hosts to create content and grow your audience.
+                    </p>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/onboarding/role-selection">Get Started</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Call to Action */}
+              <Card className="border-dashed">
+                <CardContent className="p-12 text-center">
+                  <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Join the Community</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Sign up to share your travel experiences, discover unique stays, and connect with travelers worldwide.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button asChild variant="outline">
+                      <Link href="/auth/signin">Sign In</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/auth/signup">
+                        Get Started
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Quick Links Footer */}
-      <section className="py-12 px-4 border-t border-border bg-card/50">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h3 className="text-xl font-semibold">New to Nomadiqe?</h3>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild variant="outline">
-              <Link href="/about">Learn About Us</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/search">Find Properties</Link>
-            </Button>
-            <Button asChild className="bg-primary hover:bg-primary/90">
-              <Link href="/auth/signup">Join Community</Link>
-            </Button>
+      {/* Quick Links Footer - Only show for non-authenticated users */}
+      {!session && (
+        <section className="py-12 px-4 border-t border-border bg-card/50">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <h3 className="text-xl font-semibold">Ready to Start Your Journey?</h3>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Whether you&apos;re looking for unique places to stay, planning your next trip, or want to share your travel experiences with like-minded explorers
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild variant="outline">
+                <Link href="/search">Browse Unique Stays</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/about">How It Works</Link>
+              </Button>
+              <Button asChild className="bg-primary hover:bg-primary/90">
+                <Link href="/auth/signup">Start Exploring</Link>
+              </Button>
+            </div>
+
+            {/* Policy Links Footer */}
+            <div className="mt-8 pt-8 border-t border-border">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-sm text-muted-foreground">
+                <Link href="/terms" className="hover:text-primary transition-colors">
+                  Terms of Service
+                </Link>
+                <Link href="/privacy" className="hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+                <Link href="/about" className="hover:text-primary transition-colors">
+                  About Us
+                </Link>
+              </div>
+              <div className="mt-4 text-xs text-muted-foreground">
+                © 2024 Nomadiqe. All rights reserved.
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }

@@ -2,25 +2,30 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/ui/image-upload'
-import { 
-  MapPin, 
-  Image as ImageIcon, 
-  X, 
+import { useToast } from '@/hooks/use-toast'
+import {
+  MapPin,
+  Image as ImageIcon,
+  X,
   Home,
-  ArrowLeft 
+  ArrowLeft
 } from 'lucide-react'
 
 export default function CreatePostPage() {
   const router = useRouter()
+  const { data: session } = useSession()
+  const { toast } = useToast()
   const [content, setContent] = useState('')
   const [location, setLocation] = useState('')
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Mock properties for linking
+  // Mock properties for now until property creation is implemented
+  // In production, this would fetch user's actual properties from database
   const userProperties = [
     { id: '1', title: 'Cozy Mountain Cabin', location: 'Zermatt, Switzerland' },
     { id: '2', title: 'City Loft', location: 'Barcelona, Spain' }
@@ -29,21 +34,56 @@ export default function CreatePostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!session?.user?.id) {
+      toast({
+        title: 'Error',
+        description: 'You must be signed in to create a post',
+        variant: 'destructive',
+      })
+      router.push('/auth/signin')
+      return
+    }
+
     setIsSubmitting(true)
 
-    // Mock API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          location,
+          images: uploadedImages,
+          propertyId: null, // Don't send mock property IDs since they don't exist in database
+        }),
+      })
 
-    // In real app, submit to API
-    console.log('Post submitted:', {
-      content,
-      location,
-      images: uploadedImages,
-      selectedProperty
-    })
+      const data = await response.json()
 
-    setIsSubmitting(false)
-    router.push('/')
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create post')
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Your post has been shared!',
+      })
+
+      // Redirect to user's profile page
+      router.push(`/profile/${session.user.id}`)
+    } catch (error) {
+      console.error('Error creating post:', error)
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to create post',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (

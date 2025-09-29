@@ -1,9 +1,14 @@
+"use client"
+
+import { useState } from 'react'
 import { SearchBar } from '@/components/search-bar'
 import { PropertyCard } from '@/components/property-card'
 import { Button } from '@/components/ui/button'
 import { Filter, MapIcon } from 'lucide-react'
 
 export default function SearchPage() {
+  const [showFilters, setShowFilters] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid')
   return (
     <div className="min-h-screen bg-background">
       {/* Search Header */}
@@ -23,17 +28,74 @@ export default function SearchPage() {
 
           {/* Filters */}
           <div className="flex items-center justify-center space-x-4">
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2"
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
             </Button>
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2"
+              onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
+            >
               <MapIcon className="w-4 h-4" />
-              <span>Map View</span>
+              <span>{viewMode === 'grid' ? 'Map View' : 'Grid View'}</span>
             </Button>
           </div>
         </div>
       </section>
+
+      {/* Filters Panel */}
+      {showFilters && (
+        <section className="bg-muted py-6 border-b border-border">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Price Range</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>Any price</option>
+                  <option>$0 - $50</option>
+                  <option>$50 - $100</option>
+                  <option>$100 - $200</option>
+                  <option>$200+</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Property Type</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>Any type</option>
+                  <option>Apartment</option>
+                  <option>House</option>
+                  <option>Villa</option>
+                  <option>Cabin</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Amenities</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>Any amenities</option>
+                  <option>WiFi</option>
+                  <option>Pool</option>
+                  <option>Kitchen</option>
+                  <option>Parking</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Rating</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>Any rating</option>
+                  <option>4.5+ stars</option>
+                  <option>4.0+ stars</option>
+                  <option>3.5+ stars</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Search Results */}
       <section className="py-12 px-4">
@@ -129,7 +191,14 @@ export default function SearchPage() {
 
           {/* Load More */}
           <div className="text-center mt-12">
-            <Button size="lg" variant="outline">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                console.log('Loading more properties...')
+                // In real app, this would load more data
+              }}
+            >
               Load More Properties
             </Button>
           </div>

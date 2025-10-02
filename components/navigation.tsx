@@ -1,14 +1,14 @@
 "use client"
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { 
-  Search, 
-  User, 
-  LogOut, 
-  Settings, 
+import {
+  Search,
+  User,
+  LogOut,
   Heart,
   Menu,
   X
@@ -31,62 +31,50 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">N</span>
-            </div>
+            <Image
+              src="/nomadiqe-logo-transparent.png"
+              alt="Nomadiqe Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
             <span className="text-xl font-bold nomadiqe-gradient-text">Nomadiqe</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/search" 
+          <div className="hidden md:flex items-center space-x-6">
+            <Link
+              href="/search"
               className="text-foreground hover:text-primary transition-colors"
             >
               Explore
             </Link>
-            <Link 
-              href="/about" 
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              About
-            </Link>
-            <Link 
-              href="/host" 
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              Become a Host
-            </Link>
+            {session?.user?.role !== 'INFLUENCER' && (
+              <Link
+                href="/host"
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                Become a Host
+              </Link>
+            )}
           </div>
 
-          {/* Search Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/search')}
-            className="hidden sm:flex items-center space-x-2"
-          >
-            <Search className="w-4 h-4" />
-            <span>Search</span>
-          </Button>
-
           {/* User Menu */}
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
+          <div className="flex items-center space-x-2">
             {session ? (
-              <div className="flex items-center space-x-4">
-                <Link href="/favorites">
+              <>
+                <Link href="/favorites" className="hidden sm:block">
                   <Button variant="ghost" size="sm">
                     <Heart className="w-4 h-4" />
                   </Button>
                 </Link>
-                
-                <div className="relative group">
+
+                <div className="hidden md:block relative group">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                     <User className="w-4 h-4" />
-                    <span className="hidden sm:block">{session.user?.name}</span>
+                    <span>{session.user?.name}</span>
                   </Button>
-                  
+
                   {/* Dropdown Menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-1">
@@ -100,11 +88,6 @@ export function Navigation() {
                           Profile
                         </div>
                       </Link>
-                      <Link href="/settings">
-                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent">
-                          Settings
-                        </div>
-                      </Link>
                       <button
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent"
@@ -114,9 +97,9 @@ export function Navigation() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2">
                 <Button variant="ghost" asChild>
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
@@ -144,65 +127,65 @@ export function Navigation() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border py-4">
-            <div className="flex flex-col space-y-4 px-2">
-              <div className="flex justify-center mb-2">
-                <ThemeToggle />
-              </div>
+          <div className="md:hidden border-t border-border py-3">
+            <div className="flex flex-col space-y-1 px-2">
               <Link
                 href="/search"
-                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
+                className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Search className="h-4 w-4 inline mr-2" />
+                <Search className="h-4 w-4 mr-3" />
                 Explore
               </Link>
-              <Link
-                href="/about"
-                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/host"
-                className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Become a Host
-              </Link>
+              {session?.user?.role !== 'INFLUENCER' && (
+                <Link
+                  href="/host"
+                  className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Become a Host
+                </Link>
+              )}
               {session ? (
                 <>
                   <Link
                     href="/favorites"
-                    className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
+                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Heart className="h-4 w-4 inline mr-2" />
+                    <Heart className="h-4 w-4 mr-3" />
                     Favorites
                   </Link>
                   <Link
                     href="/dashboard"
-                    className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
+                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <User className="h-4 w-4 inline mr-2" />
+                    <User className="h-4 w-4 mr-3" />
                     Dashboard
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4 mr-3" />
+                    Profile
                   </Link>
                   <button
                     onClick={() => {
                       handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent w-full"
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
                   >
-                    <LogOut className="h-4 w-4 inline mr-2" />
+                    <LogOut className="h-4 w-4 mr-3" />
                     Sign Out
                   </button>
                 </>
               ) : (
-                <div className="flex flex-col space-y-2 mt-4">
-                  <Button variant="ghost" asChild className="w-full">
+                <div className="flex flex-col space-y-2 pt-2">
+                  <Button variant="outline" asChild className="w-full">
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In
                     </Link>

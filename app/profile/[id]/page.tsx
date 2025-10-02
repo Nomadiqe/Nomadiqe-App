@@ -111,7 +111,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             {/* Profile Image */}
             <div className="relative">
               <img
-                src={user.image}
+                src={user.image || '/placeholder-avatar.png'}
                 alt={user.name}
                 className="w-32 h-32 rounded-full object-cover border-4 border-background"
               />

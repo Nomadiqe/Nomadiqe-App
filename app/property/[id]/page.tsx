@@ -295,7 +295,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </Button>
 
               <p className="text-center text-sm text-muted-foreground mt-4">
-                You won't be charged yet
+                You won&apos;t be charged yet
               </p>
 
               {/* Host Info */}

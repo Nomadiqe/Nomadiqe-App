@@ -83,7 +83,7 @@ export function Navigation() {
                           Dashboard
                         </div>
                       </Link>
-                      <Link href="/profile">
+                      <Link href={`/profile/${session.user.id}`}>
                         <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent">
                           Profile
                         </div>
@@ -165,7 +165,7 @@ export function Navigation() {
                     Dashboard
                   </Link>
                   <Link
-                    href="/profile"
+                    href={`/profile/${session.user.id}`}
                     className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

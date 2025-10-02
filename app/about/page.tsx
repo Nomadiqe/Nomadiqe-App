@@ -2,18 +2,61 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FeatureCard } from '@/components/feature-card'
 import { PropertyCard } from '@/components/property-card'
-import { 
-  Globe, 
-  Shield, 
-  Users, 
-  Zap, 
-  Star, 
+import { prisma } from '@/lib/db'
+import {
+  Globe,
+  Shield,
+  Users,
+  Zap,
+  Star,
   MapPin,
   CreditCard,
   Bitcoin
 } from 'lucide-react'
 
-export default function AboutPage() {
+async function getFeaturedProperties() {
+  try {
+    const properties = await prisma.property.findMany({
+      where: {
+        isActive: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        city: true,
+        country: true,
+        price: true,
+        currency: true,
+        maxGuests: true,
+        bedrooms: true,
+        images: true,
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
+      },
+      take: 3,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return properties.map((property: any) => ({
+      ...property,
+      averageRating:
+        property.reviews.length > 0
+          ? property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / property.reviews.length
+          : 0,
+    }))
+  } catch (error) {
+    console.error('Error fetching featured properties:', error)
+    return []
+  }
+}
+
+export default async function AboutPage() {
+  const featuredProperties = await getFeaturedProperties()
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -267,37 +310,29 @@ export default function AboutPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Sample properties - in real app, these would come from the database */}
-            <PropertyCard
-              id="1"
-              title="Cozy Mountain Cabin"
-              location="Swiss Alps"
-              price={120}
-              rating={4.8}
-              image="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={4}
-              bedrooms={2}
-            />
-            <PropertyCard
-              id="2"
-              title="Modern City Loft"
-              location="Barcelona, Spain"
-              price={85}
-              rating={4.9}
-              image="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={2}
-              bedrooms={1}
-            />
-            <PropertyCard
-              id="3"
-              title="Beachfront Villa"
-              location="Bali, Indonesia"
-              price={200}
-              rating={4.7}
-              image="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              guests={6}
-              bedrooms={3}
-            />
+            {featuredProperties.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground text-lg">No featured properties available at the moment</p>
+                <Button asChild className="mt-4">
+                  <Link href="/search">Browse All Properties</Link>
+                </Button>
+              </div>
+            ) : (
+              featuredProperties.map((property: any) => (
+                <PropertyCard
+                  key={property.id}
+                  id={property.id}
+                  title={property.title}
+                  location={`${property.city}, ${property.country}`}
+                  price={property.price}
+                  rating={property.averageRating}
+                  image={property.images[0] || '/placeholder-property.jpg'}
+                  guests={property.maxGuests}
+                  bedrooms={property.bedrooms}
+                  currency={property.currency}
+                />
+              ))
+            )}
           </div>
 
           <div className="text-center mt-12">

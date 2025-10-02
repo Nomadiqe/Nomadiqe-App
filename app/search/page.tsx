@@ -3,12 +3,53 @@ import { SearchBar } from '@/components/search-bar'
 import { PropertyCard } from '@/components/property-card'
 import { SearchFilters } from '@/components/search-filters'
 
-async function getProperties() {
+interface SearchParams {
+  priceRange?: string
+  propertyType?: string
+  amenities?: string
+  rating?: string
+}
+
+async function getProperties(searchParams: SearchParams) {
   try {
+    // Build where clause based on filters
+    const where: any = {
+      isActive: true,
+    }
+
+    // Price range filter
+    if (searchParams.priceRange && searchParams.priceRange !== 'any') {
+      const priceRanges: Record<string, { min?: number; max?: number }> = {
+        '0-50': { max: 50 },
+        '50-100': { min: 50, max: 100 },
+        '100-200': { min: 100, max: 200 },
+        '200+': { min: 200 },
+      }
+      const range = priceRanges[searchParams.priceRange]
+      if (range) {
+        where.price = {}
+        if (range.min !== undefined) where.price.gte = range.min
+        if (range.max !== undefined) where.price.lte = range.max
+      }
+    }
+
+    // Property type filter
+    if (searchParams.propertyType && searchParams.propertyType !== 'any') {
+      where.type = {
+        equals: searchParams.propertyType,
+        mode: 'insensitive' as const,
+      }
+    }
+
+    // Amenities filter
+    if (searchParams.amenities && searchParams.amenities !== 'any') {
+      where.amenities = {
+        has: searchParams.amenities,
+      }
+    }
+
     const properties = await prisma.property.findMany({
-      where: {
-        isActive: true,
-      },
+      where,
       select: {
         id: true,
         title: true,
@@ -31,21 +72,35 @@ async function getProperties() {
       },
     })
 
-    return properties.map((property: any) => ({
+    let filteredProperties = properties.map((property: any) => ({
       ...property,
       averageRating:
         property.reviews.length > 0
           ? property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / property.reviews.length
           : 0,
     }))
+
+    // Rating filter (applied after fetching since it's calculated)
+    if (searchParams.rating && searchParams.rating !== 'any') {
+      const minRating = parseFloat(searchParams.rating)
+      filteredProperties = filteredProperties.filter(
+        (p: any) => p.averageRating >= minRating
+      )
+    }
+
+    return filteredProperties
   } catch (error) {
     console.error('Error fetching properties:', error)
     return []
   }
 }
 
-export default async function SearchPage() {
-  const properties = await getProperties()
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
+  const properties = await getProperties(searchParams)
   return (
     <div className="min-h-screen bg-background">
       {/* Search Header */}

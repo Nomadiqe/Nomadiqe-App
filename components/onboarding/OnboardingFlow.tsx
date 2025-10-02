@@ -160,13 +160,9 @@ function OnboardingComplete() {
 
 function OnboardingFlowContent({ step }: OnboardingFlowProps) {
   const { setStep, role, completedSteps } = useOnboarding()
-  const { fetchProgress } = useOnboardingApi()
   const router = useRouter()
 
-  // Load initial progress on mount
-  useEffect(() => {
-    fetchProgress().catch(console.error)
-  }, [])
+  // Progress loading is handled by OnboardingWizard to avoid duplicate calls
 
   const handleNext = async () => {
     // Most steps handle their own navigation

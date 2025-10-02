@@ -177,7 +177,7 @@ export default function OnboardingWizard({
       console.error('Failed to fetch progress:', err)
       setHasError(true)
     })
-  }, [])
+  }, [fetchProgress])
 
   // Error boundary for runtime errors
   if (hasError) {

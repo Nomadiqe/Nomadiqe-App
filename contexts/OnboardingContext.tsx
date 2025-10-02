@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useReducer, ReactNode } from 'react'
+import { createContext, useContext, useReducer, useCallback, ReactNode } from 'react'
 import { UserRole, OnboardingProgress } from '@/lib/onboarding'
 
 interface OnboardingState {
@@ -121,7 +121,7 @@ export function useOnboarding() {
 export function useOnboardingApi() {
   const { setLoading, setError, setProgress } = useOnboarding()
 
-  const updateProfile = async (data: { fullName: string; username: string; profilePicture?: string }) => {
+  const updateProfile = useCallback(async (data: { fullName: string; username: string; profilePicture?: string }) => {
     setLoading(true)
     setError(undefined)
     
@@ -146,9 +146,9 @@ export function useOnboardingApi() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setLoading, setError])
 
-  const selectRole = async (role: UserRole) => {
+  const selectRole = useCallback(async (role: UserRole) => {
     setLoading(true)
     setError(undefined)
     
@@ -173,9 +173,9 @@ export function useOnboardingApi() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setLoading, setError])
 
-  const fetchProgress = async () => {
+  const fetchProgress = useCallback(async () => {
     setLoading(true)
     setError(undefined)
     
@@ -200,9 +200,9 @@ export function useOnboardingApi() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setLoading, setError, setProgress])
 
-  const submitGuestInterests = async (interests: string[]) => {
+  const submitGuestInterests = useCallback(async (interests: string[]) => {
     setLoading(true)
     setError(undefined)
     
@@ -227,9 +227,9 @@ export function useOnboardingApi() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setLoading, setError])
 
-  const verifyIdentity = async (data: { documentType: string; documentNumber: string; skipVerification?: boolean }) => {
+  const verifyIdentity = useCallback(async (data: { documentType: string; documentNumber: string; skipVerification?: boolean }) => {
     setLoading(true)
     setError(undefined)
     
@@ -258,7 +258,7 @@ export function useOnboardingApi() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setLoading, setError])
 
   return {
     updateProfile,

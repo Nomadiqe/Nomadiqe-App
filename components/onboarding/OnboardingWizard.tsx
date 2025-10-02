@@ -107,7 +107,7 @@ function WizardHeader({ currentStep, role, completedSteps }: { currentStep: stri
   const stepDescription = getStepDescription(currentStep)
 
   return (
-    <div className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-10">
+    <div className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-10" style={{ WebkitBackdropFilter: 'blur(8px)' }}>
       <div className="container mx-auto px-4 py-6">
         {/* Top Navigation */}
         <div className="flex items-center justify-between mb-6">

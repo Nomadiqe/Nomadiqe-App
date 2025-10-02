@@ -16,6 +16,8 @@ export function SearchBar() {
   const [checkIn, setCheckIn] = useState<Date>()
   const [checkOut, setCheckOut] = useState<Date>()
   const [guests, setGuests] = useState(1)
+  const [checkInOpen, setCheckInOpen] = useState(false)
+  const [checkOutOpen, setCheckOutOpen] = useState(false)
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -43,7 +45,7 @@ export function SearchBar() {
           </div>
 
           {/* Check-in Date */}
-          <Popover>
+          <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -60,7 +62,10 @@ export function SearchBar() {
               <Calendar
                 mode="single"
                 selected={checkIn}
-                onSelect={setCheckIn}
+                onSelect={(date) => {
+                  setCheckIn(date)
+                  // Keep popover open after selection so user can change their mind
+                }}
                 initialFocus
                 disabled={(date) => date < new Date()}
               />
@@ -68,7 +73,7 @@ export function SearchBar() {
           </Popover>
 
           {/* Check-out Date */}
-          <Popover>
+          <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -85,9 +90,12 @@ export function SearchBar() {
               <Calendar
                 mode="single"
                 selected={checkOut}
-                onSelect={setCheckOut}
+                onSelect={(date) => {
+                  setCheckOut(date)
+                  // Keep popover open after selection so user can change their mind
+                }}
                 initialFocus
-                disabled={(date) => 
+                disabled={(date) =>
                   date < new Date() || (checkIn ? date <= checkIn : false)
                 }
               />

@@ -93,7 +93,7 @@ export function generateUniqueFilename(originalName: string): string {
 }
 
 /**
- * Compress image using canvas (client-side)
+ * Compress image using canvas (client-side) with EXIF orientation support
  */
 export function compressImage(
   file: File,
@@ -109,12 +109,12 @@ export function compressImage(
     img.onload = () => {
       // Calculate new dimensions
       let { width, height } = img
-      
+
       if (width > maxWidth) {
         height = (height * maxWidth) / width
         width = maxWidth
       }
-      
+
       if (height > maxHeight) {
         width = (width * maxHeight) / height
         height = maxHeight
@@ -123,14 +123,26 @@ export function compressImage(
       canvas.width = width
       canvas.height = height
 
+      if (!ctx) {
+        reject(new Error('Failed to get canvas context'))
+        return
+      }
+
+      // Enable image smoothing for better quality
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
+
       // Draw and compress
-      ctx?.drawImage(img, 0, 0, width, height)
-      
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // Use image/jpeg for better compatibility, or preserve original type
+      const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+
       canvas.toBlob(
         (blob) => {
           if (blob) {
             const compressedFile = new File([blob], file.name, {
-              type: file.type,
+              type: outputType,
               lastModified: Date.now(),
             })
             resolve(compressedFile)
@@ -138,12 +150,15 @@ export function compressImage(
             reject(new Error('Failed to compress image'))
           }
         },
-        file.type,
+        outputType,
         quality
       )
     }
 
     img.onerror = () => reject(new Error('Failed to load image'))
+
+    // Set crossOrigin to handle CORS issues
+    img.crossOrigin = 'anonymous'
     img.src = URL.createObjectURL(file)
   })
 }

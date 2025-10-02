@@ -49,7 +49,11 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
     socialAccounts: socialConnections.length,
     totalFollowers: socialConnections.reduce((acc: number, conn: any) => acc + (conn.followerCount || 0), 0),
     profileViews: 0, // Will be tracked when analytics are implemented
-    contentPieces: 0 // Will count posts when content creation is linked
+    contentPieces: 0, // Will count posts when content creation is linked
+    monthlyGrowth: 0, // Will be calculated when historical data is available
+    engagementRate: 0, // Will be calculated from post engagement metrics
+    avgEngagement: 0, // Average engagement rate across all platforms
+    completedProjects: 0 // Will count completed collaboration opportunities
   }
 
   // Real collaboration opportunities would come from database

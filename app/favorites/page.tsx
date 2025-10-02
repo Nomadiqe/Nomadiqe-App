@@ -48,7 +48,7 @@ export default async function FavoritesPage() {
                 <span>Your Favorites</span>
               </h1>
               <p className="text-muted-foreground mt-2">
-                Properties you've saved for later
+                Properties you&apos;ve saved for later
               </p>
             </div>
             <Button variant="outline" className="flex items-center space-x-2">

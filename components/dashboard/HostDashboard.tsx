@@ -52,7 +52,8 @@ export default function HostDashboard({ user }: HostDashboardProps) {
     totalProperties: activeProperties.length,
     totalBookings: allBookings.length,
     totalRevenue: completedBookings.reduce((sum: number, b: any) => sum + (b.totalAmount || 0), 0),
-    totalReviews: allReviews.length
+    totalReviews: allReviews.length,
+    avgRating: allReviews.length > 0 ? (allReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / allReviews.length).toFixed(1) : '0.0'
   }
 
   // Get real upcoming bookings from user data

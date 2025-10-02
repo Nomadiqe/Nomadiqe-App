@@ -48,7 +48,7 @@ export default async function HomePage() {
       }
     })
 
-    posts = postsData.map(post => ({
+    posts = postsData.map((post: any) => ({
       id: post.id,
       content: post.content,
       images: post.images as string[],

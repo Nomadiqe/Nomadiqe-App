@@ -41,7 +41,7 @@ export async function GET(
     })
 
     // Format the comments
-    const formattedComments = comments.map(comment => ({
+    const formattedComments = comments.map((comment: any) => ({
       id: comment.id,
       content: comment.content,
       createdAt: comment.createdAt.toISOString(),

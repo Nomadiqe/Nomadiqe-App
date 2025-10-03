@@ -177,7 +177,8 @@ export default function OnboardingWizard({
       console.error('Failed to fetch progress:', err)
       setHasError(true)
     })
-  }, [fetchProgress])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Error boundary for runtime errors
   if (hasError) {

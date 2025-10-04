@@ -1,10 +1,20 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { PropertyCard } from '@/components/property-card'
-import { PropertyMap } from '@/components/property-map'
 import { Button } from '@/components/ui/button'
 import { Grid3x3, Map } from 'lucide-react'
+
+// Dynamically import PropertyMap to avoid SSR issues with Leaflet
+const PropertyMap = dynamic(() => import('@/components/property-map').then(mod => ({ default: mod.PropertyMap })), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[500px] bg-muted rounded-lg flex items-center justify-center">
+      <p className="text-muted-foreground">Loading map...</p>
+    </div>
+  ),
+})
 
 interface Property {
   id: string

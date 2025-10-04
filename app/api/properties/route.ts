@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Format the response
-    const formattedProperties = properties.map((property) => ({
+    const formattedProperties = properties.map((property: { id: string; title: string; city: string; country: string }) => ({
       id: property.id,
       title: property.title,
       location: `${property.city}, ${property.country}`,

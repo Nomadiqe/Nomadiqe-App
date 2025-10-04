@@ -55,7 +55,7 @@ export function PropertyMap({ properties }: PropertyMapProps) {
 
   if (validProperties.length === 0) {
     return (
-      <div className="w-full h-[500px] bg-muted rounded-lg flex items-center justify-center">
+      <div className="w-full h-[400px] lg:h-[calc(100vh-200px)] bg-muted rounded-lg flex items-center justify-center">
         <p className="text-muted-foreground">No properties with location data available</p>
       </div>
     )
@@ -68,7 +68,7 @@ export function PropertyMap({ properties }: PropertyMapProps) {
   ]
 
   return (
-    <div className="w-full h-[500px] rounded-lg overflow-hidden border border-border">
+    <div className="w-full h-[400px] lg:h-[calc(100vh-200px)] rounded-lg overflow-hidden border border-border">
       <MapContainer
         center={center}
         zoom={10}

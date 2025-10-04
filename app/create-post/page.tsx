@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,12 @@ import {
   ArrowLeft
 } from 'lucide-react'
 
+interface Property {
+  id: string
+  title: string
+  location: string
+}
+
 export default function CreatePostPage() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -23,13 +29,30 @@ export default function CreatePostPage() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [properties, setProperties] = useState<Property[]>([])
+  const [isLoadingProperties, setIsLoadingProperties] = useState(false)
 
-  // Mock properties for now until property creation is implemented
-  // In production, this would fetch user's actual properties from database
-  const userProperties = [
-    { id: '1', title: 'Cozy Mountain Cabin', location: 'Zermatt, Switzerland' },
-    { id: '2', title: 'City Loft', location: 'Barcelona, Spain' }
-  ]
+  // Fetch properties from database
+  useEffect(() => {
+    const fetchProperties = async () => {
+      if (!session?.user?.id) return
+
+      setIsLoadingProperties(true)
+      try {
+        const response = await fetch('/api/properties')
+        if (response.ok) {
+          const data = await response.json()
+          setProperties(data)
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error)
+      } finally {
+        setIsLoadingProperties(false)
+      }
+    }
+
+    fetchProperties()
+  }, [session?.user?.id])
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,7 +80,7 @@ export default function CreatePostPage() {
           content,
           location,
           images: uploadedImages,
-          propertyId: null, // Don't send mock property IDs since they don't exist in database
+          propertyId: selectedProperty,
         }),
       })
 
@@ -149,9 +172,12 @@ export default function CreatePostPage() {
                 value={selectedProperty || ''}
                 onChange={(e) => setSelectedProperty(e.target.value || null)}
                 className="w-full p-3 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-nomadiqe-500"
+                disabled={isLoadingProperties}
               >
-                <option value="">Select a property...</option>
-                {userProperties.map((property) => (
+                <option value="">
+                  {isLoadingProperties ? 'Loading properties...' : 'Select a property...'}
+                </option>
+                {properties.map((property) => (
                   <option key={property.id} value={property.id}>
                     {property.title} - {property.location}
                   </option>

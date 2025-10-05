@@ -3,58 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%; /* Pure white background */
-  --foreground: 222.2 84% 4.9%; /* Deep charcoal text */
-  --card: 0 0% 100%; /* White cards */
-  --card-foreground: 222.2 84% 4.9%; /* Dark card text */
-  --popover: 0 0% 100%; /* White popovers */
-  --popover-foreground: 222.2 84% 4.9%; /* Dark popover text */
-  --primary: 186 100% 42%; /* Mediterranean turquoise primary */
-  --primary-foreground: 210 40% 98%; /* Light text on primary */
-  --secondary: 43 25% 85%; /* Sandy beige secondary */
-  --secondary-foreground: 222.2 84% 4.9%; /* Dark text on secondary */
-  --muted: 197 100% 97%; /* Very light cyan-blue muted */
-  --muted-foreground: 215.4 16.3% 46.9%; /* Medium slate muted text */
-  --accent: 186 100% 35%; /* Deeper turquoise accent */
-  --accent-foreground: 210 40% 98%; /* Light text on accent */
-  --destructive: 0 84.2% 60.2%; /* Coral-orange destructive */
-  --destructive-foreground: 210 40% 98%; /* Light text on destructive */
-  --border: 197 50% 90%; /* Light turquoise border */
+  --background: 40 60% 98%; /* Warm arabesque white */
+  --foreground: 25 30% 20%; /* Warm dark brown text */
+  --card: 0 0% 100%; /* Pure white cards */
+  --card-foreground: 25 30% 20%; /* Warm dark brown card text */
+  --popover: 0 0% 100%; /* Pure white popovers */
+  --popover-foreground: 25 30% 20%; /* Warm dark brown popover text */
+  --primary: 200 95% 45%; /* Azure Mediterranean blue */
+  --primary-foreground: 0 0% 100%; /* White text on azure */
+  --secondary: 35 45% 75%; /* Sandy tan/beige */
+  --secondary-foreground: 25 30% 20%; /* Warm dark brown on sand */
+  --muted: 40 30% 94%; /* Light warm neutral */
+  --muted-foreground: 25 15% 45%; /* Medium warm gray */
+  --accent: 15 70% 60%; /* Terracotta accent */
+  --accent-foreground: 0 0% 100%; /* White text on terracotta */
+  --destructive: 0 70% 50%; /* Coral red */
+  --destructive-foreground: 0 0% 100%; /* White text on destructive */
+  --border: 40 25% 88%; /* Soft warm border */
   --input: 0 0% 100%; /* White input backgrounds */
-  --ring: 186 100% 42%; /* Primary ring color */
-  --chart-1: 197 100% 92%; /* Light turquoise chart */
-  --chart-2: 186 100% 85%; /* Medium turquoise chart */
-  --chart-3: 186 100% 42%; /* Primary turquoise chart */
-  --chart-4: 186 100% 35%; /* Deep turquoise chart */
-  --chart-5: 43 25% 75%; /* Beige chart accent */
+  --ring: 200 95% 45%; /* Azure ring color */
+  --chart-1: 200 90% 75%; /* Light azure */
+  --chart-2: 200 95% 60%; /* Medium azure */
+  --chart-3: 200 95% 45%; /* Deep azure */
+  --chart-4: 35 45% 65%; /* Sandy tan */
+  --chart-5: 15 70% 60%; /* Terracotta */
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%; /* Dark background */
-  --foreground: 210 40% 98%; /* Light text */
-  --card: 217.2 32.6% 17.5%; /* Dark card */
-  --card-foreground: 210 40% 98%; /* Light card text */
-  --popover: 217.2 32.6% 17.5%; /* Dark popover */
-  --popover-foreground: 210 40% 98%; /* Light popover text */
-  --primary: 186 100% 55%; /* Bright turquoise primary */
-  --primary-foreground: 222.2 84% 4.9%; /* Dark text on primary */
-  --secondary: 43 25% 65%; /* Muted beige secondary */
-  --secondary-foreground: 222.2 84% 4.9%; /* Dark text on secondary */
-  --muted: 217.2 32.6% 17.5%; /* Dark muted */
-  --muted-foreground: 215 20.2% 65.1%; /* Light muted text */
-  --accent: 186 100% 45%; /* Turquoise accent */
-  --accent-foreground: 210 40% 98%; /* Light accent text */
-  --destructive: 0 62.8% 30.6%; /* Dark destructive */
-  --destructive-foreground: 210 40% 98%; /* Light destructive text */
-  --border: 217.2 32.6% 17.5%; /* Dark border */
-  --input: 217.2 32.6% 17.5%; /* Dark input */
-  --ring: 186 100% 55%; /* Bright ring */
-  --chart-1: 186 100% 60%; /* Turquoise chart 1 */
-  --chart-2: 186 100% 55%; /* Turquoise chart 2 */
-  --chart-3: 186 100% 50%; /* Turquoise chart 3 */
-  --chart-4: 186 100% 45%; /* Turquoise chart 4 */
-  --chart-5: 43 25% 55%; /* Beige chart accent */
+  --background: 220 20% 12%; /* Deep night blue-gray */
+  --foreground: 40 50% 95%; /* Warm off-white text */
+  --card: 220 18% 16%; /* Slightly lighter card */
+  --card-foreground: 40 50% 95%; /* Warm off-white card text */
+  --popover: 220 18% 16%; /* Card-like popover */
+  --popover-foreground: 40 50% 95%; /* Warm off-white popover text */
+  --primary: 200 90% 55%; /* Bright azure blue */
+  --primary-foreground: 220 20% 12%; /* Dark text on azure */
+  --secondary: 35 35% 45%; /* Muted sandy tan */
+  --secondary-foreground: 40 50% 95%; /* Light text on sand */
+  --muted: 220 15% 20%; /* Dark warm muted */
+  --muted-foreground: 40 25% 70%; /* Light warm muted text */
+  --accent: 15 60% 55%; /* Muted terracotta */
+  --accent-foreground: 40 50% 95%; /* Light text on terracotta */
+  --destructive: 0 60% 45%; /* Deep coral red */
+  --destructive-foreground: 40 50% 95%; /* Light text on destructive */
+  --border: 220 15% 25%; /* Subtle warm border */
+  --input: 220 18% 18%; /* Dark input */
+  --ring: 200 90% 55%; /* Bright azure ring */
+  --chart-1: 200 80% 60%; /* Bright azure */
+  --chart-2: 200 85% 50%; /* Medium azure */
+  --chart-3: 200 90% 40%; /* Deep azure */
+  --chart-4: 35 35% 50%; /* Sandy tan */
+  --chart-5: 15 60% 50%; /* Terracotta */
 }
 
 

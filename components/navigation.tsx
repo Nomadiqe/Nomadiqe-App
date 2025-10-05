@@ -38,7 +38,7 @@ export function Navigation() {
               height={32}
               className="object-contain"
             />
-            <span className="text-xl font-bold nomadiqe-gradient-text">Nomadiqe</span>
+            <span className="text-xl font-bold text-primary">Nomadiqe</span>
           </Link>
 
           {/* Desktop Navigation */}

@@ -31,7 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Favicons and logo assets
 
 ### Changed
-- Updated color scheme with Nomadiqe brand colors
+- Updated to Sicilian island color theme (azure blues, sandy tans, arabesque whites, terracotta accents)
+- Removed purple and pink gradients in favor of clean, Mediterranean-inspired palette
+- Light mode: Warm arabesque white backgrounds with azure blue accents
+- Dark mode: Deep night blue-gray backgrounds with bright azure accents
 - Migrated from Cloudinary to Vercel Blob for image storage
 - Enhanced UI components with shadcn/ui library
 - Improved authentication flow with role selection

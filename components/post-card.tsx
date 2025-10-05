@@ -102,7 +102,7 @@ export function PostCard({
             <Link href={`/profile/${author.id}`}>
               <Avatar className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200">
                 <AvatarImage src={author.image} alt={author.name} />
-                <AvatarFallback className="bg-gradient-to-br from-nomadiqe-600 via-nomadiqe-700 to-purple-700 text-white font-semibold">
+                <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {author.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -201,7 +201,7 @@ export function PostCard({
             variant="ghost"
             size="sm"
             onClick={() => setShowComments(true)}
-            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400"
+            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
           >
             <MessageCircle className="h-4 w-4" />
             <span className="text-sm font-medium">{commentCount}</span>

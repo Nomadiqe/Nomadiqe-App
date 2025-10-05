@@ -69,12 +69,11 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative bg-gradient-to-br from-nomadiqe-600/10 via-purple-500/5 to-pink-500/10 border-b border-border/50 py-8">
-        <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      <section className="relative bg-primary/5 border-b border-border py-8">
         <div className="max-w-4xl mx-auto px-4 relative">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-nomadiqe-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-primary">
                 {session ? 'Your Feed' : 'Discover Your Next Adventure'}
               </h1>
               <p className="text-muted-foreground text-sm max-w-2xl">
@@ -84,7 +83,7 @@ export default async function HomePage() {
               </p>
             </div>
             {session && (
-              <Button asChild className="bg-gradient-to-r from-nomadiqe-600 to-purple-600 hover:from-nomadiqe-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:shadow-nomadiqe-600/20 transition-all duration-200">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200">
                 <Link href="/create-post" className="flex items-center space-x-2">
                   <Plus className="w-4 h-4" />
                   <span>Create Post</span>
@@ -134,9 +133,9 @@ export default async function HomePage() {
             <div className="space-y-8">
               {/* Welcome Card */}
               <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-nomadiqe-500 to-nomadiqe-700 p-8 text-white">
+                <div className="bg-primary p-8 text-primary-foreground">
                   <h2 className="text-3xl font-bold mb-4">Welcome to Nomadiqe</h2>
-                  <p className="text-lg mb-6 text-white/90">
+                  <p className="text-lg mb-6 opacity-90">
                     Your gateway to authentic travel experiences and unique stays around the world.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -144,21 +143,21 @@ export default async function HomePage() {
                       <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-semibold">Discover Unique Stays</p>
-                        <p className="text-white/80">Find properties shared by local hosts</p>
+                        <p className="opacity-80">Find properties shared by local hosts</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
                       <Users className="w-5 h-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-semibold">Connect with Community</p>
-                        <p className="text-white/80">Share experiences with fellow travelers</p>
+                        <p className="opacity-80">Share experiences with fellow travelers</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
                       <Camera className="w-5 h-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-semibold">Collaborate as Creator</p>
-                        <p className="text-white/80">Partner with hosts for content</p>
+                        <p className="opacity-80">Partner with hosts for content</p>
                       </div>
                     </div>
                   </div>
@@ -169,8 +168,8 @@ export default async function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                      <MapPin className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                      <MapPin className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="font-semibold text-lg mb-2">I&apos;m a Traveler</h3>
                     <p className="text-muted-foreground mb-4">
@@ -184,8 +183,8 @@ export default async function HomePage() {
 
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                      <Users className="w-6 h-6 text-green-600" />
+                    <div className="w-12 h-12 bg-secondary/30 rounded-lg flex items-center justify-center mb-4">
+                      <Users className="w-6 h-6 text-secondary-foreground" />
                     </div>
                     <h3 className="font-semibold text-lg mb-2">I&apos;m a Host</h3>
                     <p className="text-muted-foreground mb-4">
@@ -199,8 +198,8 @@ export default async function HomePage() {
 
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                      <Camera className="w-6 h-6 text-purple-600" />
+                    <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                      <Camera className="w-6 h-6 text-accent" />
                     </div>
                     <h3 className="font-semibold text-lg mb-2">I&apos;m a Creator</h3>
                     <p className="text-muted-foreground mb-4">

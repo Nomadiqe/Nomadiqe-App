@@ -165,8 +165,8 @@
 }
 
 .sicilian-map-dark .leaflet-tile-pane {
-  /* Adjust to match Sicilian night blue-gray theme */
-  filter: brightness(0.45) saturate(0.75) hue-rotate(-15deg) contrast(1.15);
+  /* Adjust to match Sicilian night blue-gray theme with better contrast */
+  filter: brightness(0.55) saturate(0.7) hue-rotate(-10deg) contrast(1.3);
 }
 
 .sicilian-map-dark .leaflet-control-attribution {

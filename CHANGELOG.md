@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image upload functionality using Vercel Blob storage
 - Dark mode support with theme toggling and system preference detection
 - Theme toggle button in navigation (desktop dropdown and mobile menu)
-- Theme-aware map tiles (CartoDB Dark Matter for dark mode, OpenStreetMap for light mode)
+- Theme-aware map tiles with Sicilian color scheme
+- Custom azure blue map markers matching brand colors
+- CSS filters to adjust map colors to Mediterranean palette
 - User profile pages with customizable information
 - Search functionality for users and posts
 - Comments system for posts

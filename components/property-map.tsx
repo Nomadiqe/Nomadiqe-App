@@ -7,13 +7,30 @@ import 'leaflet/dist/leaflet.css'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 
-// Fix for default marker icon in React-Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-})
+// Custom marker icon for Sicilian theme
+const createCustomIcon = () => {
+  return L.divIcon({
+    className: 'custom-marker-icon',
+    html: `
+      <div style="
+        position: relative;
+        width: 32px;
+        height: 32px;
+      ">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                fill="hsl(200 95% 45%)"
+                stroke="white"
+                stroke-width="1.5"/>
+          <circle cx="12" cy="9" r="2.5" fill="white"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  })
+}
 
 interface PropertyMapProps {
   properties: {
@@ -73,14 +90,16 @@ export function PropertyMap({ properties }: PropertyMapProps) {
   // Determine which theme is active
   const activeTheme = resolvedTheme || theme
 
-  // Choose tile layer based on theme
+  // Choose tile layer based on theme - Sicilian island aesthetic
   const tileUrl = activeTheme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
 
-  const attribution = activeTheme === 'dark'
-    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  const labelUrl = activeTheme === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png'
+    : null
+
+  const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 
   return (
     <div className="w-full h-full min-h-[400px] lg:min-h-[calc(100vh-200px)] rounded-lg overflow-hidden border border-border">
@@ -88,18 +107,27 @@ export function PropertyMap({ properties }: PropertyMapProps) {
         center={center}
         zoom={10}
         scrollWheelZoom={true}
-        className="h-full w-full"
+        className={`h-full w-full ${activeTheme === 'dark' ? 'sicilian-map-dark' : 'sicilian-map-light'}`}
       >
         <TileLayer
-          key={activeTheme}
+          key={`base-${activeTheme}`}
           attribution={attribution}
           url={tileUrl}
+          opacity={activeTheme === 'dark' ? 0.7 : 1}
         />
+        {labelUrl && (
+          <TileLayer
+            key={`labels-${activeTheme}`}
+            url={labelUrl}
+            opacity={0.9}
+          />
+        )}
         <MapUpdater properties={validProperties} />
         {validProperties.map((property) => (
           <Marker
             key={property.id}
             position={[property.latitude!, property.longitude!]}
+            icon={createCustomIcon()}
           >
             <Popup>
               <div className="p-2 min-w-[200px]">

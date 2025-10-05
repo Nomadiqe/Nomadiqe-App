@@ -4,6 +4,10 @@ import { SearchFiltersImproved } from '@/components/search-filters-improved'
 import { SearchResultsImproved } from '@/components/search-results-improved'
 
 interface SearchParams {
+  location?: string
+  checkIn?: string
+  checkOut?: string
+  guests?: string
   priceRange?: string
   propertyType?: string
   amenities?: string
@@ -15,6 +19,23 @@ async function getProperties(searchParams: SearchParams) {
     // Build where clause based on filters
     const where: any = {
       isActive: true,
+    }
+
+    // Location filter
+    if (searchParams.location) {
+      where.OR = [
+        { city: { contains: searchParams.location, mode: 'insensitive' as const } },
+        { country: { contains: searchParams.location, mode: 'insensitive' as const } },
+        { title: { contains: searchParams.location, mode: 'insensitive' as const } },
+      ]
+    }
+
+    // Guests filter
+    if (searchParams.guests) {
+      const guestCount = parseInt(searchParams.guests)
+      if (!isNaN(guestCount)) {
+        where.maxGuests = { gte: guestCount }
+      }
     }
 
     // Price range filter (handles formats like "0-100", "200+", etc.)

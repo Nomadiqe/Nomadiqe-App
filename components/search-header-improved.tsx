@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, MapPin, Calendar, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,10 +10,43 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { format } from 'date-fns'
 
 export function SearchHeaderImproved() {
-  const [location, setLocation] = useState('')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const [location, setLocation] = useState(searchParams.get('location') || '')
   const [checkIn, setCheckIn] = useState<Date>()
   const [checkOut, setCheckOut] = useState<Date>()
-  const [guests, setGuests] = useState(1)
+  const [guests, setGuests] = useState(parseInt(searchParams.get('guests') || '1'))
+
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (location) {
+      params.set('location', location)
+    } else {
+      params.delete('location')
+    }
+
+    if (checkIn) {
+      params.set('checkIn', format(checkIn, 'yyyy-MM-dd'))
+    } else {
+      params.delete('checkIn')
+    }
+
+    if (checkOut) {
+      params.set('checkOut', format(checkOut, 'yyyy-MM-dd'))
+    } else {
+      params.delete('checkOut')
+    }
+
+    if (guests > 1) {
+      params.set('guests', guests.toString())
+    } else {
+      params.delete('guests')
+    }
+
+    router.push(`/search?${params.toString()}`)
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -91,7 +125,7 @@ export function SearchHeaderImproved() {
           </div>
 
           {/* Search Button */}
-          <Button className="h-12 px-6 bg-nomadiqe-600 hover:bg-nomadiqe-700">
+          <Button onClick={handleSearch} className="h-12 px-6 bg-nomadiqe-600 hover:bg-nomadiqe-700">
             <Search className="w-4 h-4 mr-2" />
             Search
           </Button>

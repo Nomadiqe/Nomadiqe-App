@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { PropertyCard } from '@/components/property-card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -21,7 +23,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { Map, Grid3x3, SlidersHorizontal } from 'lucide-react'
-import { SearchFiltersImproved } from '@/components/search-filters-improved'
+import { SearchFiltersContent } from '@/components/search-filters-improved'
 
 // Dynamically import PropertyMap to avoid SSR issues with Leaflet
 const PropertyMap = dynamic(() => import('@/components/property-map').then(mod => ({ default: mod.PropertyMap })), {
@@ -55,6 +57,14 @@ interface SearchResultsProps {
 export function SearchResultsImproved({ properties }: SearchResultsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'split'>('split')
   const validMapProperties = properties.filter(p => p.latitude && p.longitude)
+  const searchParams = useSearchParams()
+
+  // Calculate active filters count
+  const activeFiltersCount =
+    (searchParams.get('priceRange') ? 1 : 0) +
+    (searchParams.get('propertyType') ? 1 : 0) +
+    (searchParams.get('amenities') ? searchParams.get('amenities')!.split(',').length : 0) +
+    (searchParams.get('rating') ? 1 : 0)
 
   return (
     <div className="h-full flex flex-col">
@@ -71,6 +81,11 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
+                {activeFiltersCount > 0 && (
+                  <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                    {activeFiltersCount}
+                  </Badge>
+                )}
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full sm:w-[400px]">
@@ -80,8 +95,8 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                   Refine your search with these filters
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6">
-                <SearchFiltersImproved />
+              <div className="mt-6 overflow-y-auto max-h-[calc(100vh-12rem)]">
+                <SearchFiltersContent />
               </div>
             </SheetContent>
           </Sheet>

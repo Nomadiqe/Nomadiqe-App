@@ -29,14 +29,31 @@ import { Badge } from '@/components/ui/badge'
 const propertyTypes = ['Apartment', 'House', 'Villa', 'Cabin', 'Loft']
 const amenitiesList = ['WiFi', 'Pool', 'Kitchen', 'Parking', 'Air Conditioning', 'Workspace']
 
-export function SearchFiltersImproved() {
+export function SearchFiltersContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [priceRange, setPriceRange] = useState([0, 500])
-  const [selectedType, setSelectedType] = useState<string>('')
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
-  const [minRating, setMinRating] = useState<string>('')
+  // Initialize from URL params
+  const initializePriceRange = () => {
+    const priceParam = searchParams.get('priceRange')
+    if (!priceParam) return [0, 500]
+    if (priceParam.includes('+')) {
+      const min = parseInt(priceParam.replace('+', ''))
+      return [min, 500]
+    }
+    if (priceParam.includes('-')) {
+      const [min, max] = priceParam.split('-').map(Number)
+      return [min, max]
+    }
+    return [0, 500]
+  }
+
+  const [priceRange, setPriceRange] = useState(initializePriceRange())
+  const [selectedType, setSelectedType] = useState<string>(searchParams.get('propertyType') || '')
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
+    searchParams.get('amenities') ? searchParams.get('amenities')!.split(',') : []
+  )
+  const [minRating, setMinRating] = useState<string>(searchParams.get('rating') || '')
 
   const activeFiltersCount =
     (selectedType ? 1 : 0) +
@@ -98,7 +115,7 @@ export function SearchFiltersImproved() {
     )
   }
 
-  const FiltersContent = () => (
+  return (
     <div className="space-y-6">
       {/* Price Range */}
       <div className="space-y-3">
@@ -194,6 +211,16 @@ export function SearchFiltersImproved() {
       </div>
     </div>
   )
+}
+
+export function SearchFiltersImproved() {
+  const searchParams = useSearchParams()
+
+  const activeFiltersCount =
+    (searchParams.get('priceRange') ? 1 : 0) +
+    (searchParams.get('propertyType') ? 1 : 0) +
+    (searchParams.get('amenities') ? searchParams.get('amenities')!.split(',').length : 0) +
+    (searchParams.get('rating') ? 1 : 0)
 
   return (
     <>
@@ -219,7 +246,7 @@ export function SearchFiltersImproved() {
               </SheetDescription>
             </SheetHeader>
             <div className="mt-6 overflow-y-auto max-h-[calc(85vh-8rem)]">
-              <FiltersContent />
+              <SearchFiltersContent />
             </div>
           </SheetContent>
         </Sheet>
@@ -237,7 +264,7 @@ export function SearchFiltersImproved() {
             </div>
           </CardHeader>
           <CardContent>
-            <FiltersContent />
+            <SearchFiltersContent />
           </CardContent>
         </Card>
       </div>

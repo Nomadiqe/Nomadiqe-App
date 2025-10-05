@@ -48,6 +48,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme consistency across all pages
 - Navigation accessibility and user experience
 - Authentication redirect issues
+- Search functionality now properly updates URL parameters and filters properties
+- Filter functionality fully integrated with URL state and database queries
+- Filter panel z-index increased (z-999/z-1000) to appear above map
+- Filter state initialization from URL parameters on page load
+- Active filter count badge displays on filter button
 - Profile page rendering and data fetching
 - SSR error with Leaflet map by using dynamic import
 - Infinite loop in onboarding progress fetching

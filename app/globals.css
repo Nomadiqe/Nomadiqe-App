@@ -165,7 +165,8 @@
 }
 
 .sicilian-map-dark .leaflet-tile-pane {
-  filter: brightness(0.5) saturate(0.8) hue-rotate(15deg) contrast(1.1);
+  /* Adjust to match Sicilian night blue-gray theme */
+  filter: brightness(0.45) saturate(0.75) hue-rotate(-15deg) contrast(1.15);
 }
 
 .sicilian-map-dark .leaflet-control-attribution {
@@ -185,6 +186,15 @@
 
 .custom-marker-icon:hover {
   transform: scale(1.1);
+}
+
+/* Theme-aware marker colors */
+.dark .custom-marker-icon svg path {
+  fill: hsl(200 90% 55%) !important; /* Bright azure for dark mode */
+}
+
+.dark .custom-marker-icon svg circle {
+  fill: hsl(220 20% 12%) !important; /* Match dark background */
 }
 
 /* Style the map popup to match theme */

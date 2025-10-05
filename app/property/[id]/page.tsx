@@ -3,6 +3,11 @@ import { notFound } from "next/navigation"
 import Image from "next/image"
 import { MapPin, Users, Bed, Bath, Star, Heart, Share2, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
 interface PropertyPageProps {
@@ -166,165 +171,168 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {/* Amenities */}
             {property.amenities.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {property.amenities.map((amenity: string, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                      <span className="text-sm">{amenity}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold">Amenities</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {property.amenities.map((amenity: string, index: number) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-sm">{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* House Rules */}
             {property.rules.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">House Rules</h2>
-                <div className="space-y-2">
-                  {property.rules.map((rule: string, index: number) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-                      <span className="text-sm">{rule}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold">House Rules</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {property.rules.map((rule: string, index: number) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary mt-2" />
+                        <span className="text-sm">{rule}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Reviews */}
             {property.reviews.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">
-                  Reviews ({property.reviews.length})
-                </h2>
-                <div className="space-y-6">
-                  {property.reviews.map((review: any) => (
-                    <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
-                      <div className="flex items-start gap-4">
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted">
-                          {review.reviewer.image ? (
-                            <Image
-                              src={review.reviewer.image}
-                              alt={review.reviewer.name || "User"}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-lg font-semibold">
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold">
+                    Reviews ({property.reviews.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {property.reviews.map((review: any, index: number) => (
+                      <div key={review.id}>
+                        <div className="flex items-start gap-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={review.reviewer.image} alt={review.reviewer.name || "User"} />
+                            <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
                               {review.reviewer.name?.[0] || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <p className="font-semibold">{review.reviewer.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(review.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <Badge variant="secondary" className="gap-1">
+                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                {review.rating}
+                              </Badge>
                             </div>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <p className="font-semibold">{review.reviewer.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(review.createdAt).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="font-medium">{review.rating}</span>
-                            </div>
+                            <p className="text-sm text-muted-foreground">{review.comment}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{review.comment}</p>
                         </div>
+                        {index < property.reviews.length - 1 && <Separator className="mt-6" />}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 border border-border rounded-xl p-6 shadow-lg">
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-3xl font-bold">
-                    {property.currency === "EUR" ? "€" : "$"}{property.price}
-                  </span>
-                  <span className="text-muted-foreground">/ night</span>
-                </div>
-                {property.reviews.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{averageRating.toFixed(1)}</span>
-                    </div>
-                    <span className="text-muted-foreground">·</span>
-                    <span className="text-muted-foreground">{property.reviews.length} reviews</span>
+            <Card className="sticky top-24 shadow-lg">
+              <CardContent className="p-6">
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-3xl font-bold">
+                      {property.currency === "EUR" ? "€" : "$"}{property.price}
+                    </span>
+                    <span className="text-muted-foreground">/ night</span>
                   </div>
-                )}
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Check-in</label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-2 border border-border rounded-md"
-                  />
+                  {property.reviews.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        {averageRating.toFixed(1)}
+                      </Badge>
+                      <span className="text-muted-foreground">·</span>
+                      <span className="text-muted-foreground">{property.reviews.length} reviews</span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Check-out</label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-2 border border-border rounded-md"
-                  />
+
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <Label htmlFor="check-in">Check-in</Label>
+                    <input
+                      id="check-in"
+                      type="date"
+                      className="w-full px-4 py-2 border border-border rounded-md mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="check-out">Check-out</Label>
+                    <input
+                      id="check-out"
+                      type="date"
+                      className="w-full px-4 py-2 border border-border rounded-md mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="guests">Guests</Label>
+                    <select id="guests" className="w-full px-4 py-2 border border-border rounded-md mt-2">
+                      {Array.from({ length: property.maxGuests }, (_, i) => i + 1).map((num) => (
+                        <option key={num} value={num}>
+                          {num} {num === 1 ? "guest" : "guests"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+
+                <Button className="w-full" size="lg">
+                  Reserve
+                </Button>
+
+                <p className="text-center text-sm text-muted-foreground mt-4">
+                  You won&apos;t be charged yet
+                </p>
+
+                <Separator className="my-6" />
+
+                {/* Host Info */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Guests</label>
-                  <select className="w-full px-4 py-2 border border-border rounded-md">
-                    {Array.from({ length: property.maxGuests }, (_, i) => i + 1).map((num) => (
-                      <option key={num} value={num}>
-                        {num} {num === 1 ? "guest" : "guests"}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <Button className="w-full" size="lg">
-                Reserve
-              </Button>
-
-              <p className="text-center text-sm text-muted-foreground mt-4">
-                You won&apos;t be charged yet
-              </p>
-
-              {/* Host Info */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <h3 className="font-semibold mb-4">Hosted by</h3>
-                <Link href={`/profile/${property.host.id}`}>
-                  <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted">
-                      {property.host.image ? (
-                        <Image
-                          src={property.host.image}
-                          alt={property.host.name || "Host"}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-lg font-semibold">
+                  <h3 className="font-semibold mb-4">Hosted by</h3>
+                  <Link href={`/profile/${property.host.id}`}>
+                    <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={property.host.image} alt={property.host.name || "Host"} />
+                        <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
                           {property.host.name?.[0] || "H"}
-                        </div>
-                      )}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">{property.host.name}</p>
+                        <p className="text-sm text-muted-foreground">View profile</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold">{property.host.name}</p>
-                      <p className="text-sm text-muted-foreground">View profile</p>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

@@ -104,17 +104,14 @@ export default async function SearchPage({
 }) {
   const properties = await getProperties(searchParams)
   return (
-    <div className="min-h-screen bg-background">
-      {/* Search Header */}
-      <section className="bg-gradient-to-br from-nomadiqe-600/5 via-purple-500/5 to-pink-500/5 border-b border-border py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-nomadiqe-600 to-purple-600 bg-clip-text text-transparent">
+    <div className="h-screen flex flex-col bg-background">
+      {/* Search Header - Compact */}
+      <section className="bg-gradient-to-br from-nomadiqe-600/5 via-purple-500/5 to-pink-500/5 border-b border-border py-6 shrink-0">
+        <div className="max-w-[1600px] mx-auto px-4">
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold mb-1 bg-gradient-to-r from-nomadiqe-600 to-purple-600 bg-clip-text text-transparent">
               Find Your Perfect Stay
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Discover unique properties and experiences around the world
-            </p>
           </div>
 
           {/* Search Bar */}
@@ -122,20 +119,16 @@ export default async function SearchPage({
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar Filters - Desktop */}
-            <aside className="w-full lg:w-80 lg:sticky lg:top-24 lg:self-start">
-              <SearchFiltersImproved />
-            </aside>
-
-            {/* Search Results */}
-            <main className="flex-1 min-w-0">
-              <SearchResultsImproved properties={properties} />
-            </main>
+      {/* Main Content - Takes remaining height */}
+      <section className="flex-1 overflow-hidden px-4 py-4">
+        <div className="max-w-[1600px] mx-auto h-full">
+          {/* Mobile Filters */}
+          <div className="mb-4 lg:hidden">
+            <SearchFiltersImproved />
           </div>
+
+          {/* Search Results with Integrated Filters */}
+          <SearchResultsImproved properties={properties} />
         </div>
       </section>
     </div>

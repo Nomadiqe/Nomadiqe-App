@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Legal pages (Privacy Policy, Terms of Service)
 - Settings page for user preferences
 - Responsive navigation with mobile support
+- Interactive map view for property search with Leaflet integration
+- Property filtering by price, type, amenities, and rating
+- Horizontal property card layout variant for list views
+- iOS Safari compatibility improvements for sticky headers with backdrop-blur
+- Favicons and logo assets
 
 ### Changed
 - Updated color scheme with Nomadiqe brand colors
@@ -30,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved authentication flow with role selection
 - Updated middleware for better route protection
 - Replaced standard apostrophes with HTML entities in UI text
+- Complete UX redesign of search page with shadcn components
+- Optimized search page layout to fit above the fold
+- Implemented 50/50 split view with fixed map and scrollable property list
+- Improved property cards with compact horizontal layout (180px max height)
+- Enhanced mobile layout for search page with full-width cards
+- Updated property card component to support grid and list variants
+- Improved image upload quality settings
 
 ### Fixed
 - Image upload stability and error handling
@@ -37,6 +49,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Navigation accessibility and user experience
 - Authentication redirect issues
 - Profile page rendering and data fetching
+- SSR error with Leaflet map by using dynamic import
+- Infinite loop in onboarding progress fetching
+- Profile image display with fallback for null images
+- Property display on about page with filter functionality
+- Profile navigation 404 errors
+- Date picker auto-closing issue in search bar
+- Loading state issues on onboarding pages
+- Horizontal overflow by constraining html/body
+- TypeScript and ESLint build errors
+- Favicon conflicts by removing dynamic icon
+- Properties API route TypeScript errors
+- Create-post component to fetch properties from database
 
 ### Removed
 - Old documentation files (onboarding plans, technical specs)

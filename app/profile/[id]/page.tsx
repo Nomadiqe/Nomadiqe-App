@@ -1,10 +1,15 @@
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import {
   MapPin,
   Calendar,
   Phone,
   Mail,
-  Star
+  Star,
+  CheckCircle
 } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth/next'
@@ -173,24 +178,32 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center space-x-8 pt-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-foreground">{user.stats.posts}</p>
-                  <p className="text-sm text-muted-foreground">Posts</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-foreground">{user.stats.followers}</p>
-                  <p className="text-sm text-muted-foreground">Followers</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-foreground">{user.stats.following}</p>
-                  <p className="text-sm text-muted-foreground">Following</p>
-                </div>
+              <div className="flex items-center gap-6 pt-4">
+                <Card className="flex-1">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-2xl font-bold">{user.stats.posts}</p>
+                    <p className="text-xs text-muted-foreground">Posts</p>
+                  </CardContent>
+                </Card>
+                <Card className="flex-1">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-2xl font-bold">{user.stats.followers}</p>
+                    <p className="text-xs text-muted-foreground">Followers</p>
+                  </CardContent>
+                </Card>
+                <Card className="flex-1">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-2xl font-bold">{user.stats.following}</p>
+                    <p className="text-xs text-muted-foreground">Following</p>
+                  </CardContent>
+                </Card>
                 {user.role === 'HOST' && (
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-foreground">{user.stats.properties}</p>
-                    <p className="text-sm text-muted-foreground">Properties</p>
-                  </div>
+                  <Card className="flex-1">
+                    <CardContent className="p-4 text-center">
+                      <p className="text-2xl font-bold">{user.stats.properties}</p>
+                      <p className="text-xs text-muted-foreground">Properties</p>
+                    </CardContent>
+                  </Card>
                 )}
               </div>
             </div>

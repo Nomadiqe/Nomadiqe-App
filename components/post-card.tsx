@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import {
   Heart,
   MessageCircle,
@@ -92,61 +95,58 @@ export function PostCard({
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Link href={`/profile/${author.id}`}>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 flex items-center justify-center">
-              {author.image ? (
-                <img 
-                  src={author.image} 
-                  alt={author.name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              ) : (
-                <span className="text-white font-medium text-sm">
-                  {author.name.charAt(0)}
-                </span>
-              )}
-            </div>
-          </Link>
-          <div>
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
-              <h3 className="font-medium text-foreground hover:text-primary transition-colors">
-                {author.name}
-              </h3>
+              <Avatar className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity">
+                <AvatarImage src={author.image} alt={author.name} />
+                <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
+                  {author.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
             </Link>
-            <p className="text-sm text-muted-foreground">{formatDate(createdAt)}</p>
+            <div>
+              <Link href={`/profile/${author.id}`}>
+                <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                  {author.name}
+                </h3>
+              </Link>
+              <p className="text-xs text-muted-foreground">{formatDate(createdAt)}</p>
+            </div>
           </div>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
         </div>
-        <Button variant="ghost" size="sm">
-          <MoreHorizontal className="w-4 h-4" />
-        </Button>
-      </div>
+      </CardHeader>
 
-      {/* Content */}
-      <div className="space-y-3">
-        <p className="text-foreground leading-relaxed">{content}</p>
-        
-        {location && (
-          <div className="flex items-center space-x-1 text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            <span className="text-sm">{location}</span>
-          </div>
-        )}
+      <CardContent className="space-y-4">
+        {/* Content */}
+        <div className="space-y-3">
+          <p className="text-sm leading-relaxed">{content}</p>
 
-        {property && (
-          <div className="bg-accent/50 rounded-md p-3 border border-border">
-            <Link href={`/property/${property.id}`}>
-              <p className="text-sm text-muted-foreground">Featured Property</p>
-              <h4 className="font-medium text-foreground hover:text-primary transition-colors">
-                {property.title}
-              </h4>
-            </Link>
-          </div>
-        )}
-      </div>
+          {location && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{location}</span>
+            </div>
+          )}
+
+          {property && (
+            <Card className="bg-muted/50">
+              <CardContent className="p-3">
+                <Link href={`/property/${property.id}`}>
+                  <Badge variant="secondary" className="mb-1 text-xs">Featured Property</Badge>
+                  <h4 className="font-medium text-sm hover:text-primary transition-colors">
+                    {property.title}
+                  </h4>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
       {/* Images */}
       {images.length > 0 && (
@@ -180,31 +180,30 @@ export function PostCard({
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center space-x-4">
+        {/* Actions */}
+        <div className="flex items-center gap-2 pt-2 border-t">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLike}
-            className={`flex items-center space-x-2 ${
-              liked ? 'text-nomadiqe-error hover:text-nomadiqe-error/80' : 'text-muted-foreground hover:text-foreground'
+            className={`gap-2 ${
+              liked ? 'text-red-500 hover:text-red-600' : ''
             }`}
           >
-            <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-            <span className="text-sm">{likeCount}</span>
+            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+            <span className="text-sm font-medium">{likeCount}</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowComments(true)}
-            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
+            className="gap-2"
           >
-            <MessageCircle className="w-4 h-4" />
-            <span className="text-sm">{commentCount}</span>
+            <MessageCircle className="h-4 w-4" />
+            <span className="text-sm font-medium">{commentCount}</span>
           </Button>
         </div>
-      </div>
+      </CardContent>
 
       {/* Comments Panel */}
       <PostComments
@@ -213,6 +212,6 @@ export function PostCard({
         onClose={() => setShowComments(false)}
         onCommentAdded={() => setCommentCount(commentCount + 1)}
       />
-    </div>
+    </Card>
   )
 }

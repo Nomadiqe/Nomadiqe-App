@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -226,15 +227,19 @@ export function SearchFiltersImproved() {
 
       {/* Desktop: Inline */}
       <div className="hidden lg:block">
-        <div className="bg-card border border-border rounded-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Filters</h3>
-            {activeFiltersCount > 0 && (
-              <Badge variant="secondary">{activeFiltersCount} active</Badge>
-            )}
-          </div>
-          <FiltersContent />
-        </div>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Filters</h3>
+              {activeFiltersCount > 0 && (
+                <Badge variant="secondary">{activeFiltersCount} active</Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <FiltersContent />
+          </CardContent>
+        </Card>
       </div>
     </>
   )

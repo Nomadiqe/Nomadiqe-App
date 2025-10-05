@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from 'react'
 import { PostCard } from '@/components/post-card'
 import { Camera, Home, Image, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 
 interface ProfileTabsProps {
@@ -14,105 +15,91 @@ interface ProfileTabsProps {
 }
 
 export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: ProfileTabsProps) {
-  const [activeTab, setActiveTab] = useState<'posts' | 'properties' | 'photos' | 'reviews'>('posts')
-
-  const tabs = [
-    { id: 'posts', label: 'Posts' },
-    ...(userRole === 'HOST' ? [{ id: 'properties', label: 'Properties' }] : []),
-    { id: 'photos', label: 'Photos' },
-    { id: 'reviews', label: 'Reviews' }
-  ]
+  const EmptyState = ({ icon: Icon, title, description, actionLabel, actionHref }: any) => (
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center py-16">
+        <Icon className="h-12 w-12 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-semibold mb-2">{title}</h3>
+        <p className="text-sm text-muted-foreground text-center mb-4 max-w-sm">
+          {description}
+        </p>
+        {isOwnProfile && actionLabel && actionHref && (
+          <Button asChild>
+            <Link href={actionHref}>{actionLabel}</Link>
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  )
 
   return (
-    <>
-      <div className="border-b border-border mb-8">
-        <div className="flex items-center space-x-8">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-4 font-medium transition-all ${
-                activeTab === tab.id
-                  ? 'border-b-2 border-nomadiqe-500 text-nomadiqe-500'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <Tabs defaultValue="posts" className="w-full">
+      <TabsList className="grid w-full max-w-md grid-cols-3 lg:grid-cols-4">
+        <TabsTrigger value="posts">Posts</TabsTrigger>
+        {userRole === 'HOST' && <TabsTrigger value="properties">Properties</TabsTrigger>}
+        <TabsTrigger value="photos">Photos</TabsTrigger>
+        <TabsTrigger value="reviews">Reviews</TabsTrigger>
+      </TabsList>
 
-      <div className="space-y-8">
-        {activeTab === 'posts' && (
-          <>
-            {posts.map((post: any) => (
-              <PostCard key={post.id} {...post} />
-            ))}
-
-            {posts.length === 0 && (
-              <div className="text-center py-12">
-                <Camera className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium text-foreground mb-2">No posts yet</h3>
-                <p className="text-muted-foreground">
-                  {isOwnProfile ? 'Share your first travel experience!' : `${userName} hasn't shared any posts yet.`}
-                </p>
-                {isOwnProfile && (
-                  <Button asChild className="mt-4 bg-nomadiqe-600 hover:bg-nomadiqe-700">
-                    <Link href="/create-post">
-                      Create Your First Post
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            )}
-          </>
+      <TabsContent value="posts" className="mt-6 space-y-6">
+        {posts.length > 0 ? (
+          posts.map((post: any) => <PostCard key={post.id} {...post} />)
+        ) : (
+          <EmptyState
+            icon={Camera}
+            title="No posts yet"
+            description={
+              isOwnProfile
+                ? 'Share your first travel experience!'
+                : `${userName} hasn't shared any posts yet.`
+            }
+            actionLabel={isOwnProfile ? 'Create Your First Post' : undefined}
+            actionHref="/create-post"
+          />
         )}
+      </TabsContent>
 
-        {activeTab === 'properties' && (
-          <div className="text-center py-12">
-            <Home className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No properties listed</h3>
-            <p className="text-muted-foreground">
-              {isOwnProfile ? 'List your first property to start hosting!' : `${userName} hasn't listed any properties yet.`}
-            </p>
-            {isOwnProfile && (
-              <Button asChild className="mt-4 bg-nomadiqe-600 hover:bg-nomadiqe-700">
-                <Link href="/host/create-property">
-                  List Your Property
-                </Link>
-              </Button>
-            )}
-          </div>
-        )}
+      {userRole === 'HOST' && (
+        <TabsContent value="properties" className="mt-6">
+          <EmptyState
+            icon={Home}
+            title="No properties listed"
+            description={
+              isOwnProfile
+                ? 'List your first property to start hosting!'
+                : `${userName} hasn't listed any properties yet.`
+            }
+            actionLabel={isOwnProfile ? 'List Your Property' : undefined}
+            actionHref="/host/create-property"
+          />
+        </TabsContent>
+      )}
 
-        {activeTab === 'photos' && (
-          <div className="text-center py-12">
-            <Image className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No photos yet</h3>
-            <p className="text-muted-foreground">
-              {isOwnProfile ? 'Share photos from your travels!' : `${userName} hasn't shared any photos yet.`}
-            </p>
-            {isOwnProfile && (
-              <Button asChild className="mt-4 bg-nomadiqe-600 hover:bg-nomadiqe-700">
-                <Link href="/create-post">
-                  Upload Photos
-                </Link>
-              </Button>
-            )}
-          </div>
-        )}
+      <TabsContent value="photos" className="mt-6">
+        <EmptyState
+          icon={Image}
+          title="No photos yet"
+          description={
+            isOwnProfile
+              ? 'Share photos from your travels!'
+              : `${userName} hasn't shared any photos yet.`
+          }
+          actionLabel={isOwnProfile ? 'Upload Photos' : undefined}
+          actionHref="/create-post"
+        />
+      </TabsContent>
 
-        {activeTab === 'reviews' && (
-          <div className="text-center py-12">
-            <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No reviews yet</h3>
-            <p className="text-muted-foreground">
-              {isOwnProfile ? 'Reviews from your stays will appear here.' : `${userName} hasn't received any reviews yet.`}
-            </p>
-          </div>
-        )}
-      </div>
-    </>
+      <TabsContent value="reviews" className="mt-6">
+        <EmptyState
+          icon={Star}
+          title="No reviews yet"
+          description={
+            isOwnProfile
+              ? 'Reviews from your stays will appear here.'
+              : `${userName} hasn't received any reviews yet.`
+          }
+        />
+      </TabsContent>
+    </Tabs>
   )
 }

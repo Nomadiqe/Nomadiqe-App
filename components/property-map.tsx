@@ -65,6 +65,27 @@ function MapUpdater({ properties }: { properties: PropertyMapProps['properties']
   return null
 }
 
+function ThemeUpdater({ theme }: { theme: string | undefined }) {
+  const map = useMap()
+
+  useEffect(() => {
+    const container = map.getContainer()
+    const isDark = theme === 'dark'
+
+    // Remove both classes first
+    container.classList.remove('sicilian-map-light', 'sicilian-map-dark')
+
+    // Add the appropriate class
+    if (isDark) {
+      container.classList.add('sicilian-map-dark')
+    } else {
+      container.classList.add('sicilian-map-light')
+    }
+  }, [theme, map])
+
+  return null
+}
+
 export function PropertyMap({ properties }: PropertyMapProps) {
   const { theme, resolvedTheme } = useTheme()
 
@@ -122,6 +143,7 @@ export function PropertyMap({ properties }: PropertyMapProps) {
             opacity={0.9}
           />
         )}
+        <ThemeUpdater theme={activeTheme} />
         <MapUpdater properties={validProperties} />
         {validProperties.map((property) => (
           <Marker

@@ -128,3 +128,5 @@ temp/
 # Uploads
 /uploads/
 /public/uploads/
+
+.playwright-mcp/

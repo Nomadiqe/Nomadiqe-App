@@ -161,11 +161,26 @@
 }
 
 .sicilian-map-dark {
-  background-color: hsl(220 20% 12%) !important;
+  background-color: hsl(var(--background)) !important;
 }
 
 .sicilian-map-dark .leaflet-tile-pane {
-  filter: brightness(0.3) saturate(0.6) hue-rotate(20deg) contrast(1.2);
+  /* Invert and prepare for exact color matching */
+  filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(0.95) saturate(0.2);
+}
+
+/* Apply exact theme color overlay */
+.sicilian-map-dark .leaflet-tile-pane::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: hsl(var(--card));
+  mix-blend-mode: color;
+  pointer-events: none;
+  opacity: 0.95;
 }
 
 .sicilian-map-dark .leaflet-control-attribution {

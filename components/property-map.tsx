@@ -112,13 +112,9 @@ export function PropertyMap({ properties }: PropertyMapProps) {
   const activeTheme = resolvedTheme || theme
 
   // Choose tile layer based on theme - Sicilian island aesthetic
-  const tileUrl = activeTheme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-
-  const labelUrl = activeTheme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png'
-    : null
+  // Use light tiles for both, apply invert filter for dark mode
+  const tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+  const labelUrl = null
 
   const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 

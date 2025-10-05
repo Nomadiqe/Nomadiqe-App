@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
 
 // Fix for default marker icon in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -48,6 +49,8 @@ function MapUpdater({ properties }: { properties: PropertyMapProps['properties']
 }
 
 export function PropertyMap({ properties }: PropertyMapProps) {
+  const { theme, resolvedTheme } = useTheme()
+
   // Filter properties that have valid coordinates
   const validProperties = properties.filter(
     p => p.latitude != null && p.longitude != null
@@ -67,6 +70,18 @@ export function PropertyMap({ properties }: PropertyMapProps) {
     validProperties.reduce((sum, p) => sum + (p.longitude || 0), 0) / validProperties.length,
   ]
 
+  // Determine which theme is active
+  const activeTheme = resolvedTheme || theme
+
+  // Choose tile layer based on theme
+  const tileUrl = activeTheme === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+  const attribution = activeTheme === 'dark'
+    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
   return (
     <div className="w-full h-full min-h-[400px] lg:min-h-[calc(100vh-200px)] rounded-lg overflow-hidden border border-border">
       <MapContainer
@@ -76,8 +91,9 @@ export function PropertyMap({ properties }: PropertyMapProps) {
         className="h-full w-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={activeTheme}
+          attribution={attribution}
+          url={tileUrl}
         />
         <MapUpdater properties={validProperties} />
         {validProperties.map((property) => (

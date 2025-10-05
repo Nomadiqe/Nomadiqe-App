@@ -88,6 +88,9 @@ export function Navigation() {
                           Profile
                         </div>
                       </Link>
+                      <div className="px-4 py-2">
+                        <ThemeToggle />
+                      </div>
                       <button
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent"
@@ -172,6 +175,9 @@ export function Navigation() {
                     <User className="h-4 w-4 mr-3" />
                     Profile
                   </Link>
+                  <div className="py-2.5 px-3">
+                    <ThemeToggle />
+                  </div>
                   <button
                     onClick={() => {
                       handleSignOut()
@@ -185,6 +191,9 @@ export function Navigation() {
                 </>
               ) : (
                 <div className="flex flex-col space-y-2 pt-2">
+                  <div className="px-2">
+                    <ThemeToggle />
+                  </div>
                   <Button variant="outline" asChild className="w-full">
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In

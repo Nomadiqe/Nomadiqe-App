@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete onboarding flow for all user types
 - Post creation and discovery features
 - Image upload functionality using Vercel Blob storage
-- Dark mode support with theme toggling
+- Dark mode support with theme toggling and system preference detection
+- Theme toggle button in navigation (desktop dropdown and mobile menu)
+- Theme-aware map tiles (CartoDB Dark Matter for dark mode, OpenStreetMap for light mode)
 - User profile pages with customizable information
 - Search functionality for users and posts
 - Comments system for posts
@@ -57,6 +59,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SSR error with Leaflet map by using dynamic import
 - Infinite loop in onboarding progress fetching
 - Profile image display with fallback for null images
+
+### Enhanced
+- Homepage feed with modern gradient header using Nomadiqe brand colors
+- Post cards with hover effects, shadows, and smooth transitions
+- Avatar components with ring effects on hover
+- Like and comment buttons with color-coded hover states and scale animations
+- Post images with full-width display and zoom effects on hover
+- Create Post button with gradient background and shadow effects
+- Overall visual hierarchy and spacing improvements across feed
 - Property display on about page with filter functionality
 - Profile navigation 404 errors
 - Date picker auto-closing issue in search bar

@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SSR error with Leaflet map by using dynamic import
 - Infinite loop in onboarding progress fetching
 - Profile image display with fallback for null images
+- Map theme switching bug - map now properly updates between light and dark modes in real-time
 
 ### Enhanced
 - Homepage feed with modern gradient header using Nomadiqe brand colors
@@ -74,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Create Post button with gradient background and shadow effects
 - Overall visual hierarchy and spacing improvements across feed
 - Property display on about page with filter functionality
+- Dark mode map styling to better match Sicilian night blue-gray theme (brightness 0.3)
 - Profile navigation 404 errors
 - Date picker auto-closing issue in search bar
 - Loading state issues on onboarding pages

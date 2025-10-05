@@ -79,22 +79,23 @@ export function Navigation() {
                   <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-1">
                       <Link href="/dashboard">
-                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent">
+                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
+                          <User className="h-4 w-4 mr-3" />
                           Dashboard
                         </div>
                       </Link>
                       <Link href={`/profile/${session.user.id}`}>
-                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent">
+                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
+                          <User className="h-4 w-4 mr-3" />
                           Profile
                         </div>
                       </Link>
-                      <div className="px-4 py-2">
-                        <ThemeToggle />
-                      </div>
+                      <ThemeToggle />
                       <button
                         onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent"
+                        className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center"
                       >
+                        <LogOut className="h-4 w-4 mr-3" />
                         Sign Out
                       </button>
                     </div>
@@ -175,9 +176,7 @@ export function Navigation() {
                     <User className="h-4 w-4 mr-3" />
                     Profile
                   </Link>
-                  <div className="py-2.5 px-3">
-                    <ThemeToggle />
-                  </div>
+                  <ThemeToggle />
                   <button
                     onClick={() => {
                       handleSignOut()
@@ -191,9 +190,7 @@ export function Navigation() {
                 </>
               ) : (
                 <div className="flex flex-col space-y-2 pt-2">
-                  <div className="px-2">
-                    <ThemeToggle />
-                  </div>
+                  <ThemeToggle />
                   <Button variant="outline" asChild className="w-full">
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In

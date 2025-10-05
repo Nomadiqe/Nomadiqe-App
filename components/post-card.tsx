@@ -95,28 +95,28 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border-border/50 hover:border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
-              <Avatar className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity">
+              <Avatar className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200">
                 <AvatarImage src={author.image} alt={author.name} />
-                <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
-                  {author.name.charAt(0)}
+                <AvatarFallback className="bg-gradient-to-br from-nomadiqe-600 via-nomadiqe-700 to-purple-700 text-white font-semibold">
+                  {author.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link href={`/profile/${author.id}`}>
-                <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                <h3 className="font-semibold text-sm hover:text-primary transition-colors hover:underline decoration-primary/30">
                   {author.name}
                 </h3>
               </Link>
               <p className="text-xs text-muted-foreground">{formatDate(createdAt)}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
@@ -150,29 +150,33 @@ export function PostCard({
 
       {/* Images */}
       {images.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2 -mx-6">
           {images.length === 1 ? (
-            <img
-              src={images[0]}
-              alt="Post image"
-              className="w-full h-64 object-cover rounded-md"
-            />
+            <div className="relative group overflow-hidden">
+              <img
+                src={images[0]}
+                alt="Post image"
+                className="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1">
               {images.slice(0, 4).map((image, index) => (
-                <div key={index} className="relative">
+                <div key={index} className="relative group overflow-hidden">
                   <img
                     src={image}
                     alt={`Post image ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-md"
+                    className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {index === 3 && images.length > 4 && (
-                    <div className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center">
-                      <span className="text-white font-medium">
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center group-hover:bg-black/70 transition-colors">
+                      <span className="text-white font-semibold text-lg">
                         +{images.length - 4}
                       </span>
                     </div>
                   )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               ))}
             </div>
@@ -181,23 +185,23 @@ export function PostCard({
       )}
 
         {/* Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t">
+        <div className="flex items-center gap-3 pt-3 border-t border-border/50">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLike}
-            className={`gap-2 ${
-              liked ? 'text-red-500 hover:text-red-600' : ''
+            className={`gap-2 transition-all duration-200 hover:scale-105 ${
+              liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
             }`}
           >
-            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
             <span className="text-sm font-medium">{likeCount}</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowComments(true)}
-            className="gap-2"
+            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400"
           >
             <MessageCircle className="h-4 w-4" />
             <span className="text-sm font-medium">{commentCount}</span>

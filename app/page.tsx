@@ -69,21 +69,22 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="bg-card border-b border-border py-6">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="relative bg-gradient-to-br from-nomadiqe-600/10 via-purple-500/5 to-pink-500/10 border-b border-border/50 py-8">
+        <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+        <div className="max-w-4xl mx-auto px-4 relative">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-nomadiqe-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 {session ? 'Your Feed' : 'Discover Your Next Adventure'}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm max-w-2xl">
                 {session
                   ? 'See the latest posts from the community'
                   : 'Join the community of travelers sharing authentic experiences and unique stays worldwide'}
               </p>
             </div>
             {session && (
-              <Button asChild className="bg-primary hover:bg-primary/90">
+              <Button asChild className="bg-gradient-to-r from-nomadiqe-600 to-purple-600 hover:from-nomadiqe-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:shadow-nomadiqe-600/20 transition-all duration-200">
                 <Link href="/create-post" className="flex items-center space-x-2">
                   <Plus className="w-4 h-4" />
                   <span>Create Post</span>
@@ -95,8 +96,8 @@ export default async function HomePage() {
       </section>
 
       {/* Main Feed */}
-      <section className="py-6 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <section className="py-8 px-4">
+        <div className="max-w-4xl mx-auto space-y-6">
           {session ? (
             // Authenticated user: Show posts feed
             posts.length > 0 ? (

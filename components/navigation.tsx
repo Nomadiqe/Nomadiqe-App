@@ -11,7 +11,8 @@ import {
   LogOut,
   Heart,
   Menu,
-  X
+  X,
+  LayoutDashboard
 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -80,7 +81,7 @@ export function Navigation() {
                     <div className="py-1">
                       <Link href="/dashboard">
                         <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
-                          <User className="h-4 w-4 mr-3" />
+                          <LayoutDashboard className="h-4 w-4 mr-3" />
                           Dashboard
                         </div>
                       </Link>
@@ -165,7 +166,7 @@ export function Navigation() {
                     className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <User className="h-4 w-4 mr-3" />
+                    <LayoutDashboard className="h-4 w-4 mr-3" />
                     Dashboard
                   </Link>
                   <Link

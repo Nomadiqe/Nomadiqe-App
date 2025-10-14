@@ -59,6 +59,15 @@ export function Navigation() {
                 Become a Host
               </Link>
             )}
+            {session?.user?.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                className="text-foreground hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Shield className="w-4 h-4" />
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* User Menu */}

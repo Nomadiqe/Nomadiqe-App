@@ -89,7 +89,6 @@ async function getProperties(searchParams: SearchParams) {
           },
         },
       },
-      take: 20,
       orderBy: {
         createdAt: 'desc',
       },

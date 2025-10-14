@@ -12,7 +12,8 @@ import {
   Heart,
   Menu,
   X,
-  LayoutDashboard
+  LayoutDashboard,
+  Shield
 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -91,6 +92,14 @@ export function Navigation() {
                           Profile
                         </div>
                       </Link>
+                      {session.user?.role === 'ADMIN' && (
+                        <Link href="/admin">
+                          <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
+                            <Shield className="h-4 w-4 mr-3" />
+                            Admin
+                          </div>
+                        </Link>
+                      )}
                       <ThemeToggle />
                       <button
                         onClick={handleSignOut}
@@ -177,6 +186,16 @@ export function Navigation() {
                     <User className="h-4 w-4 mr-3" />
                     Profile
                   </Link>
+                  {session.user?.role === 'ADMIN' && (
+                    <Link
+                      href="/admin"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Shield className="h-4 w-4 mr-3" />
+                      Admin
+                    </Link>
+                  )}
                   <ThemeToggle />
                   <button
                     onClick={() => {

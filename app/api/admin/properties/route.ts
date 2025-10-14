@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      properties: properties.map(p => ({
+      properties: properties.map((p: any) => ({
         id: p.id,
         title: p.title,
         city: p.city,

@@ -130,3 +130,5 @@ temp/
 /public/uploads/
 
 .playwright-mcp/
+
+.env.backup

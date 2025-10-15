@@ -16,18 +16,21 @@ export const authOptions: NextAuthOptions = {
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true, // Allow linking Google to existing email/password account
       })
     ] : []),
     ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
       AppleProvider({
         clientId: process.env.APPLE_ID,
         clientSecret: process.env.APPLE_SECRET,
+        allowDangerousEmailAccountLinking: true, // Allow linking Apple to existing email/password account
       })
     ] : []),
     ...(process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET ? [
       FacebookProvider({
         clientId: process.env.FACEBOOK_CLIENT_ID,
         clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true, // Allow linking Facebook to existing email/password account
       })
     ] : []),
     CredentialsProvider({
@@ -79,13 +82,45 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt" as const
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      // On sign-in, fetch fresh user data from database
       if (user) {
         token.role = (user as any).role
       }
       
-      // Handle OAuth account linking
-      if (account?.provider === 'google') {
+      // Handle OAuth providers - always fetch fresh role from database
+      if (account?.provider && ['google', 'apple', 'facebook'].includes(account.provider)) {
+        try {
+          // Wait a bit for PrismaAdapter to finish creating user
+          await new Promise(resolve => setTimeout(resolve, 100))
+          
+          let dbUser = await prisma.user.findUnique({
+            where: { email: token.email! }
+          })
+          
+          // If user was just created, set default role
+          if (dbUser && !dbUser.role) {
+            dbUser = await prisma.user.update({
+              where: { email: token.email! },
+              data: {
+                role: 'GUEST',
+                onboardingStatus: 'PENDING',
+                emailVerified: new Date()
+              }
+            })
+          }
+          
+          if (dbUser) {
+            token.role = dbUser.role
+            token.sub = dbUser.id
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error)
+        }
+      }
+      
+      // On update, refresh user data
+      if (trigger === 'update') {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email! }
@@ -94,7 +129,7 @@ export const authOptions: NextAuthOptions = {
             token.role = dbUser.role
           }
         } catch (error) {
-          console.error('Error fetching user role:', error)
+          console.error('Error refreshing user role:', error)
         }
       }
       
@@ -108,32 +143,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user, account, profile }) {
-      if (account?.provider && ['google', 'apple', 'facebook'].includes(account.provider)) {
-        try {
-          // Check if user exists, if not create with default role
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! }
-          })
-          
-          if (!existingUser) {
-            // Create user with social OAuth - start with GUEST role and onboarding
-            await prisma.user.create({
-              data: {
-                email: user.email!,
-                name: user.name || '',
-                image: user.image || '',
-                role: 'GUEST',
-                emailVerified: new Date(),
-                onboardingStatus: 'PENDING'
-              }
-            })
-          }
-        } catch (error) {
-          console.error(`Error in ${account.provider} signIn callback:`, error)
-          return false
-        }
-      }
-      
+      // Allow all sign-ins - PrismaAdapter and jwt callback handle user creation/updates
       return true
     }
   },

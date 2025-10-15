@@ -86,6 +86,7 @@ export const authOptions: NextAuthOptions = {
       // On sign-in, fetch fresh user data from database
       if (user) {
         token.role = (user as any).role
+        token.onboardingStatus = (user as any).onboardingStatus
       }
       
       // Handle OAuth providers - always fetch fresh role from database
@@ -112,6 +113,7 @@ export const authOptions: NextAuthOptions = {
           
           if (dbUser) {
             token.role = dbUser.role
+            token.onboardingStatus = dbUser.onboardingStatus
             token.sub = dbUser.id
           }
         } catch (error) {
@@ -119,7 +121,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
       
-      // On update, refresh user data
+      // On update, refresh user data from database
       if (trigger === 'update') {
         try {
           const dbUser = await prisma.user.findUnique({
@@ -127,6 +129,7 @@ export const authOptions: NextAuthOptions = {
           })
           if (dbUser) {
             token.role = dbUser.role
+            token.onboardingStatus = dbUser.onboardingStatus
           }
         } catch (error) {
           console.error('Error refreshing user role:', error)
@@ -139,6 +142,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.sub!
         session.user.role = token.role as string
+        session.user.onboardingStatus = token.onboardingStatus as string
       }
       return session
     },

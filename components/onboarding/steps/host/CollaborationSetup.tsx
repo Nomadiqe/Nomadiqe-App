@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CONTENT_NICHES } from '@/lib/onboarding'
 import { Users, Gift, Star, Check, AlertCircle, Hash, Calendar } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 interface FormData {
   standardOffer: {
@@ -68,6 +69,7 @@ interface CollaborationSetupProps {
 export default function CollaborationSetup({ onComplete }: CollaborationSetupProps) {
   const { completeStep, setStep } = useOnboarding()
   const router = useRouter()
+  const { update } = useSession()
   
   const [formData, setFormData] = useState<FormData>({
     standardOffer: {
@@ -155,6 +157,9 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
       if (response.ok && result.success) {
         completeStep('collaboration-setup')
         setStep('complete')
+        
+        // Update the session to refresh JWT token with new onboardingStatus
+        await update()
         
         if (onComplete) {
           onComplete()

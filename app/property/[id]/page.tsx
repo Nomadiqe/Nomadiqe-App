@@ -222,8 +222,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         <div className="flex items-start gap-4">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={review.reviewer.image} alt={review.reviewer.name || "User"} />
-                            <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
-                              {review.reviewer.name?.[0] || "U"}
+                            <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white p-1">
+                              <Image 
+                                src="/nomadiqe-logo-transparent.png" 
+                                alt="Nomadiqe" 
+                                width={36} 
+                                height={36}
+                                className="object-contain"
+                              />
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
@@ -320,8 +326,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={property.host.image} alt={property.host.name || "Host"} />
-                        <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white">
-                          {property.host.name?.[0] || "H"}
+                        <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white p-1">
+                          <Image 
+                            src="/nomadiqe-logo-transparent.png" 
+                            alt="Nomadiqe" 
+                            width={44} 
+                            height={44}
+                            className="object-contain"
+                          />
                         </AvatarFallback>
                       </Avatar>
                       <div>

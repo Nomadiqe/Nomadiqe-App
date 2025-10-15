@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -118,8 +119,14 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                   <div key={comment.id} className="flex space-x-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={comment.user.image} alt={comment.user.name} />
-                      <AvatarFallback>
-                        {comment.user.name.charAt(0).toUpperCase()}
+                      <AvatarFallback className="p-1">
+                        <Image 
+                          src="/nomadiqe-logo-transparent.png" 
+                          alt="Nomadiqe" 
+                          width={28} 
+                          height={28}
+                          className="object-contain"
+                        />
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">

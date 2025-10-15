@@ -1,6 +1,7 @@
 "use client"
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -102,8 +103,14 @@ export function PostCard({
             <Link href={`/profile/${author.id}`}>
               <Avatar className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200">
                 <AvatarImage src={author.image} alt={author.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                  {author.name.charAt(0).toUpperCase()}
+                <AvatarFallback className="bg-primary text-primary-foreground font-semibold p-1">
+                  <Image 
+                    src="/nomadiqe-logo-transparent.png" 
+                    alt="Nomadiqe" 
+                    width={40} 
+                    height={40}
+                    className="object-contain"
+                  />
                 </AvatarFallback>
               </Avatar>
             </Link>

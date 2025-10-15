@@ -13,13 +13,11 @@ export default withAuth(
 
     // Check if authenticated user needs onboarding
     if (token && !pathname.startsWith('/onboarding')) {
-      // If user has GUEST role (new users start as GUEST), redirect to onboarding
-      if (token.role === 'GUEST') {
+      // Only redirect to onboarding if onboardingStatus is not COMPLETED
+      // and user has GUEST role (new users start as GUEST)
+      if (token.role === 'GUEST' && token.onboardingStatus !== 'COMPLETED') {
         return NextResponse.redirect(new URL('/onboarding/profile-setup', req.url))
       }
-      
-      // TODO: Add check for onboarding completion status from database
-      // For now, we assume users with specific roles have completed onboarding
     }
 
     // Check if user is trying to access admin routes
@@ -72,7 +70,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public assets (images, fonts, etc.)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf)).*)',
   ],
 }

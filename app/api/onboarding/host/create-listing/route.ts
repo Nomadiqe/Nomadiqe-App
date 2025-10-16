@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { geocodingService } from '@/lib/geocoding'
 import { z } from 'zod'
 
 const listingSchema = z.object({
@@ -98,6 +99,40 @@ export async function POST(req: NextRequest) {
       }
     })
 
+    // Geocode the address if coordinates are not provided
+    let latitude = validatedData.location.latitude
+    let longitude = validatedData.location.longitude
+    let geocodingAccuracy: string | null = null
+    let geocodingFailed = false
+
+    if (!latitude || !longitude) {
+      console.log('Geocoding address:', {
+        address: validatedData.location.address,
+        city: validatedData.location.city,
+        country: validatedData.location.country
+      })
+
+      const geocodingResult = await geocodingService.geocodeAddressWithFallback(
+        validatedData.location.address,
+        validatedData.location.city,
+        validatedData.location.country
+      )
+
+      if (geocodingResult) {
+        latitude = geocodingResult.latitude
+        longitude = geocodingResult.longitude
+        geocodingAccuracy = geocodingResult.accuracy
+        console.log('Geocoding successful:', {
+          latitude,
+          longitude,
+          accuracy: geocodingAccuracy
+        })
+      } else {
+        geocodingFailed = true
+        console.warn('Geocoding failed - property will be created without coordinates')
+      }
+    }
+
     // Create the property listing
     const property = await prisma.property.create({
       data: {
@@ -107,8 +142,10 @@ export async function POST(req: NextRequest) {
         address: validatedData.location.address,
         city: validatedData.location.city,
         country: validatedData.location.country,
-        latitude: validatedData.location.latitude,
-        longitude: validatedData.location.longitude,
+        latitude: latitude ?? null,
+        longitude: longitude ?? null,
+        geocodingAccuracy,
+        geocodingFailed,
         price: validatedData.pricing.basePrice,
         currency: validatedData.pricing.currency,
         maxGuests: validatedData.maxGuests,

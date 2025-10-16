@@ -8,6 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Automatic Geocoding Service**: Properties are now automatically geocoded using OpenStreetMap Nominatim API
+  - Multi-level fallback strategy (exact address → street → city center)
+  - Rate limiting compliance (1 request/second)
+  - Geocoding accuracy tracking (`geocodingAccuracy` and `geocodingFailed` fields)
+  - Admin interface for manual coordinate setting
+  - Properties without coordinates show warning badges in admin dashboard
+  - Bulk geocoding script for existing properties (`scripts/geocode-existing-properties.ts`)
+- **Admin Dashboard**: Complete property management interface for administrators
+  - View all properties with filtering (active/inactive/all)
+  - Publish/unpublish properties
+  - Verify hosts
+  - Delete properties
+  - Manual coordinate setting with validation
+  - Visual geocoding status indicators
+  - Admin menu item in main navigation (requires ADMIN role)
+- **Social Authentication System**: Multi-provider OAuth implementation
+  - Google OAuth with complete setup documentation
+  - Facebook OAuth support
+  - Apple Sign In support
+  - Enhanced avatar fallback system (initials + gradient backgrounds)
+  - Improved auth flow with better error handling
+  - Simplified signup process (removed redundant name field)
+- **Documentation Organization**: All documentation moved to `/docs` folder
+  - Documentation index with categorized guides
+  - Updated README with prominent documentation links
+  - Cross-referenced documentation with navigation aids
+  - Contributing guidelines and documentation standards
 - Multi-role user system (Guest, Host, Influencer) with role-specific dashboards
 - Complete onboarding flow for all user types
 - Post creation and discovery features
@@ -51,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved image upload quality settings
 
 ### Fixed
+- TypeScript error in admin properties API route (added type annotation to properties.map)
 - Image upload stability and error handling
 - Theme consistency across all pages
 - Navigation accessibility and user experience
@@ -67,6 +95,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Map theme switching bug - map now properly updates between light and dark modes in real-time
 
 ### Enhanced
+- **Admin Dashboard**: Comprehensive geocoding status display
+  - Visual warnings for properties without coordinates (orange badges)
+  - Accuracy level indicators for approximate locations (blue badges)
+  - "Set Location" button for manual coordinate entry
+  - Dialog interface with validation and instructions
+- **Property Map Display**: Properties now appear on map even with approximate coordinates
+  - City center fallback ensures properties are visible
+  - Accuracy badges inform users of location precision
+- **Navigation UI**: Consistent styling improvements
+  - Theme toggle button with improved styling
+  - Menu items with unified design language
+  - LayoutDashboard icon for all dashboard menu items
+  - Dark mode styling for map zoom controls
 - Homepage feed with modern gradient header using Nomadiqe brand colors
 - Post cards with hover effects, shadows, and smooth transitions
 - Avatar components with ring effects on hover

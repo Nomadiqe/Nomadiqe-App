@@ -2,16 +2,29 @@
 
 A modern travel platform connecting travelers, hosts, and influencers. Built with Next.js, Prisma, and NextAuth.
 
+## 📚 Documentation
+
+**[View Complete Documentation →](./docs/README.md)**
+
+### Quick Links
+- 🚀 **[Quick Start: Social Auth](./docs/QUICKSTART_SOCIAL_AUTH.md)** - OAuth setup guide
+- 🗺️ **[Geocoding Service](./docs/GEOCODING.md)** - Automatic address-to-coordinates
+- ☁️ **[Vercel Deployment](./docs/VERCEL_SETUP.md)** - Production deployment guide
+- 📝 **[Changelog](./docs/CHANGELOG.md)** - Version history
+
 ## Features
 
 - **Multi-Role User System**: Support for Guests, Hosts, and Influencers with role-specific dashboards
-- **Authentication**: Secure authentication via NextAuth with Google OAuth
+- **Property Management**: List and manage properties with automatic geocoding
+- **Interactive Maps**: Property search with Leaflet integration and smart coordinate fallback
+- **Admin Dashboard**: Comprehensive admin interface with geocoding status tracking
+- **Authentication**: Secure authentication via NextAuth with Google, Facebook, and Apple OAuth
 - **Image Management**: Integrated image upload using Vercel Blob storage
 - **Dark Mode**: Full dark mode support with theme toggling
 - **Post Creation & Discovery**: Create and browse travel posts with image galleries
 - **User Profiles**: Comprehensive user profiles with customizable information
 - **Onboarding Flow**: Role-specific onboarding for new users
-- **Search Functionality**: Search for users and posts
+- **Search Functionality**: Advanced property filtering by price, type, amenities, and rating
 - **Responsive Design**: Mobile-first responsive design with Tailwind CSS
 
 ## Prerequisites
@@ -79,51 +92,96 @@ The app is configured for Vercel deployment with automatic Prisma client generat
 
 ## Troubleshooting
 
-### Prisma Client Issues
-If you encounter "Module '@prisma/client' has no exported member 'PrismaClient'" errors:
+For detailed troubleshooting guides, see the [documentation](./docs/README.md).
 
-1. **Regenerate Prisma client:**
-   ```bash
-   pnpm prisma generate
-   ```
+### Quick Fixes
 
-2. **Clear Next.js cache:**
-   ```bash
-   rm -rf .next
-   pnpm build
-   ```
+**Prisma Client Issues:**
+```bash
+pnpm prisma generate
+rm -rf .next
+pnpm build
+```
 
-3. **Reinstall dependencies:**
-   ```bash
-   rm -rf node_modules pnpm-lock.yaml
-   pnpm install
-   ```
+**OAuth/Social Auth Issues:**
+See [Social Auth Setup](./docs/SOCIAL_AUTH_SETUP.md) and [Fixes Applied](./docs/FIXES_APPLIED.md)
 
-### Build Issues
-If the build fails during deployment:
+**Map/Geocoding Issues:**
+See [Geocoding Documentation](./docs/GEOCODING.md#troubleshooting)
 
-1. Ensure `DATABASE_URL` is set in your environment variables
-2. Check that Prisma client is generated before build
-3. Verify all dependencies are properly installed
+**Deployment Issues:**
+See [Vercel Setup Guide](./docs/VERCEL_SETUP.md)
 
 ## Scripts
 
+### Development
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
+
+### Database
 - `pnpm db:generate` - Generate Prisma client
 - `pnpm db:push` - Push database schema
 - `pnpm db:studio` - Open Prisma Studio
 - `pnpm db:seed` - Seed database
 
+### Utilities
+- `npx tsx scripts/geocode-existing-properties.ts` - Bulk geocode properties without coordinates
+  - Add `DRY_RUN=true` to preview changes
+  - Add `LIMIT=10` to limit number of properties processed
+
 ## Tech Stack
 
 - **Framework:** Next.js 14 (App Router)
 - **Database:** PostgreSQL with Prisma ORM
-- **Authentication:** NextAuth.js with Google OAuth
+- **Authentication:** NextAuth.js with OAuth (Google, Facebook, Apple)
 - **Styling:** Tailwind CSS with CSS Variables
 - **UI Components:** Radix UI (shadcn/ui)
+- **Maps:** Leaflet with React Leaflet
+- **Geocoding:** OpenStreetMap Nominatim API
 - **Image Storage:** Vercel Blob
 - **Package Manager:** pnpm
 - **TypeScript:** Full type safety across the application
+
+## Project Structure
+
+```
+Nomadiqe-App/
+├── app/                    # Next.js app directory (routes & pages)
+├── components/             # React components
+│   ├── admin/             # Admin dashboard components
+│   ├── ui/                # Reusable UI components (shadcn)
+│   └── ...                # Feature-specific components
+├── docs/                   # 📚 Documentation
+│   ├── README.md          # Documentation index
+│   ├── GEOCODING.md       # Geocoding service guide
+│   ├── SOCIAL_AUTH_SETUP.md
+│   └── ...
+├── lib/                    # Utility libraries
+│   ├── auth.ts            # NextAuth configuration
+│   ├── db.ts              # Prisma client
+│   ├── geocoding.ts       # Geocoding service
+│   └── ...
+├── prisma/                 # Database schema & migrations
+├── public/                 # Static assets
+└── scripts/               # Utility scripts
+    └── geocode-existing-properties.ts
+```
+
+## Contributing
+
+When contributing to this project:
+
+1. Follow the existing code style and conventions
+2. Update documentation when adding new features
+3. Add entries to [CHANGELOG.md](./docs/CHANGELOG.md) for notable changes
+4. Test thoroughly before submitting pull requests
+
+## License
+
+[Add your license here]
+
+---
+
+**Need Help?** Check the [documentation](./docs/README.md) or review [troubleshooting guides](./docs/FIXES_APPLIED.md).

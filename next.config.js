@@ -26,6 +26,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'graph.facebook.com',
       },
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+      },
     ],
   },
   // Ensure TypeScript compilation works during build

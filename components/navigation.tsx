@@ -1,103 +1,95 @@
 "use client"
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import {
-  Search,
   User,
   LogOut,
   Heart,
   Menu,
   X,
-  LayoutDashboard,
-  Shield
+  Home,
+  Compass,
+  Shield,
+  Search
 } from 'lucide-react'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 export function Navigation() {
   const { data: session } = useSession()
-  const router = useRouter()
+  const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
   }
 
+  const navItems = [
+    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/search', label: 'Explore', icon: Search },
+    { href: session?.user?.id ? `/profile/${session.user.id}` : '/auth/signin', label: 'Profile', icon: User },
+  ]
+
   return (
-    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/nomadiqe-logo-transparent.png"
-              alt="Nomadiqe Logo"
-              className="w-8 h-auto object-contain"
-            />
-            <span className="text-xl font-bold text-primary">Nomadiqe</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {!session && (
-              <Link
-                href="/"
-                className="text-foreground hover:text-primary transition-colors"
-              >
-                Discover
-              </Link>
-            )}
-            <Link
-              href="/search"
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              Explore
+    <>
+      {/* Desktop Header Navigation */}
+      <nav className="hidden md:block bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/nomadiqe-logo-transparent.png"
+                alt="Nomadiqe Logo"
+                className="w-8 h-auto object-contain"
+              />
+              <span className="text-xl font-bold text-primary">Nomadiqe</span>
             </Link>
-            {session?.user?.role === 'ADMIN' && (
-              <Link
-                href="/admin"
-                className="text-foreground hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <Shield className="w-4 h-4" />
-                Admin
-              </Link>
-            )}
-          </div>
 
-          {/* User Menu */}
-          <div className="flex items-center space-x-2">
-            {session ? (
-              <>
-                <Link href="/favorites" className="hidden sm:block">
-                  <Button variant="ghost" size="sm">
-                    <Heart className="w-4 h-4" />
-                  </Button>
-                </Link>
+            {/* Desktop Navigation Items */}
+            <div className="flex items-center space-x-1">
+              {navItems.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
+                      isActive
+                        ? "text-primary bg-primary/10"
+                        : "text-foreground hover:text-primary hover:bg-accent"
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                )
+              })}
+            </div>
 
-                <div className="hidden md:block relative group">
+            {/* Desktop Right Menu */}
+            <div className="flex items-center space-x-2">
+              {session ? (
+                <div className="relative group">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                    <User className="w-4 h-4" />
-                    <span>{session.user?.name}</span>
+                    <Menu className="w-4 h-4" />
                   </Button>
 
                   {/* Dropdown Menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-1">
-                      <Link href="/dashboard">
+                      <Link href="/favorites">
                         <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
-                          <LayoutDashboard className="h-4 w-4 mr-3" />
-                          Dashboard
-                        </div>
-                      </Link>
-                      <Link href={`/profile/${session.user.id}`}>
-                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
-                          <User className="h-4 w-4 mr-3" />
-                          Profile
+                          <Heart className="h-4 w-4 mr-3" />
+                          Favorites
                         </div>
                       </Link>
                       {session.user?.role === 'ADMIN' && (
@@ -119,56 +111,78 @@ export function Navigation() {
                     </div>
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className="hidden md:flex items-center space-x-2">
-                <Button variant="ghost" asChild>
-                  <Link href="/auth/signin">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/auth/signup">Sign Up</Link>
-                </Button>
-              </div>
-            )}
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" asChild>
+                    <Link href="/auth/signin">Sign In</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/auth/signup">Sign Up</Link>
+                  </Button>
+                </div>
               )}
-            </Button>
+            </div>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border py-3">
-            <div className="flex flex-col space-y-1 px-2">
-              {!session && (
-                <Link
-                  href="/"
-                  className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Heart className="h-4 w-4 mr-3" />
-                  Discover
-                </Link>
-              )}
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
+        <div className="flex items-center justify-around h-16 px-2">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+            return (
               <Link
-                href="/search"
-                className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                onClick={() => setIsMobileMenuOpen(false)}
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-md transition-colors min-w-[60px]",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-primary"
+                )}
               >
-                <Search className="h-4 w-4 mr-3" />
-                Explore
+                <Icon className="w-6 h-6" />
+                <span className="text-xs font-medium">{item.label}</span>
               </Link>
+            )
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile Top Bar with Logo and Menu */}
+      <nav className="md:hidden bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-40" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="flex justify-between items-center h-16 px-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/nomadiqe-logo-transparent.png"
+              alt="Nomadiqe Logo"
+              className="w-8 h-auto object-contain"
+            />
+            <span className="text-xl font-bold text-primary">Nomadiqe</span>
+          </Link>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </Button>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="border-t border-border py-3">
+            <div className="flex flex-col space-y-1 px-2">
               {session ? (
                 <>
                   <Link
@@ -178,22 +192,6 @@ export function Navigation() {
                   >
                     <Heart className="h-4 w-4 mr-3" />
                     Favorites
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <LayoutDashboard className="h-4 w-4 mr-3" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href={`/profile/${session.user.id}`}
-                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <User className="h-4 w-4 mr-3" />
-                    Profile
                   </Link>
                   {session.user?.role === 'ADMIN' && (
                     <Link
@@ -235,7 +233,10 @@ export function Navigation() {
             </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Bottom Padding to prevent content from being hidden behind bottom nav */}
+      <div className="md:hidden h-16" />
+    </>
   )
 }

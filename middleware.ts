@@ -6,8 +6,16 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
 
-    // Skip middleware for onboarding-related paths
-    if (pathname.startsWith('/onboarding') || pathname.startsWith('/api/onboarding')) {
+    // Redirect completed users away from onboarding pages
+    if (pathname.startsWith('/onboarding') && token?.onboardingStatus === 'COMPLETED') {
+      const dashboardUrl = token.role === 'HOST' ? '/dashboard/host'
+        : token.role === 'INFLUENCER' ? '/dashboard/influencer'
+        : '/dashboard'
+      return NextResponse.redirect(new URL(dashboardUrl, req.url))
+    }
+
+    // Skip middleware for onboarding-related API paths
+    if (pathname.startsWith('/api/onboarding')) {
       return NextResponse.next()
     }
 

@@ -170,6 +170,8 @@ model Property {
   country     String
   latitude    Float?
   longitude   Float?
+  geocodingAccuracy String? // 'exact', 'street', 'city', 'approximate', or null if not geocoded
+  geocodingFailed Boolean  @default(false) // true if all geocoding attempts failed
   price       Float
   currency    String   @default("EUR")
   maxGuests   Int

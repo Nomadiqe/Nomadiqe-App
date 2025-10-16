@@ -32,15 +32,31 @@ export async function PATCH(
     }
 
     const body = await req.json()
-    const { isActive, isVerified } = body
+    const { isActive, isVerified, latitude, longitude } = body
+
+    // Build update data object
+    const updateData: any = {}
+
+    if (typeof isActive === 'boolean') {
+      updateData.isActive = isActive
+    }
+
+    if (typeof isVerified === 'boolean') {
+      updateData.isVerified = isVerified
+    }
+
+    // Allow admin to manually set coordinates
+    if (typeof latitude === 'number' && typeof longitude === 'number') {
+      updateData.latitude = latitude
+      updateData.longitude = longitude
+      updateData.geocodingAccuracy = 'exact' // Admin-set coordinates are considered exact
+      updateData.geocodingFailed = false // Reset failed flag
+    }
 
     // Update property status
     const property = await prisma.property.update({
       where: { id: params.id },
-      data: {
-        ...(typeof isActive === 'boolean' && { isActive }),
-        ...(typeof isVerified === 'boolean' && { isVerified }),
-      },
+      data: updateData,
       include: {
         host: {
           select: {
@@ -60,6 +76,10 @@ export async function PATCH(
         title: property.title,
         isActive: property.isActive,
         isVerified: property.isVerified,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        geocodingAccuracy: property.geocodingAccuracy,
+        geocodingFailed: property.geocodingFailed,
         host: property.host,
       }
     })

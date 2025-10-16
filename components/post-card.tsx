@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -47,12 +49,20 @@ export function PostCard({
   comments,
   isLiked = false
 }: PostCardProps) {
+  const { data: session } = useSession()
+  const router = useRouter()
   const [liked, setLiked] = useState(isLiked)
   const [likeCount, setLikeCount] = useState(likes)
   const [commentCount, setCommentCount] = useState(comments)
   const [showComments, setShowComments] = useState(false)
 
   const handleLike = async () => {
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      router.push('/auth/signin')
+      return
+    }
+
     // Optimistic update
     const wasLiked = liked
     const previousCount = likeCount
@@ -82,6 +92,15 @@ export function PostCard({
       setLiked(wasLiked)
       setLikeCount(previousCount)
     }
+  }
+
+  const handleCommentClick = () => {
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      router.push('/auth/signin')
+      return
+    }
+    setShowComments(true)
   }
 
   const formatDate = (dateString: string) => {
@@ -207,7 +226,7 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setShowComments(true)}
+            onClick={handleCommentClick}
             className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
           >
             <MessageCircle className="h-4 w-4" />

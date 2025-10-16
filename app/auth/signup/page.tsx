@@ -7,11 +7,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { Eye, EyeOff, ArrowLeft, User, Mail } from 'lucide-react'
+import { Eye, EyeOff, Mail } from 'lucide-react'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -30,7 +29,7 @@ export default function SignUpPage() {
   }
 
   const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
       toast({
         title: "Validation Error",
         description: "Please fill in all fields.",
@@ -85,7 +84,6 @@ export default function SignUpPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
           email: formData.email,
           password: formData.password,
         }),
@@ -162,17 +160,12 @@ export default function SignUpPage() {
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home
-            </Link>
             <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">N</span>
-              </div>
+              <img
+                src="/nomadiqe-logo-transparent.png"
+                alt="Nomadiqe Logo"
+                className="w-16 h-auto object-contain"
+              />
             </div>
             <h1 className="text-2xl font-bold gradient-text">Join Nomadiqe</h1>
             <p className="text-muted-foreground">Create your account and start exploring</p>
@@ -259,25 +252,6 @@ export default function SignUpPage() {
 
           {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  required
-                  disabled={isLoading}
-                />
-                <User className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                 Email

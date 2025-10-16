@@ -44,20 +44,20 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
+            {!session && (
+              <Link
+                href="/"
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                Discover
+              </Link>
+            )}
             <Link
               href="/search"
               className="text-foreground hover:text-primary transition-colors"
             >
               Explore
             </Link>
-            {session?.user?.role !== 'INFLUENCER' && (
-              <Link
-                href="/host"
-                className="text-foreground hover:text-primary transition-colors"
-              >
-                Become a Host
-              </Link>
-            )}
             {session?.user?.role === 'ADMIN' && (
               <Link
                 href="/admin"
@@ -151,6 +151,16 @@ export function Navigation() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-border py-3">
             <div className="flex flex-col space-y-1 px-2">
+              {!session && (
+                <Link
+                  href="/"
+                  className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Heart className="h-4 w-4 mr-3" />
+                  Discover
+                </Link>
+              )}
               <Link
                 href="/search"
                 className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
@@ -159,15 +169,6 @@ export function Navigation() {
                 <Search className="h-4 w-4 mr-3" />
                 Explore
               </Link>
-              {session?.user?.role !== 'INFLUENCER' && (
-                <Link
-                  href="/host"
-                  className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Become a Host
-                </Link>
-              )}
               {session ? (
                 <>
                   <Link

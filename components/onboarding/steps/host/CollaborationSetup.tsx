@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
+import { useOnboarding } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -146,10 +146,30 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
     setIsSubmitting(true)
 
     try {
+      // Prepare payload with proper types
+      const payload = {
+        standardOffer: {
+          offerType: formData.standardOffer.offerType,
+          discount: formData.standardOffer.offerType === 'discounted_stay'
+            ? formData.standardOffer.discount
+            : undefined,
+          minNights: Number(formData.standardOffer.minNights),
+          maxNights: Number(formData.standardOffer.maxNights),
+          deliverables: formData.standardOffer.deliverables,
+          terms: formData.standardOffer.terms.trim()
+        },
+        minFollowerCount: formData.minFollowerCount && formData.minFollowerCount > 0
+          ? Number(formData.minFollowerCount)
+          : undefined,
+        preferredNiches: formData.preferredNiches.length > 0
+          ? formData.preferredNiches
+          : undefined
+      }
+
       const response = await fetch('/api/onboarding/host/collaboration-setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
       const result = await response.json()
@@ -157,19 +177,33 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
       if (response.ok && result.success) {
         completeStep('collaboration-setup')
         setStep('complete')
-        
+
         // Update the session to refresh JWT token with new onboardingStatus
         await update()
-        
+
         if (onComplete) {
           onComplete()
         } else {
           router.push('/dashboard/host')
         }
       } else {
-        setErrors({ general: result.error || 'Failed to save collaboration preferences' })
+        // Display detailed error information
+        let errorMessage = result.error || 'Failed to save collaboration preferences'
+
+        if (result.details && Array.isArray(result.details)) {
+          // Zod validation errors
+          const fieldErrors: FormErrors = {}
+          result.details.forEach((err: any) => {
+            const field = err.path.join('.')
+            fieldErrors[field] = err.message
+          })
+          setErrors({ ...fieldErrors, general: errorMessage })
+        } else {
+          setErrors({ general: errorMessage })
+        }
       }
     } catch (error) {
+      console.error('Collaboration setup submission error:', error)
       setErrors({ general: 'An error occurred. Please try again.' })
     } finally {
       setIsSubmitting(false)
@@ -256,7 +290,10 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
               <Input
                 type="number"
                 value={formData.standardOffer.discount || ''}
-                onChange={(e) => updateStandardOffer({ discount: Number(e.target.value) })}
+                onChange={(e) => {
+                  const value = e.target.value ? Number(e.target.value) : undefined
+                  updateStandardOffer({ discount: value })
+                }}
                 placeholder="20"
                 className={`w-24 ${errors.discount ? 'border-red-500' : ''}`}
                 min="5"
@@ -279,7 +316,10 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
               <Input
                 type="number"
                 value={formData.standardOffer.minNights}
-                onChange={(e) => updateStandardOffer({ minNights: Math.max(1, Number(e.target.value)) })}
+                onChange={(e) => {
+                  const value = e.target.value ? Math.max(1, Number(e.target.value)) : 1
+                  updateStandardOffer({ minNights: value })
+                }}
                 className="w-20"
                 min="1"
                 max="30"
@@ -293,7 +333,10 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
               <Input
                 type="number"
                 value={formData.standardOffer.maxNights}
-                onChange={(e) => updateStandardOffer({ maxNights: Math.max(formData.standardOffer.minNights, Number(e.target.value)) })}
+                onChange={(e) => {
+                  const value = e.target.value ? Math.max(formData.standardOffer.minNights, Number(e.target.value)) : formData.standardOffer.minNights
+                  updateStandardOffer({ maxNights: value })
+                }}
                 className="w-20"
                 min={formData.standardOffer.minNights}
                 max="30"
@@ -342,7 +385,10 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
           <Input
             type="number"
             value={formData.minFollowerCount || ''}
-            onChange={(e) => updateFormData({ minFollowerCount: e.target.value ? Number(e.target.value) : undefined })}
+            onChange={(e) => {
+              const value = e.target.value && Number(e.target.value) > 0 ? Number(e.target.value) : undefined
+              updateFormData({ minFollowerCount: value })
+            }}
             placeholder="10000"
             className={`w-32 ${errors.minFollowerCount ? 'border-red-500' : ''}`}
             min="1000"

@@ -34,7 +34,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
   const router = useRouter()
   
   const [formData, setFormData] = useState<FormData>({
-    fullName: session?.user?.name || '',
+    fullName: '',
     username: '',
     profilePicture: session?.user?.image || ''
   })

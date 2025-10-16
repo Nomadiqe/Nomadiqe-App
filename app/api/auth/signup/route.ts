@@ -5,12 +5,12 @@ import { UserRole } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json()
+    const { email, password } = await request.json()
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { message: 'Name, email, and password are required' },
+        { message: 'Email and password are required' },
         { status: 400 }
       )
     }
@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
     // Create user
     const user = await prisma.user.create({
       data: {
-        name,
         email: email.toLowerCase(),
         password: hashedPassword,
         role: UserRole.TRAVELER, // Default role

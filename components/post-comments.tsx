@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
@@ -30,6 +32,7 @@ interface PostCommentsProps {
 
 export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCommentsProps) {
   const { data: session } = useSession()
+  const router = useRouter()
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -175,10 +178,18 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
               </div>
             </form>
           ) : (
-            <div className="border-t p-4">
+            <div className="border-t p-4 space-y-3">
               <p className="text-center text-sm text-muted-foreground">
-                Please sign in to comment
+                Sign in to join the conversation
               </p>
+              <div className="flex gap-2 justify-center">
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href="/auth/signup">Sign Up</Link>
+                </Button>
+              </div>
             </div>
           )}
         </div>

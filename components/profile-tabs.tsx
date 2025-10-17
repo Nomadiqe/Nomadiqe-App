@@ -1,23 +1,22 @@
 "use client"
 
 import { PostCard } from '@/components/post-card'
-import { Camera, Home, Image, Star, Users, Bed, Bath, MapPin, CheckCircle } from 'lucide-react'
+import { Camera, Home, Image, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 interface ProfileTabsProps {
   posts: any[]
-  properties: any[]
+  properties?: any[]
   userRole: string
   isOwnProfile: boolean
   userName: string
 }
 
-export function ProfileTabs({ posts, properties, userRole, isOwnProfile, userName }: ProfileTabsProps) {
+export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, userName }: ProfileTabsProps) {
   const EmptyState = ({ icon: Icon, title, description, actionLabel, actionHref }: any) => (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -70,71 +69,41 @@ export function ProfileTabs({ posts, properties, userRole, isOwnProfile, userNam
       {userRole === 'HOST' && (
         <TabsContent value="properties" className="mt-6">
           {properties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.map((property: any) => (
-                <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link href={`/property/${property.id}`}>
-                    <div className="relative">
-                      {property.image ? (
-                        <img
-                          src={property.image}
-                          alt={property.title}
-                          className="w-full h-48 object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-muted flex items-center justify-center">
-                          <Camera className="h-12 w-12 text-muted-foreground" />
-                        </div>
-                      )}
-                      <div className="absolute top-3 right-3 flex gap-2">
-                        {property.isVerified && (
-                          <Badge className="bg-green-500">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Verified
-                          </Badge>
-                        )}
-                        <Badge variant={property.isActive ? 'default' : 'secondary'}>
-                          {property.isActive ? 'Active' : 'Under Review'}
-                        </Badge>
+                <Card key={property.id} className="overflow-hidden">
+                  <div className="aspect-video bg-muted">
+                    {property.images && property.images.length > 0 ? (
+                      <img
+                        src={property.images[0]}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Home className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-2 line-clamp-1">{property.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{property.description}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">
+                        {property.currency} {property.price}/night
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span>{property.averageRating.toFixed(1)}</span>
+                        <span className="text-muted-foreground">({property.reviewsCount})</span>
                       </div>
                     </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-1">
-                        {property.title}
-                      </h3>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-                        <MapPin className="w-4 h-4" />
-                        <span>{property.location}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            <span>{property.maxGuests}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Bed className="w-4 h-4" />
-                            <span>{property.bedrooms}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Bath className="w-4 h-4" />
-                            <span>{property.bathrooms}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-xl font-bold">
-                            {property.currency === 'EUR' ? '€' : '$'}{property.price}
-                          </span>
-                          <span className="text-sm text-muted-foreground"> / night</span>
-                        </div>
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Link>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                      <span>{property.maxGuests} guests</span>
+                      <span>{property.bedrooms} bed{property.bedrooms !== 1 ? 's' : ''}</span>
+                      <span>{property.bathrooms} bath{property.bathrooms !== 1 ? 's' : ''}</span>
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -148,7 +117,7 @@ export function ProfileTabs({ posts, properties, userRole, isOwnProfile, userNam
                   : `${userName} hasn't listed any properties yet.`
               }
               actionLabel={isOwnProfile ? 'List Your Property' : undefined}
-              actionHref="/onboarding/listing-creation"
+              actionHref="/host/create-property"
             />
           )}
         </TabsContent>

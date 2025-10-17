@@ -66,23 +66,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     prisma.follow.count({ where: { followerId: dbUser.id } }),
     prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
     dbUser.role === 'HOST' ? prisma.property.findMany({
-      where: { hostId: dbUser.id },
+      where: { hostId: dbUser.id, isActive: true },
       orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        city: true,
-        country: true,
-        price: true,
-        currency: true,
-        maxGuests: true,
-        bedrooms: true,
-        bathrooms: true,
-        images: true,
-        isActive: true,
-        isVerified: true,
+      include: {
+        reviews: { select: { rating: true } },
+        _count: { select: { reviews: true } },
       },
-    }) : Promise.resolve([]),
+    }) : [],
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
@@ -106,18 +96,22 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     isLiked: Array.isArray(p.likes) ? p.likes.length > 0 : false,
   }))
 
-  const properties = propertiesRaw.map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    location: `${p.city}, ${p.country}`,
-    price: p.price,
-    currency: p.currency,
-    maxGuests: p.maxGuests,
-    bedrooms: p.bedrooms,
-    bathrooms: p.bathrooms,
-    image: p.images && p.images.length > 0 ? p.images[0] : null,
-    isActive: p.isActive,
-    isVerified: p.isVerified,
+  const properties = propertiesRaw.map((property: any) => ({
+    id: property.id,
+    title: property.title,
+    description: property.description,
+    images: property.images as string[],
+    location: property.location,
+    price: property.price,
+    currency: property.currency,
+    maxGuests: property.maxGuests,
+    bedrooms: property.bedrooms,
+    bathrooms: property.bathrooms,
+    averageRating: property.reviews.length > 0 
+      ? property.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / property.reviews.length 
+      : 0,
+    reviewsCount: property._count?.reviews || 0,
+    createdAt: property.createdAt.toISOString(),
   }))
 
   const user = {

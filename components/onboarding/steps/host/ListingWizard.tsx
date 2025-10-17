@@ -64,8 +64,13 @@ interface ListingWizardProps {
 }
 
 export default function ListingWizard({ onComplete }: ListingWizardProps) {
-  const { role, completeStep, setStep } = useOnboarding()
+  const onboardingContext = useOnboarding()
   const router = useRouter()
+  
+  // Make onboarding context optional for standalone use
+  const role = onboardingContext?.role
+  const completeStep = onboardingContext?.completeStep
+  const setStep = onboardingContext?.setStep
   
   const [currentStep, setCurrentStep] = useState<'basic' | 'location' | 'details' | 'amenities' | 'photos' | 'pricing'>('basic')
   const [formData, setFormData] = useState<FormData>({
@@ -175,14 +180,20 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
       const result = await response.json()
 
       if (response.ok && result.success) {
-        completeStep('listing-creation')
-        const nextStep = getNextStep('listing-creation', role!)
-        setStep(nextStep)
+        // If used in onboarding flow
+        if (role && completeStep && setStep) {
+          completeStep('listing-creation')
+          const nextStep = getNextStep('listing-creation', role)
+          setStep(nextStep)
+          router.push(`/onboarding/${nextStep}`)
+        }
         
+        // If used as standalone component
         if (onComplete) {
           onComplete()
-        } else {
-          router.push(`/onboarding/${nextStep}`)
+        } else if (!role) {
+          // Default redirect to dashboard if no onboarding context
+          router.push('/dashboard')
         }
       } else {
         setErrors({ general: result.error || 'Failed to create listing' })

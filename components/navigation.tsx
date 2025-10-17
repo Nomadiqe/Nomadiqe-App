@@ -13,7 +13,8 @@ import {
   Home,
   Compass,
   Shield,
-  Search
+  Search,
+  Plus
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -31,6 +32,16 @@ export function Navigation() {
   const navItems = [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
+    { href: '/search', label: 'Explore', icon: Search },
+    { href: session?.user?.id ? `/profile/${session.user.id}` : '/auth/signin', label: 'Profile', icon: User },
+  ]
+
+  const mobileNavItems = [
+    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: '/', label: 'Discover', icon: Compass },
+  ]
+
+  const mobileNavItemsRight = [
     { href: '/search', label: 'Explore', icon: Search },
     { href: session?.user?.id ? `/profile/${session.user.id}` : '/auth/signin', label: 'Profile', icon: User },
   ]
@@ -73,6 +84,15 @@ export function Navigation() {
                   </Link>
                 )
               })}
+              {session && (
+                <Link
+                  href="/create-post"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="font-medium">Create Post</span>
+                </Link>
+              )}
             </div>
 
             {/* Desktop Right Menu */}
@@ -128,26 +148,75 @@ export function Navigation() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
-        <div className="flex items-center justify-around h-16 px-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-md transition-colors min-w-[60px]",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-primary"
-                )}
+        <div className="flex items-center justify-between h-16 px-2">
+          {/* Left Navigation Items */}
+          <div className="flex items-center justify-around flex-1">
+            {mobileNavItems.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-md transition-colors min-w-[60px]",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-primary"
+                  )}
+                >
+                  <Icon className="w-6 h-6" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Center Create Post Button */}
+          {session && (
+            <Link
+              href="/create-post"
+              className="flex items-center justify-center w-14 h-14 -mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <Icon className="w-6 h-6" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </Link>
-            )
-          })}
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </Link>
+          )}
+
+          {/* Right Navigation Items */}
+          <div className="flex items-center justify-around flex-1">
+            {mobileNavItemsRight.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-md transition-colors min-w-[60px]",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-primary"
+                  )}
+                >
+                  <Icon className="w-6 h-6" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </nav>
 

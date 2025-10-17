@@ -296,8 +296,6 @@ export function Navigation() {
         )}
       </nav>
 
-      {/* Mobile Bottom Padding to prevent content from being hidden behind bottom nav */}
-      <div className="md:hidden h-16" />
     </>
   )
 }

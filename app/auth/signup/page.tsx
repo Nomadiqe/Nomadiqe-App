@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff, Mail } from 'lucide-react'
 
 export default function SignUpPage() {
+  const { data: session, status } = useSession()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -20,6 +21,13 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+
+  // Redirect to discover page if already authenticated
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/')
+    }
+  }, [status, session, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -153,6 +161,22 @@ export default function SignUpPage() {
   const hasFacebookAuth = process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID
   const hasAppleAuth = process.env.NEXT_PUBLIC_APPLE_ID
   const hasSocialAuth = hasGoogleAuth || hasFacebookAuth || hasAppleAuth
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render form if already authenticated (will redirect via useEffect)
+  if (status === 'authenticated') {
+    return null
+  }
 
   return (
     <div className="min-h-screen flex justify-center bg-gradient-to-br from-background to-muted p-4 pt-12">

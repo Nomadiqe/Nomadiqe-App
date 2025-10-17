@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge'
 const propertyTypes = ['Apartment', 'House', 'Villa', 'Cabin', 'Loft']
 const amenitiesList = ['WiFi', 'Pool', 'Kitchen', 'Parking', 'Air Conditioning', 'Workspace']
 
-export function SearchFiltersContent() {
+export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -97,6 +97,11 @@ export function SearchFiltersContent() {
     }
 
     router.push(`/search?${params.toString()}`)
+
+    // Call onApply callback to close the sheet on mobile
+    if (onApply) {
+      onApply()
+    }
   }
 
   const clearFilters = () => {
@@ -215,6 +220,7 @@ export function SearchFiltersContent() {
 
 export function SearchFiltersImproved() {
   const searchParams = useSearchParams()
+  const [isOpen, setIsOpen] = useState(false)
 
   const activeFiltersCount =
     (searchParams.get('priceRange') ? 1 : 0) +
@@ -222,11 +228,15 @@ export function SearchFiltersImproved() {
     (searchParams.get('amenities') ? searchParams.get('amenities')!.split(',').length : 0) +
     (searchParams.get('rating') ? 1 : 0)
 
+  const handleCloseSheet = () => {
+    setIsOpen(false)
+  }
+
   return (
     <>
       {/* Mobile: Sheet */}
       <div className="lg:hidden">
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant="outline" className="w-full relative">
               <Filter className="w-4 h-4 mr-2" />
@@ -246,7 +256,7 @@ export function SearchFiltersImproved() {
               </SheetDescription>
             </SheetHeader>
             <div className="mt-6 overflow-y-auto max-h-[calc(85vh-8rem)]">
-              <SearchFiltersContent />
+              <SearchFiltersContent onApply={handleCloseSheet} />
             </div>
           </SheetContent>
         </Sheet>

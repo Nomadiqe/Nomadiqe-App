@@ -7,28 +7,55 @@ import 'leaflet/dist/leaflet.css'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 
-// Custom marker icon for Sicilian theme
-const createCustomIcon = () => {
+// Custom marker icon showing property image and price
+const createPropertyMarkerIcon = (imageUrl: string, price: number, currency: string) => {
   return L.divIcon({
-    className: 'custom-marker-icon',
+    className: 'custom-property-marker',
     html: `
       <div style="
         position: relative;
-        width: 32px;
-        height: 32px;
-      ">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                fill="hsl(200 95% 45%)"
-                stroke="white"
-                stroke-width="1.5"/>
-          <circle cx="12" cy="9" r="2.5" fill="white"/>
-        </svg>
+        width: 80px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.2s;
+      "
+      onmouseover="this.style.transform='scale(1.1)'"
+      onmouseout="this.style.transform='scale(1)'">
+        <img
+          src="${imageUrl || '/placeholder-property.jpg'}"
+          alt="Property"
+          style="
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            display: block;
+          "
+        />
+        <div style="
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+          padding: 4px 6px 2px;
+        ">
+          <div style="
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            text-align: center;
+          ">
+            ${currency} ${price}
+          </div>
+        </div>
       </div>
     `,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
+    iconSize: [80, 60],
+    iconAnchor: [40, 60],
+    popupAnchor: [0, -60],
   })
 }
 
@@ -145,7 +172,11 @@ export function PropertyMap({ properties }: PropertyMapProps) {
           <Marker
             key={property.id}
             position={[property.latitude!, property.longitude!]}
-            icon={createCustomIcon()}
+            icon={createPropertyMarkerIcon(
+              property.images[0] || '/placeholder-property.jpg',
+              property.price,
+              property.currency
+            )}
           >
             <Popup>
               <div className="p-2 min-w-[200px]">

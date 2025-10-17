@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Heart, Star, MapPin, Users, Bed } from 'lucide-react'
+import { Heart, Star, MapPin, Users, Bed, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -63,12 +63,18 @@ export function PropertyCard({
           <div className="flex h-[180px]">
             {/* Image - Left side */}
             <div className="relative w-[240px] shrink-0">
-              <Image
-                src={image}
-                alt={title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              {image ? (
+                <Image
+                  src={image}
+                  alt={title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <Camera className="h-12 w-12 text-muted-foreground" />
+                </div>
+              )}
               {rating > 0 && (
                 <Badge className="absolute bottom-2 left-2 bg-black/60 hover:bg-black/70 backdrop-blur-sm border-0">
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
@@ -131,12 +137,18 @@ export function PropertyCard({
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
       <Link href={propertyUrl}>
         <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          {image ? (
+            <Image
+              src={image}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <Camera className="h-12 w-12 text-muted-foreground" />
+            </div>
+          )}
           <div className="absolute top-3 right-3">
             <Button
               size="icon"

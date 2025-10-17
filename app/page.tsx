@@ -65,8 +65,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <section className="relative bg-primary/5 border-b border-border py-8">
+      {/* Header - Hidden on mobile */}
+      <section className="hidden md:block relative bg-primary/5 border-b border-border py-8">
         <div className="max-w-4xl mx-auto px-4 relative">
           <div className="flex items-center justify-between">
             <div className="space-y-1">

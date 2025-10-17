@@ -1,23 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, Home } from "lucide-react"
-
+import { Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 interface Property {
   id: string
@@ -38,85 +23,112 @@ export function PropertySearch({
   value,
   onChange,
   disabled = false,
-  placeholder = "Select a property...",
+  placeholder = "Search properties...",
 }: PropertySearchProps) {
   const [open, setOpen] = React.useState(false)
+  const [searchQuery, setSearchQuery] = React.useState("")
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   const selectedProperty = properties.find((property) => property.id === value)
 
+  // Filter properties based on search query
+  const filteredProperties = React.useMemo(() => {
+    if (!searchQuery) return properties
+
+    const query = searchQuery.toLowerCase()
+    return properties.filter(
+      (property) =>
+        property.title.toLowerCase().includes(query) ||
+        property.location.toLowerCase().includes(query)
+    )
+  }, [searchQuery, properties])
+
+  // Display value in input
+  const displayValue = selectedProperty
+    ? `${selectedProperty.title} - ${selectedProperty.location}`
+    : searchQuery
+
+  const handleClear = () => {
+    onChange(null)
+    setSearchQuery("")
+  }
+
+  // Close on click outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-          disabled={disabled}
+    <div ref={containerRef} className="relative">
+      <input
+        type="text"
+        value={displayValue}
+        onChange={(e) => {
+          setSearchQuery(e.target.value)
+          if (selectedProperty) {
+            onChange(null)
+          }
+          setOpen(true)
+        }}
+        onFocus={() => setOpen(true)}
+        disabled={disabled}
+        placeholder={placeholder}
+        className="w-full p-3 pr-10 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-nomadiqe-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      />
+      {selectedProperty && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
         >
-          <div className="flex items-center space-x-2">
-            <Home className="h-4 w-4 shrink-0 opacity-50" />
-            <span className={cn(!selectedProperty && "text-muted-foreground")}>
-              {selectedProperty
-                ? `${selectedProperty.title} - ${selectedProperty.location}`
-                : placeholder}
-            </span>
-          </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]" align="start">
-        <Command>
-          <CommandInput placeholder="Search properties..." />
-          <CommandList>
-            <CommandEmpty>No property found.</CommandEmpty>
-            <CommandGroup>
-              {/* Clear selection option */}
-              {value && (
-                <CommandItem
-                  value="clear-selection"
-                  onSelect={() => {
-                    onChange(null)
-                    setOpen(false)
-                  }}
-                  className="text-muted-foreground"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      !value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  Clear selection
-                </CommandItem>
-              )}
-              {properties.map((property) => (
-                <CommandItem
+          <X className="h-4 w-4" />
+        </button>
+      )}
+
+      {open && (
+        <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-md max-h-60 overflow-auto">
+          {filteredProperties.length === 0 ? (
+            <div className="p-3 text-sm text-muted-foreground text-center">
+              No property found.
+            </div>
+          ) : (
+            <div className="py-1">
+              {filteredProperties.map((property) => (
+                <button
                   key={property.id}
-                  value={`${property.title} ${property.location}`}
-                  onSelect={() => {
-                    onChange(property.id === value ? null : property.id)
+                  type="button"
+                  onClick={() => {
+                    onChange(property.id)
+                    setSearchQuery("")
                     setOpen(false)
                   }}
+                  className="w-full px-3 py-2 text-left hover:bg-accent flex items-center gap-2 transition-colors"
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "h-4 w-4 shrink-0",
                       value === property.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  <div className="flex flex-col">
-                    <span className="font-medium">{property.title}</span>
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-medium text-sm truncate">{property.title}</span>
+                    <span className="text-xs text-muted-foreground truncate">
                       {property.location}
                     </span>
                   </div>
-                </CommandItem>
+                </button>
               ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

@@ -199,7 +199,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 </div>
 
                 {/* Toggle to List View Button */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                <div className="absolute bottom-[72px] left-1/2 -translate-x-1/2 z-[1000]">
                   <Button
                     onClick={() => setIsMobileListView(true)}
                     className="shadow-lg"
@@ -234,7 +234,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 </div>
 
                 {/* Toggle to Map View Button */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                <div className="absolute bottom-[72px] left-1/2 -translate-x-1/2 z-[1000]">
                   <Button
                     onClick={() => setIsMobileListView(false)}
                     className="shadow-lg"

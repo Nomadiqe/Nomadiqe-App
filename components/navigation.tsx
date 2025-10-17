@@ -29,21 +29,30 @@ export function Navigation() {
     await signOut({ callbackUrl: '/' })
   }
 
-  const navItems = [
+  // Desktop navigation items - filter based on authentication
+  const navItems = session ? [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
     { href: '/search', label: 'Explore', icon: Search },
-    { href: session?.user?.id ? `/profile/${session.user.id}` : '/auth/signin', label: 'Profile', icon: User },
+    { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
+  ] : [
+    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/search', label: 'Explore', icon: Search },
   ]
 
-  const mobileNavItems = [
+  // Mobile navigation items - filter based on authentication
+  const mobileNavItems = session ? [
     { href: '/dashboard', label: 'Home', icon: Home },
+    { href: '/', label: 'Discover', icon: Compass },
+  ] : [
     { href: '/', label: 'Discover', icon: Compass },
   ]
 
-  const mobileNavItemsRight = [
+  const mobileNavItemsRight = session ? [
     { href: '/search', label: 'Explore', icon: Search },
-    { href: session?.user?.id ? `/profile/${session.user.id}` : '/auth/signin', label: 'Profile', icon: User },
+    { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
+  ] : [
+    { href: '/search', label: 'Explore', icon: Search },
   ]
 
   return (

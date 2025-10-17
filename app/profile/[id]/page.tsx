@@ -51,7 +51,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount] = await Promise.all([
+  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw] = await Promise.all([
     prisma.post.findMany({
       where: { authorId: dbUser.id, isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -65,6 +65,24 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     prisma.follow.count({ where: { followingId: dbUser.id } }),
     prisma.follow.count({ where: { followerId: dbUser.id } }),
     prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
+    dbUser.role === 'HOST' ? prisma.property.findMany({
+      where: { hostId: dbUser.id },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        city: true,
+        country: true,
+        price: true,
+        currency: true,
+        maxGuests: true,
+        bedrooms: true,
+        bathrooms: true,
+        images: true,
+        isActive: true,
+        isVerified: true,
+      },
+    }) : Promise.resolve([]),
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
@@ -86,6 +104,20 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     likes: p._count?.likes || 0,
     comments: p._count?.comments || 0,
     isLiked: Array.isArray(p.likes) ? p.likes.length > 0 : false,
+  }))
+
+  const properties = propertiesRaw.map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    location: `${p.city}, ${p.country}`,
+    price: p.price,
+    currency: p.currency,
+    maxGuests: p.maxGuests,
+    bedrooms: p.bedrooms,
+    bathrooms: p.bathrooms,
+    image: p.images && p.images.length > 0 ? p.images[0] : null,
+    isActive: p.isActive,
+    isVerified: p.isVerified,
   }))
 
   const user = {
@@ -215,6 +247,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <section className="max-w-4xl mx-auto px-4 py-8">
         <ProfileTabs
           posts={posts}
+          properties={properties}
           userRole={user.role}
           isOwnProfile={isOwnProfile}
           userName={user.name}

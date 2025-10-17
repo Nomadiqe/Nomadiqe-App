@@ -106,12 +106,6 @@ export function Navigation() {
                   {/* Dropdown Menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-1">
-                      <Link href="/favorites">
-                        <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
-                          <Heart className="h-4 w-4 mr-3" />
-                          Favorites
-                        </div>
-                      </Link>
                       {session.user?.role === 'ADMIN' && (
                         <Link href="/admin">
                           <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
@@ -254,14 +248,6 @@ export function Navigation() {
             <div className="flex flex-col space-y-1 px-2">
               {session ? (
                 <>
-                  <Link
-                    href="/favorites"
-                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Heart className="h-4 w-4 mr-3" />
-                    Favorites
-                  </Link>
                   {session.user?.role === 'ADMIN' && (
                     <Link
                       href="/admin"

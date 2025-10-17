@@ -16,7 +16,7 @@ export function SearchHeaderImproved() {
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [checkIn, setCheckIn] = useState<Date>()
   const [checkOut, setCheckOut] = useState<Date>()
-  const [guests, setGuests] = useState(parseInt(searchParams.get('guests') || '1'))
+  const [guests, setGuests] = useState(searchParams.get('guests') || '1')
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString())
@@ -39,8 +39,9 @@ export function SearchHeaderImproved() {
       params.delete('checkOut')
     }
 
-    if (guests > 1) {
-      params.set('guests', guests.toString())
+    const guestCount = parseInt(guests) || 1
+    if (guestCount > 1) {
+      params.set('guests', guestCount.toString())
     } else {
       params.delete('guests')
     }
@@ -118,7 +119,19 @@ export function SearchHeaderImproved() {
               min="1"
               max="16"
               value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
+              onChange={(e) => {
+                const value = e.target.value
+                // Allow empty value or valid numbers
+                if (value === '' || (parseInt(value) >= 1 && parseInt(value) <= 16)) {
+                  setGuests(value)
+                }
+              }}
+              onBlur={(e) => {
+                // If empty on blur, set to 1
+                if (e.target.value === '') {
+                  setGuests('1')
+                }
+              }}
               className="border-0 bg-transparent h-auto p-0 focus-visible:ring-0 w-12"
             />
             <span className="text-sm text-muted-foreground">guests</span>

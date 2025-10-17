@@ -81,7 +81,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
     bedrooms: 1,
     bathrooms: 1,
     amenities: Object.keys(PROPERTY_AMENITIES).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-    photos: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'], // Demo photo
+    photos: [], // Start with no photos
     pricing: {
       basePrice: 100,
       cleaningFee: 25,
@@ -461,7 +461,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </ul>
             </div>
 
-            {/* Show existing demo photos if any */}
+            {/* Show uploaded photos */}
             {formData.photos.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {formData.photos.map((photo, index) => (
@@ -471,13 +471,6 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                       alt={`Property photo ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
                     />
-                    {photo.includes('unsplash') && (
-                      <div className="absolute top-2 right-2">
-                        <div className="bg-green-500 text-white px-2 py-1 rounded text-xs">
-                          Demo
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

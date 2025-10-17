@@ -380,7 +380,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                   <Card key={property.id} className="overflow-hidden">
                     <div className="relative">
                       <img
-                        src={property.images[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'}
+                        src={property.images[0] || '/placeholder-property.jpg'}
                         alt={property.title}
                         className="w-full h-48 object-cover"
                       />

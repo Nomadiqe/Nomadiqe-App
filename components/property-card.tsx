@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Heart, Star, MapPin, Users, Bed } from 'lucide-react'
@@ -5,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils'
+import { useSearchParams } from 'next/navigation'
 
 interface PropertyCardProps {
   id: string
@@ -31,11 +34,32 @@ export function PropertyCard({
   currency = "EUR",
   variant = "grid"
 }: PropertyCardProps) {
+  const searchParams = useSearchParams()
+  
+  // Build property URL with reservation parameters
+  const buildPropertyUrl = () => {
+    const params = new URLSearchParams()
+    
+    // Pass check-in, check-out, and guests from search
+    const checkIn = searchParams.get('checkIn')
+    const checkOut = searchParams.get('checkOut')
+    const guestsParam = searchParams.get('guests')
+    
+    if (checkIn) params.set('checkIn', checkIn)
+    if (checkOut) params.set('checkOut', checkOut)
+    if (guestsParam) params.set('guests', guestsParam)
+    
+    const queryString = params.toString()
+    return queryString ? `/property/${id}?${queryString}` : `/property/${id}`
+  }
+  
+  const propertyUrl = buildPropertyUrl()
+  
   // List variant - horizontal layout with image on left
   if (variant === "list") {
     return (
       <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 max-h-[180px]">
-        <Link href={`/property/${id}`}>
+        <Link href={propertyUrl}>
           <div className="flex h-[180px]">
             {/* Image - Left side */}
             <div className="relative w-[240px] shrink-0">
@@ -105,7 +129,7 @@ export function PropertyCard({
   // Grid variant - original vertical layout
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <Link href={`/property/${id}`}>
+      <Link href={propertyUrl}>
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
             src={image}
@@ -134,7 +158,7 @@ export function PropertyCard({
       </Link>
 
       <CardContent className="p-4">
-        <Link href={`/property/${id}`}>
+        <Link href={propertyUrl}>
           <h3 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors line-clamp-1">
             {title}
           </h3>

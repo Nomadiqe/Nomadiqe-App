@@ -15,7 +15,7 @@ export function SearchBar() {
   const [location, setLocation] = useState('')
   const [checkIn, setCheckIn] = useState<Date>()
   const [checkOut, setCheckOut] = useState<Date>()
-  const [guests, setGuests] = useState(1)
+  const [guests, setGuests] = useState('1')
   const [checkInOpen, setCheckInOpen] = useState(false)
   const [checkOutOpen, setCheckOutOpen] = useState(false)
 
@@ -24,7 +24,8 @@ export function SearchBar() {
     if (location) params.append('location', location)
     if (checkIn) params.append('checkIn', checkIn.toISOString())
     if (checkOut) params.append('checkOut', checkOut.toISOString())
-    params.append('guests', guests.toString())
+    const guestCount = parseInt(guests) || 1
+    params.append('guests', guestCount.toString())
     
     router.push(`/search?${params.toString()}`)
   }
@@ -110,7 +111,19 @@ export function SearchBar() {
               min="1"
               max="16"
               value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
+              onChange={(e) => {
+                const value = e.target.value
+                // Allow empty value or valid numbers
+                if (value === '' || (parseInt(value) >= 1 && parseInt(value) <= 16)) {
+                  setGuests(value)
+                }
+              }}
+              onBlur={(e) => {
+                // If empty on blur, set to 1
+                if (e.target.value === '') {
+                  setGuests('1')
+                }
+              }}
               className="pl-10 bg-white/20 border-white/20 text-white h-12 w-24"
             />
           </div>

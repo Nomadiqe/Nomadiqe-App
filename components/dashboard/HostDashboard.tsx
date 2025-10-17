@@ -379,11 +379,17 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 {properties.map((property: any) => (
                   <Card key={property.id} className="overflow-hidden">
                     <div className="relative">
-                      <img
-                        src={property.images[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'}
-                        alt={property.title}
-                        className="w-full h-48 object-cover"
-                      />
+                      {property.images && property.images.length > 0 ? (
+                        <img
+                          src={property.images[0]}
+                          alt={property.title}
+                          className="w-full h-48 object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-muted flex items-center justify-center">
+                          <Camera className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                      )}
                       <div className="absolute top-3 right-3">
                         <Badge variant={property.isActive ? 'default' : 'secondary'}>
                           {property.isActive ? 'Published' : 'Under Review'}

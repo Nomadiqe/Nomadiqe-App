@@ -81,7 +81,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
     bedrooms: 1,
     bathrooms: 1,
     amenities: Object.keys(PROPERTY_AMENITIES).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-    photos: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'], // Demo photo
+    photos: [],
     pricing: {
       basePrice: 100,
       cleaningFee: 25,

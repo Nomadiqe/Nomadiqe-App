@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/theme-toggle'
 import {
   User,
   LogOut,
@@ -97,7 +96,6 @@ export function Navigation() {
 
             {/* Desktop Right Menu */}
             <div className="flex items-center space-x-2">
-              <ThemeToggle />
               {session ? (
                 <div className="relative group">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -230,7 +228,6 @@ export function Navigation() {
 
           {/* Mobile Right Menu */}
           <div className="flex items-center space-x-2">
-            <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"

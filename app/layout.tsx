@@ -76,7 +76,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Navigation />
-            <main>
+            <main className="pb-16 md:pb-0">
               {children}
             </main>
             <Toaster />

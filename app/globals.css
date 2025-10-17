@@ -192,7 +192,12 @@
   color: hsl(200 90% 55%) !important;
 }
 
-/* Dark mode zoom controls */
+/* Hide zoom controls - users can pinch/double-tap to zoom */
+.leaflet-control-zoom {
+  display: none !important;
+}
+
+/* Dark mode zoom controls (keeping for reference but hidden) */
 .sicilian-map-dark .leaflet-control-zoom a {
   background-color: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;

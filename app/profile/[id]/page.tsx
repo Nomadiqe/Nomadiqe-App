@@ -68,7 +68,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
-  const avatarUrl = dbUser.image || dbUser.profilePictureUrl || undefined
+  const avatarUrl = dbUser.profilePictureUrl || dbUser.image || undefined
   const isOwnProfile = session?.user?.id === dbUser.id
 
   const posts = postsRaw.map((p: any) => ({

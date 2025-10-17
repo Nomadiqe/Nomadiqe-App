@@ -56,6 +56,7 @@ interface SearchResultsProps {
 
 export function SearchResultsImproved({ properties }: SearchResultsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'split'>('split')
+  const [isMobileListView, setIsMobileListView] = useState(false)
   const validMapProperties = properties.filter(p => p.latitude && p.longitude)
   const searchParams = useSearchParams()
 
@@ -68,8 +69,8 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header - Compact */}
-      <div className="flex items-center justify-between mb-4 shrink-0">
+      {/* Desktop Header - Compact */}
+      <div className="hidden sm:flex items-center justify-between mb-4 shrink-0">
         <div className="flex items-center gap-4">
           {/* Desktop Filters Sheet */}
           <Sheet>
@@ -77,7 +78,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden lg:flex items-center gap-2"
+                className="flex items-center gap-2"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
@@ -111,47 +112,21 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
             variant={viewMode === 'grid' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('grid')}
-            className="hidden sm:flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <Grid3x3 className="w-4 h-4" />
-            Grid
+            List
           </Button>
           <Button
             variant={viewMode === 'split' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('split')}
-            className="hidden sm:flex items-center gap-2"
+            className="flex items-center gap-2"
             disabled={validMapProperties.length === 0}
           >
             <Map className="w-4 h-4" />
-            Split View
+            Map
           </Button>
-
-          {/* Mobile Map Dialog */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="sm:hidden"
-                disabled={validMapProperties.length === 0}
-              >
-                <Map className="w-4 h-4 mr-2" />
-                Map
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] w-full h-[85vh]">
-              <DialogHeader>
-                <DialogTitle>Property Locations</DialogTitle>
-                <DialogDescription>
-                  {validMapProperties.length} {validMapProperties.length === 1 ? 'property' : 'properties'} with location data
-                </DialogDescription>
-              </DialogHeader>
-              <div className="h-[calc(85vh-6rem)] mt-4">
-                <PropertyMap properties={properties} />
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
@@ -163,53 +138,168 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
             <p className="text-sm text-muted-foreground">Try adjusting your search criteria</p>
           </div>
         </div>
-      ) : viewMode === 'grid' ? (
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                id={property.id}
-                title={property.title}
-                location={`${property.city}, ${property.country}`}
-                price={property.price}
-                rating={property.averageRating}
-                image={property.images[0] || '/placeholder-property.jpg'}
-                guests={property.maxGuests}
-                bedrooms={property.bedrooms}
-                currency={property.currency}
-              />
-            ))}
-          </div>
-        </div>
       ) : (
-        <div className="flex-1 flex gap-6 overflow-hidden">
-          {/* Map - 50% - Hidden on mobile */}
-          <div className="hidden sm:block w-1/2 rounded-lg overflow-hidden border border-border">
-            <PropertyMap properties={properties} />
+        <>
+          {/* Mobile View - Map with controls or List */}
+          <div className="sm:hidden flex-1 relative">
+            {!isMobileListView ? (
+              <>
+                {/* Full-height Map */}
+                <div className="absolute inset-0 rounded-lg overflow-hidden border border-border">
+                  <PropertyMap properties={properties} />
+                </div>
+
+                {/* Floating Controls Overlay */}
+                <div className="absolute top-3 left-3 right-3 z-[1000] flex gap-2">
+                  {/* Search Input */}
+                  <div className="flex-1 bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg">
+                    <input
+                      type="text"
+                      placeholder="Search location..."
+                      defaultValue={searchParams.get('location') || ''}
+                      className="w-full px-4 py-2.5 bg-transparent border-none outline-none text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const params = new URLSearchParams(searchParams.toString())
+                          params.set('location', e.currentTarget.value)
+                          window.location.href = `/search?${params.toString()}`
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* Filter Button */}
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button
+                        size="icon"
+                        className="h-11 w-11 shadow-lg bg-background/95 backdrop-blur-sm hover:bg-background"
+                        variant="outline"
+                      >
+                        <SlidersHorizontal className="w-5 h-5" />
+                        {activeFiltersCount > 0 && (
+                          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                            {activeFiltersCount}
+                          </Badge>
+                        )}
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="bottom" className="h-[85vh]">
+                      <SheetHeader>
+                        <SheetTitle>Filters</SheetTitle>
+                        <SheetDescription>
+                          Refine your search with these filters
+                        </SheetDescription>
+                      </SheetHeader>
+                      <div className="mt-6 overflow-y-auto max-h-[calc(85vh-8rem)]">
+                        <SearchFiltersContent />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
+
+                {/* Toggle to List View Button */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                  <Button
+                    onClick={() => setIsMobileListView(true)}
+                    className="shadow-lg"
+                    variant="default"
+                  >
+                    <Grid3x3 className="w-4 h-4 mr-2" />
+                    Show List ({properties.length})
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* List View */}
+                <div className="h-full overflow-y-auto">
+                  <div className="grid gap-4">
+                    {properties.map((property) => (
+                      <PropertyCard
+                        key={property.id}
+                        id={property.id}
+                        title={property.title}
+                        location={`${property.city}, ${property.country}`}
+                        price={property.price}
+                        rating={property.averageRating}
+                        image={property.images[0] || '/placeholder-property.jpg'}
+                        guests={property.maxGuests}
+                        bedrooms={property.bedrooms}
+                        currency={property.currency}
+                        variant="list"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Toggle to Map View Button */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                  <Button
+                    onClick={() => setIsMobileListView(false)}
+                    className="shadow-lg"
+                    variant="default"
+                  >
+                    <Map className="w-4 h-4 mr-2" />
+                    Show Map
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
 
-          {/* List - 50% on desktop, full width on mobile */}
-          <div className="w-full sm:w-1/2 overflow-y-auto">
-            <div className="grid gap-4 pr-2">
-              {properties.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  id={property.id}
-                  title={property.title}
-                  location={`${property.city}, ${property.country}`}
-                  price={property.price}
-                  rating={property.averageRating}
-                  image={property.images[0] || '/placeholder-property.jpg'}
-                  guests={property.maxGuests}
-                  bedrooms={property.bedrooms}
-                  currency={property.currency}
-                  variant="list"
-                />
-              ))}
-            </div>
+          {/* Desktop View - Grid or Split */}
+          <div className="hidden sm:block flex-1">
+            {viewMode === 'grid' ? (
+              <div className="h-full overflow-y-auto">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {properties.map((property) => (
+                    <PropertyCard
+                      key={property.id}
+                      id={property.id}
+                      title={property.title}
+                      location={`${property.city}, ${property.country}`}
+                      price={property.price}
+                      rating={property.averageRating}
+                      image={property.images[0] || '/placeholder-property.jpg'}
+                      guests={property.maxGuests}
+                      bedrooms={property.bedrooms}
+                      currency={property.currency}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-6 h-full overflow-hidden">
+                {/* Map - 50% */}
+                <div className="w-1/2 rounded-lg overflow-hidden border border-border">
+                  <PropertyMap properties={properties} />
+                </div>
+
+                {/* List - 50% */}
+                <div className="w-1/2 overflow-y-auto">
+                  <div className="grid gap-4 pr-2">
+                    {properties.map((property) => (
+                      <PropertyCard
+                        key={property.id}
+                        id={property.id}
+                        title={property.title}
+                        location={`${property.city}, ${property.country}`}
+                        price={property.price}
+                        rating={property.averageRating}
+                        image={property.images[0] || '/placeholder-property.jpg'}
+                        guests={property.maxGuests}
+                        bedrooms={property.bedrooms}
+                        currency={property.currency}
+                        variant="list"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        </>
       )}
     </div>
   )

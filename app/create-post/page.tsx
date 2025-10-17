@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/ui/image-upload'
+import { PropertySearch } from '@/components/ui/property-search'
 import { useToast } from '@/hooks/use-toast'
 import {
   MapPin,
@@ -117,7 +118,7 @@ export default function CreatePostPage() {
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
-              onClick={() => router.back()}
+              onClick={() => router.push('/')}
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -168,21 +169,13 @@ export default function CreatePostPage() {
                 <Home className="w-4 h-4" />
                 <span>Link a property (optional)</span>
               </label>
-              <select
-                value={selectedProperty || ''}
-                onChange={(e) => setSelectedProperty(e.target.value || null)}
-                className="w-full p-3 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-nomadiqe-500"
+              <PropertySearch
+                properties={properties}
+                value={selectedProperty}
+                onChange={setSelectedProperty}
                 disabled={isLoadingProperties}
-              >
-                <option value="">
-                  {isLoadingProperties ? 'Loading properties...' : 'Select a property...'}
-                </option>
-                {properties.map((property) => (
-                  <option key={property.id} value={property.id}>
-                    {property.title} - {property.location}
-                  </option>
-                ))}
-              </select>
+                placeholder={isLoadingProperties ? 'Loading properties...' : 'Search properties...'}
+              />
             </div>
 
             {/* Images */}
@@ -210,7 +203,7 @@ export default function CreatePostPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.back()}
+                onClick={() => router.push('/')}
               >
                 Cancel
               </Button>

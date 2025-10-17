@@ -97,6 +97,7 @@ export function Navigation() {
 
             {/* Desktop Right Menu */}
             <div className="flex items-center space-x-2">
+              <ThemeToggle />
               {session ? (
                 <div className="relative group">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -114,7 +115,6 @@ export function Navigation() {
                           </div>
                         </Link>
                       )}
-                      <ThemeToggle />
                       <button
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center"
@@ -228,18 +228,21 @@ export function Navigation() {
             <span className="text-xl font-bold text-primary">Nomadiqe</span>
           </Link>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </Button>
+          {/* Mobile Right Menu */}
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Dropdown Menu */}
@@ -258,7 +261,6 @@ export function Navigation() {
                       Admin
                     </Link>
                   )}
-                  <ThemeToggle />
                   <button
                     onClick={() => {
                       handleSignOut()
@@ -272,7 +274,6 @@ export function Navigation() {
                 </>
               ) : (
                 <div className="flex flex-col space-y-2 pt-2">
-                  <ThemeToggle />
                   <Button variant="outline" asChild className="w-full">
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In

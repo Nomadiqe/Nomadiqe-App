@@ -65,32 +65,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header - Hidden on mobile */}
-      <section className="hidden md:block relative bg-primary/5 border-b border-border py-8">
-        <div className="max-w-4xl mx-auto px-4 relative">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-primary">
-                {session ? 'Discover' : 'Discover'}
-              </h1>
-              <p className="text-muted-foreground text-sm max-w-2xl">
-                {session
-                  ? 'See the latest posts from the community'
-                  : 'Stories and experiences from travelers around the world'}
-              </p>
-            </div>
-            {session && (
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200">
-                <Link href="/create-post" className="flex items-center space-x-2">
-                  <Plus className="w-4 h-4" />
-                  <span>Create Post</span>
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* Main Feed */}
       <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto space-y-6">

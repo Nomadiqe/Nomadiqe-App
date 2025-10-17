@@ -13,7 +13,8 @@ import {
   Home,
   Compass,
   Shield,
-  Search
+  Search,
+  Plus
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -83,6 +84,15 @@ export function Navigation() {
                   </Link>
                 )
               })}
+              {session && (
+                <Link
+                  href="/create-post"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="font-medium">Crea Post</span>
+                </Link>
+              )}
             </div>
 
             {/* Desktop Right Menu */}

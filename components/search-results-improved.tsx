@@ -199,14 +199,14 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 </div>
 
                 {/* Toggle to List View Button */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                <div className="absolute bottom-[68px] left-1/2 -translate-x-1/2 z-[1000]">
                   <Button
                     onClick={() => setIsMobileListView(true)}
                     className="shadow-lg"
                     variant="default"
                   >
                     <Grid3x3 className="w-4 h-4 mr-2" />
-                    Show List ({properties.length})
+                    List ({properties.length})
                   </Button>
                 </div>
               </>
@@ -234,14 +234,14 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 </div>
 
                 {/* Toggle to Map View Button */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+                <div className="absolute bottom-[68px] left-1/2 -translate-x-1/2 z-[1000]">
                   <Button
                     onClick={() => setIsMobileListView(false)}
                     className="shadow-lg"
                     variant="default"
                   >
                     <Map className="w-4 h-4 mr-2" />
-                    Show Map
+                    Map
                   </Button>
                 </div>
               </>

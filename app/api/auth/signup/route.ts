@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Create default traveler profile
+    // Create default traveler profile (will be updated based on user type selection)
     await prisma.travelerProfile.create({
       data: {
         userId: user.id,

@@ -40,6 +40,7 @@ model User {
   travelerProfile   TravelerProfile?
   guestPreferences  GuestPreferences?
   influencerProfile InfluencerProfile?
+  digitalCreatorProfile DigitalCreatorProfile?
 
   // Relationships
   properties        Property[]
@@ -143,6 +144,28 @@ model InfluencerProfile {
   updatedAt        DateTime          @updatedAt
 
   @@map("influencer_profiles")
+}
+
+model DigitalCreatorProfile {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentTypes     String[]          // Types of content they create (photos, videos, blogs, etc.)
+  platforms        String[]          // Platforms they're active on (Instagram, TikTok, YouTube, etc.)
+  portfolioUrl     String?
+  portfolioImages  String[]          // Portfolio showcase images
+  collaborationTypes String[]        // Types of collaborations they do
+  rates            Json?             // Pricing and rates information
+  availability     String?           // General availability info
+  location         String?           // Creator's location
+  languages        String[]          // Languages they speak
+  specialties      String[]          // Special areas of expertise
+  equipment        String[]          // Equipment they have access to
+  teamSize         Int?              // Size of their team if any
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@map("digital_creator_profiles")
 }
 
 // Social media connections
@@ -436,6 +459,7 @@ enum UserRole {
   HOST
   INFLUENCER
   TRAVELER
+  DIGITAL_CREATOR
   ADMIN
 }
 

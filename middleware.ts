@@ -10,6 +10,7 @@ export default withAuth(
     if (pathname.startsWith('/onboarding') && token?.onboardingStatus === 'COMPLETED') {
       const dashboardUrl = token.role === 'HOST' ? '/dashboard/host'
         : token.role === 'INFLUENCER' ? '/dashboard/influencer'
+        : token.role === 'DIGITAL_CREATOR' ? '/dashboard/creator'
         : '/dashboard'
       return NextResponse.redirect(new URL(dashboardUrl, req.url))
     }
@@ -21,10 +22,16 @@ export default withAuth(
 
     // Check if authenticated user needs onboarding
     if (token && !pathname.startsWith('/onboarding')) {
-      // Only redirect to onboarding if onboardingStatus is not COMPLETED
-      // and user has GUEST role (new users start as GUEST)
-      if (token.role === 'GUEST' && token.onboardingStatus !== 'COMPLETED') {
-        return NextResponse.redirect(new URL('/onboarding/profile-setup', req.url))
+      // Redirect to user type selection if user hasn't completed onboarding
+      if (token.onboardingStatus !== 'COMPLETED') {
+        // If user is on default TRAVELER role and hasn't been through user type selection
+        if (token.role === 'TRAVELER' && !pathname.includes('/onboarding/user-type')) {
+          return NextResponse.redirect(new URL('/onboarding/user-type', req.url))
+        }
+        // If user has completed user type selection but not profile setup
+        else if (token.role !== 'TRAVELER' && !pathname.includes('/onboarding/profile-setup')) {
+          return NextResponse.redirect(new URL('/onboarding/profile-setup', req.url))
+        }
       }
     }
 
@@ -35,6 +42,11 @@ export default withAuth(
 
     // Check if user is trying to access host routes without being a host
     if (pathname.startsWith('/host') && !['HOST', 'ADMIN'].includes(token?.role as string)) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+
+    // Check if user is trying to access creator routes without being a creator
+    if (pathname.startsWith('/creator') && !['DIGITAL_CREATOR', 'ADMIN'].includes(token?.role as string)) {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
 

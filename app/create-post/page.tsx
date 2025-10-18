@@ -5,21 +5,14 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/ui/image-upload'
-import { PropertySearch } from '@/components/ui/property-search'
 import { useToast } from '@/hooks/use-toast'
 import {
   MapPin,
   Image as ImageIcon,
   X,
-  Home,
   ArrowLeft
 } from 'lucide-react'
 
-interface Property {
-  id: string
-  title: string
-  location: string
-}
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -28,32 +21,8 @@ export default function CreatePostPage() {
   const [content, setContent] = useState('')
   const [location, setLocation] = useState('')
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
-  const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [properties, setProperties] = useState<Property[]>([])
-  const [isLoadingProperties, setIsLoadingProperties] = useState(false)
 
-  // Fetch properties from database
-  useEffect(() => {
-    const fetchProperties = async () => {
-      if (!session?.user?.id) return
-
-      setIsLoadingProperties(true)
-      try {
-        const response = await fetch('/api/properties')
-        if (response.ok) {
-          const data = await response.json()
-          setProperties(data)
-        }
-      } catch (error) {
-        console.error('Error fetching properties:', error)
-      } finally {
-        setIsLoadingProperties(false)
-      }
-    }
-
-    fetchProperties()
-  }, [session?.user?.id])
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,7 +50,6 @@ export default function CreatePostPage() {
           content,
           location,
           images: uploadedImages,
-          propertyId: selectedProperty,
         }),
       })
 
@@ -163,20 +131,6 @@ export default function CreatePostPage() {
               />
             </div>
 
-            {/* Property Link */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center space-x-2">
-                <Home className="w-4 h-4" />
-                <span>Link a property (optional)</span>
-              </label>
-              <PropertySearch
-                properties={properties}
-                value={selectedProperty}
-                onChange={setSelectedProperty}
-                disabled={isLoadingProperties}
-                placeholder={isLoadingProperties ? 'Loading properties...' : 'Search properties...'}
-              />
-            </div>
 
             {/* Images */}
             <div className="space-y-4">

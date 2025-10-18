@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, Heart } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { PostCard } from '@/components/post-card'
+import { SimpleSearchBar } from '@/components/simple-search-bar'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
@@ -164,6 +165,8 @@ export default async function HomePage() {
         </div>
       </section>
 
+             {/* Search Bar - Only show for authenticated users */}
+             {session && <SimpleSearchBar />}
     </div>
   )
 }

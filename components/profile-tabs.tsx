@@ -68,6 +68,18 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
 
       {userRole === 'HOST' && (
         <TabsContent value="properties" className="mt-6">
+          {/* Add Property Button - Always visible for hosts */}
+          {isOwnProfile && (
+            <div className="mb-6">
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="/host/create-property">
+                  <Home className="w-4 h-4 mr-2" />
+                  Add Property
+                </Link>
+              </Button>
+            </div>
+          )}
+
           {properties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.map((property: any) => (

@@ -18,6 +18,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ProfileActions } from '@/components/profile-actions'
 import { ProfileTabs } from '@/components/profile-tabs'
+import { SocialLinks } from '@/components/social-icons'
 
 interface ProfilePageProps {
   params: {
@@ -38,6 +39,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       username: true,
       image: true,
       profilePictureUrl: true,
+      backgroundPictureUrl: true,
       bio: true,
       location: true,
       phone: true,
@@ -51,7 +53,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw] = await Promise.all([
+  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw, socialConnections] = await Promise.all([
     prisma.post.findMany({
       where: { authorId: dbUser.id, isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -73,6 +75,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         _count: { select: { reviews: true } },
       },
     }) : [],
+    prisma.socialConnection.findMany({
+      where: { userId: dbUser.id },
+      select: {
+        platform: true,
+        username: true,
+        followerCount: true,
+        isPrimary: true,
+      },
+    }),
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
@@ -118,6 +129,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     id: dbUser.id,
     name: displayName,
     image: avatarUrl,
+    backgroundPictureUrl: dbUser.backgroundPictureUrl || undefined,
     bio: dbUser.bio || '',
     location: dbUser.location || '',
     phone: dbUser.phone || '',
@@ -125,6 +137,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     role: dbUser.role,
     joinedDate: dbUser.createdAt.toISOString(),
     isVerified: dbUser.isVerified,
+    socialConnections: socialConnections,
     stats: {
       posts: postsCount,
       followers: followersCount,
@@ -135,8 +148,20 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Profile Background */}
+      {user.backgroundPictureUrl && (
+        <div className="relative h-64 md:h-80 overflow-hidden">
+          <img
+            src={user.backgroundPictureUrl}
+            alt={`${user.name} background`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        </div>
+      )}
+      
       {/* Profile Header */}
-      <section className="bg-card border-b border-border">
+      <section className={`${user.backgroundPictureUrl ? '-mt-20 relative z-10' : 'bg-card border-b border-border'}`}>
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-8">
             {/* Profile Image */}
@@ -232,6 +257,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   </Card>
                 )}
               </div>
+
+              {/* Social Media Links */}
+              {user.socialConnections && user.socialConnections.length > 0 && (
+                <div className="flex items-center space-x-2">
+                  <SocialLinks 
+                    socialConnections={user.socialConnections} 
+                    size="md" 
+                    showCount={true}
+                    className="flex-wrap gap-3"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

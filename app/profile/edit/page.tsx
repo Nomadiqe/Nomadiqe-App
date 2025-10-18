@@ -20,6 +20,7 @@ export default async function EditProfilePage() {
       username: true,
       image: true,
       profilePictureUrl: true,
+      backgroundPictureUrl: true,
       bio: true,
       location: true,
       phone: true,

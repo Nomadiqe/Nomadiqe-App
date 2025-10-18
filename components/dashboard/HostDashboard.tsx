@@ -27,7 +27,8 @@ import {
   MapPin,
   Wifi,
   Car,
-  Heart
+  Heart,
+  UserPlus
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -92,30 +93,6 @@ export default function HostDashboard({ user }: HostDashboardProps) {
       {/* Header */}
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, {user.fullName || user.name}! 👋
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {isNewHost ? 'Thanks for joining as a host! Here\'s your dashboard.' : 'Manage your properties and bookings'}
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" asChild>
-                <Link href="/profile">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link href="/host/create-property">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Property
-                </Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -352,6 +329,13 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     <Link href="/host/analytics">
                       <TrendingUp className="h-6 w-6" />
                       <span className="text-sm">View Analytics</span>
+                    </Link>
+                  </Button>
+
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
+                    <Link href="/host/kol-bed">
+                      <UserPlus className="h-6 w-6" />
+                      <span className="text-sm">KOL$BED</span>
                     </Link>
                   </Button>
                 </div>

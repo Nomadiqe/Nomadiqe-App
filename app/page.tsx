@@ -9,6 +9,19 @@ import { prisma } from '@/lib/db'
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
+  
+  // Get current user data if authenticated
+  let currentUser = null
+  if (session?.user?.id) {
+    currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        image: true,
+        profilePictureUrl: true,
+      }
+    })
+  }
 
   let posts: any[] = []
 
@@ -85,6 +98,33 @@ export default async function HomePage() {
                     </Button>
                     <Button asChild size="sm">
                       <Link href="/auth/signup">Sign Up</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Profile picture reminder for authenticated users without avatar */}
+          {session && currentUser && (!currentUser.image && !currentUser.profilePictureUrl) && (
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-lg font-semibold mb-1 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Complete Your Profile
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Add a profile picture to personalize your posts and connect better with the community
+                    </p>
+                  </div>
+                  <div className="flex gap-3 flex-shrink-0">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href="/profile/edit">Add Photo</Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href="/profile">View Profile</Link>
                     </Button>
                   </div>
                 </div>

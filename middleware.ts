@@ -65,6 +65,7 @@ export default withAuth(
           pathname.startsWith('/onboarding') ||
           pathname.startsWith('/api/onboarding') ||
           pathname.startsWith('/search') ||
+          pathname.startsWith('/explore') ||
           pathname.startsWith('/experiences') ||
           pathname.startsWith('/property/') ||
           pathname.startsWith('/terms') ||

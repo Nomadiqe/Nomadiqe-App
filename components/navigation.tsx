@@ -32,11 +32,11 @@ export function Navigation() {
   const navItems = session ? [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
     { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
   ]
 
   const mobileNavItems = session ? [
@@ -47,10 +47,10 @@ export function Navigation() {
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
   ]
 
   return (

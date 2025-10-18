@@ -199,6 +199,28 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 />
               </div>
 
+              {/* Stats - Positioned next to profile picture */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.posts}</span>
+                  <span className="text-sm text-muted-foreground">posts</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.followers}</span>
+                  <span className="text-sm text-muted-foreground">followers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.following}</span>
+                  <span className="text-sm text-muted-foreground">following</span>
+                </div>
+                {user.role === 'HOST' && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-semibold">{user.stats.properties}</span>
+                    <span className="text-sm text-muted-foreground">properties</span>
+                  </div>
+                )}
+              </div>
+
               {/* Bio */}
               <p className="text-foreground leading-relaxed">{user.bio}</p>
 
@@ -225,36 +247,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     <Mail className="w-4 h-4" />
                     <span>{user.email}</span>
                   </div>
-                )}
-              </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-6 pt-4">
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.posts}</p>
-                    <p className="text-xs text-muted-foreground">Posts</p>
-                  </CardContent>
-                </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.followers}</p>
-                    <p className="text-xs text-muted-foreground">Followers</p>
-                  </CardContent>
-                </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.following}</p>
-                    <p className="text-xs text-muted-foreground">Following</p>
-                  </CardContent>
-                </Card>
-                {user.role === 'HOST' && (
-                  <Card className="flex-1">
-                    <CardContent className="p-4 text-center">
-                      <p className="text-2xl font-bold">{user.stats.properties}</p>
-                      <p className="text-xs text-muted-foreground">Properties</p>
-                    </CardContent>
-                  </Card>
                 )}
               </div>
 

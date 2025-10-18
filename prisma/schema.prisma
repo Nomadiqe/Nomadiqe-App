@@ -33,12 +33,14 @@ model User {
   location      String?
   phone         String?
   isVerified    Boolean   @default(false)
+  backgroundPictureUrl String? // Profile background image
 
   // Profile relationships
   hostProfile       HostProfile?
   travelerProfile   TravelerProfile?
   guestPreferences  GuestPreferences?
   influencerProfile InfluencerProfile?
+  digitalCreatorProfile DigitalCreatorProfile?
 
   // Relationships
   properties        Property[]
@@ -56,6 +58,10 @@ model User {
   // Onboarding relationships
   onboardingProgress OnboardingProgress?
   socialConnections  SocialConnection[]
+
+  // KOL$BED relationships
+  sentKolBedMessages     KolBedMessage[] @relation("KolBedSender")
+  receivedKolBedMessages KolBedMessage[] @relation("KolBedReceiver")
 
   @@map("users")
 }
@@ -140,6 +146,28 @@ model InfluencerProfile {
   @@map("influencer_profiles")
 }
 
+model DigitalCreatorProfile {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentTypes     String[]          // Types of content they create (photos, videos, blogs, etc.)
+  platforms        String[]          // Platforms they're active on (Instagram, TikTok, YouTube, etc.)
+  portfolioUrl     String?
+  portfolioImages  String[]          // Portfolio showcase images
+  collaborationTypes String[]        // Types of collaborations they do
+  rates            Json?             // Pricing and rates information
+  availability     String?           // General availability info
+  location         String?           // Creator's location
+  languages        String[]          // Languages they speak
+  specialties      String[]          // Special areas of expertise
+  equipment        String[]          // Equipment they have access to
+  teamSize         Int?              // Size of their team if any
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@map("digital_creator_profiles")
+}
+
 // Social media connections
 model SocialConnection {
   id               String    @id @default(cuid())
@@ -194,6 +222,7 @@ model Property {
   availability Availability[]
   posts       Post[]
   ads         Ad[]
+  kolBedMessages KolBedMessage[]
 
   @@map("properties")
 }
@@ -430,6 +459,7 @@ enum UserRole {
   HOST
   INFLUENCER
   TRAVELER
+  DIGITAL_CREATOR
   ADMIN
 }
 
@@ -483,4 +513,29 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+// KOL$BED collaboration messages
+model KolBedMessage {
+  id            String   @id @default(cuid())
+  senderId      String   // Creator who sent the message
+  receiverId    String   // Host who received the message
+  propertyId    String?  // Property being discussed
+  message       String
+  status        KolBedStatus @default(PENDING)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sender        User     @relation("KolBedSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver      User     @relation("KolBedReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  property      Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@map("kol_bed_messages")
+}
+
+enum KolBedStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
 }

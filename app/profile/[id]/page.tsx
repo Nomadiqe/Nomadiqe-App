@@ -18,6 +18,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ProfileActions } from '@/components/profile-actions'
 import { ProfileTabs } from '@/components/profile-tabs'
+import { SocialLinks } from '@/components/social-icons'
 
 interface ProfilePageProps {
   params: {
@@ -38,6 +39,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       username: true,
       image: true,
       profilePictureUrl: true,
+      backgroundPictureUrl: true,
       bio: true,
       location: true,
       phone: true,
@@ -51,7 +53,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount] = await Promise.all([
+  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw, socialConnections] = await Promise.all([
     prisma.post.findMany({
       where: { authorId: dbUser.id, isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -65,6 +67,23 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     prisma.follow.count({ where: { followingId: dbUser.id } }),
     prisma.follow.count({ where: { followerId: dbUser.id } }),
     prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
+    dbUser.role === 'HOST' ? prisma.property.findMany({
+      where: { hostId: dbUser.id, isActive: true },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        reviews: { select: { rating: true } },
+        _count: { select: { reviews: true } },
+      },
+    }) : [],
+    prisma.socialConnection.findMany({
+      where: { userId: dbUser.id },
+      select: {
+        platform: true,
+        username: true,
+        followerCount: true,
+        isPrimary: true,
+      },
+    }),
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
@@ -88,10 +107,29 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     isLiked: Array.isArray(p.likes) ? p.likes.length > 0 : false,
   }))
 
+  const properties = propertiesRaw.map((property: any) => ({
+    id: property.id,
+    title: property.title,
+    description: property.description,
+    images: property.images as string[],
+    location: property.location,
+    price: property.price,
+    currency: property.currency,
+    maxGuests: property.maxGuests,
+    bedrooms: property.bedrooms,
+    bathrooms: property.bathrooms,
+    averageRating: property.reviews.length > 0 
+      ? property.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / property.reviews.length 
+      : 0,
+    reviewsCount: property._count?.reviews || 0,
+    createdAt: property.createdAt.toISOString(),
+  }))
+
   const user = {
     id: dbUser.id,
     name: displayName,
     image: avatarUrl,
+    backgroundPictureUrl: dbUser.backgroundPictureUrl || undefined,
     bio: dbUser.bio || '',
     location: dbUser.location || '',
     phone: dbUser.phone || '',
@@ -99,6 +137,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     role: dbUser.role,
     joinedDate: dbUser.createdAt.toISOString(),
     isVerified: dbUser.isVerified,
+    socialConnections: socialConnections,
     stats: {
       posts: postsCount,
       followers: followersCount,
@@ -109,8 +148,20 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Profile Background */}
+      {user.backgroundPictureUrl && (
+        <div className="relative h-64 md:h-80 overflow-hidden">
+          <img
+            src={user.backgroundPictureUrl}
+            alt={`${user.name} background`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        </div>
+      )}
+      
       {/* Profile Header */}
-      <section className="bg-card border-b border-border">
+      <section className={`${user.backgroundPictureUrl ? '-mt-20 relative z-10' : 'bg-card border-b border-border'}`}>
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-8">
             {/* Profile Image */}
@@ -148,6 +199,28 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 />
               </div>
 
+              {/* Stats - Positioned next to profile picture */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.posts}</span>
+                  <span className="text-sm text-muted-foreground">posts</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.followers}</span>
+                  <span className="text-sm text-muted-foreground">followers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">{user.stats.following}</span>
+                  <span className="text-sm text-muted-foreground">following</span>
+                </div>
+                {user.role === 'HOST' && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-semibold">{user.stats.properties}</span>
+                    <span className="text-sm text-muted-foreground">properties</span>
+                  </div>
+                )}
+              </div>
+
               {/* Bio */}
               <p className="text-foreground leading-relaxed">{user.bio}</p>
 
@@ -177,35 +250,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 )}
               </div>
 
-              {/* Stats */}
-              <div className="flex items-center gap-6 pt-4">
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.posts}</p>
-                    <p className="text-xs text-muted-foreground">Posts</p>
-                  </CardContent>
-                </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.followers}</p>
-                    <p className="text-xs text-muted-foreground">Followers</p>
-                  </CardContent>
-                </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.following}</p>
-                    <p className="text-xs text-muted-foreground">Following</p>
-                  </CardContent>
-                </Card>
-                {user.role === 'HOST' && (
-                  <Card className="flex-1">
-                    <CardContent className="p-4 text-center">
-                      <p className="text-2xl font-bold">{user.stats.properties}</p>
-                      <p className="text-xs text-muted-foreground">Properties</p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+              {/* Social Media Links */}
+              {user.socialConnections && user.socialConnections.length > 0 && (
+                <div className="flex items-center space-x-2">
+                  <SocialLinks 
+                    socialConnections={user.socialConnections} 
+                    size="md" 
+                    showCount={true}
+                    className="flex-wrap gap-3"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -215,6 +270,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <section className="max-w-4xl mx-auto px-4 py-8">
         <ProfileTabs
           posts={posts}
+          properties={properties}
           userRole={user.role}
           isOwnProfile={isOwnProfile}
           userName={user.name}

@@ -10,12 +10,13 @@ import { ThemeToggle } from '@/components/theme-toggle'
 
 interface ProfileTabsProps {
   posts: any[]
+  properties?: any[]
   userRole: string
   isOwnProfile: boolean
   userName: string
 }
 
-export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: ProfileTabsProps) {
+export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, userName }: ProfileTabsProps) {
   const EmptyState = ({ icon: Icon, title, description, actionLabel, actionHref }: any) => (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -67,17 +68,70 @@ export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: Profile
 
       {userRole === 'HOST' && (
         <TabsContent value="properties" className="mt-6">
-          <EmptyState
-            icon={Home}
-            title="No properties listed"
-            description={
-              isOwnProfile
-                ? 'List your first property to start hosting!'
-                : `${userName} hasn't listed any properties yet.`
-            }
-            actionLabel={isOwnProfile ? 'List Your Property' : undefined}
-            actionHref="/host/create-property"
-          />
+          {/* Add Property Button - Always visible for hosts */}
+          {isOwnProfile && (
+            <div className="mb-6">
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="/host/create-property">
+                  <Home className="w-4 h-4 mr-2" />
+                  Add Property
+                </Link>
+              </Button>
+            </div>
+          )}
+
+          {properties.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((property: any) => (
+                <Card key={property.id} className="overflow-hidden">
+                  <div className="aspect-video bg-muted">
+                    {property.images && property.images.length > 0 ? (
+                      <img
+                        src={property.images[0]}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Home className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-2 line-clamp-1">{property.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{property.description}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">
+                        {property.currency} {property.price}/night
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span>{property.averageRating.toFixed(1)}</span>
+                        <span className="text-muted-foreground">({property.reviewsCount})</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                      <span>{property.maxGuests} guests</span>
+                      <span>{property.bedrooms} bed{property.bedrooms !== 1 ? 's' : ''}</span>
+                      <span>{property.bathrooms} bath{property.bathrooms !== 1 ? 's' : ''}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Home}
+              title="No properties listed"
+              description={
+                isOwnProfile
+                  ? 'List your first property to start hosting!'
+                  : `${userName} hasn't listed any properties yet.`
+              }
+              actionLabel={isOwnProfile ? 'List Your Property' : undefined}
+              actionHref="/host/create-property"
+            />
+          )}
         </TabsContent>
       )}
 

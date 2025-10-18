@@ -5,12 +5,6 @@ import { Search, Bot, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { UserAvatar } from '@/components/user-avatar'
-
-interface SearchBarProps {
-  className?: string
-}
 
 interface User {
   id: string
@@ -37,7 +31,8 @@ interface ChatMessage {
   timestamp: Date
 }
 
-export function SearchBar({ className = '' }: SearchBarProps) {
+export function SimpleSearchBar() {
+  console.log('SimpleSearchBar component is rendering!')
   const [isExpanded, setIsExpanded] = useState(false)
   const [isAIMode, setIsAIMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -47,9 +42,6 @@ export function SearchBar({ className = '' }: SearchBarProps) {
   const [isAILoading, setIsAILoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  // Debug log
-  console.log('SearchBar component rendered')
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -163,22 +155,27 @@ export function SearchBar({ className = '' }: SearchBarProps) {
   }
 
   return (
-    <div className={`fixed bottom-24 right-4 z-[100] ${className}`}>
+    <div className="fixed bottom-20 left-4 right-4 z-[9999] md:left-auto md:w-80 md:right-4">
       {!isExpanded ? (
-        // Collapsed state - search button
-        <Button
-          onClick={() => setIsExpanded(true)}
-          className="h-12 w-12 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 bg-primary hover:bg-primary/90 border-2 border-background text-primary-foreground"
-          size="icon"
-        >
-          <Search className="h-5 w-5" />
-        </Button>
+        // Collapsed state - search button (mobile: full width, desktop: fixed width)
+        <div className="w-full md:w-auto">
+          <Button
+            onClick={() => {
+              console.log('Search button clicked!')
+              setIsExpanded(true)
+            }}
+            className="w-full h-12 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white border-2 border-white md:w-12"
+            size="icon"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+        </div>
       ) : (
-        // Expanded state - search bar
-        <Card className="w-80 shadow-2xl border-2">
-          <CardContent className="p-4">
+        // Expanded state - search bar (mobile: full width, desktop: fixed width)
+        <Card className="w-full shadow-2xl border-2 md:w-80">
+          <CardContent className="p-3">
             <div className="space-y-3">
-              {/* Search Input */}
+              {/* Search Input - Mobile Layout */}
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -188,14 +185,14 @@ export function SearchBar({ className = '' }: SearchBarProps) {
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPress}
                     placeholder={isAIMode ? "Ask AI anything..." : "Search users..."}
-                    className="pl-10 pr-4 h-10"
+                    className="pl-10 pr-4 h-10 w-full"
                   />
                 </div>
                 <Button
                   onClick={toggleAIMode}
                   variant={isAIMode ? "default" : "outline"}
                   size="sm"
-                  className="h-10 px-3"
+                  className="h-10 px-3 flex-shrink-0"
                 >
                   {isAIMode ? <Bot className="h-4 w-4" /> : "AI"}
                 </Button>
@@ -203,20 +200,20 @@ export function SearchBar({ className = '' }: SearchBarProps) {
                   onClick={closeSearch}
                   variant="ghost"
                   size="sm"
-                  className="h-10 w-10 p-0"
+                  className="h-10 w-10 p-0 flex-shrink-0"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
 
               {/* Results Area */}
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-64 overflow-y-auto">
                 {isAIMode ? (
                   // AI Chat Mode
                   <div className="space-y-3">
                     {chatMessages.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Bot className="h-8 w-8 mx-auto mb-2" />
+                      <div className="text-center py-6 text-muted-foreground">
+                        <Bot className="h-6 w-6 mx-auto mb-2" />
                         <p className="text-sm">Start a conversation with AI</p>
                       </div>
                     )}
@@ -270,11 +267,11 @@ export function SearchBar({ className = '' }: SearchBarProps) {
                           window.location.href = `/profile/${user.id}`
                         }}
                       >
-                        <UserAvatar
-                          user={user}
-                          size="sm"
-                          linkToProfile={false}
-                        />
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-medium text-primary">
+                            {(user.fullName || user.name || 'U').charAt(0).toUpperCase()}
+                          </span>
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1">
                             <p className="font-medium text-sm truncate">
@@ -289,18 +286,10 @@ export function SearchBar({ className = '' }: SearchBarProps) {
                           <p className="text-xs text-muted-foreground truncate">
                             @{user.username || user.name?.toLowerCase()}
                           </p>
-                          {user.bio && (
-                            <p className="text-xs text-muted-foreground truncate mt-1">
-                              {user.bio}
-                            </p>
-                          )}
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex-shrink-0">
                           <p className="text-xs text-muted-foreground">
                             {user._count.followers} followers
-                          </p>
-                          <p className="text-xs text-muted-foreground capitalize">
-                            {user.role}
                           </p>
                         </div>
                       </div>

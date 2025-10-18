@@ -28,18 +28,17 @@ export function Navigation() {
     await signOut({ callbackUrl: '/' })
   }
 
-  // Desktop navigation items - filter based on authentication
+  // Show only Discover and Explore when not authenticated
   const navItems = session ? [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
     { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
   ]
 
-  // Mobile navigation items - filter based on authentication
   const mobileNavItems = session ? [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
@@ -48,10 +47,10 @@ export function Navigation() {
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/explore', label: 'Explore', icon: Search },
   ]
 
   return (
@@ -148,7 +147,7 @@ export function Navigation() {
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[1100] bg-background border-t border-border">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
         <div className="flex items-center justify-between h-16 px-2">
           {/* Left Navigation Items */}
           <div className="flex items-center justify-around flex-1">

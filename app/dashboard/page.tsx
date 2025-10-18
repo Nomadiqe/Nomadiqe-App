@@ -33,15 +33,6 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">
-            Welcome back, {session.user.name}!
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {isHost ? 'Manage your properties and bookings' : 'Discover your next adventure'}
-          </p>
-        </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">

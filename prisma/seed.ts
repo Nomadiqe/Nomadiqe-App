@@ -22,7 +22,7 @@ async function main() {
       bio: 'Passionate about sharing the beauty of the Alps with travelers from around the world. Local expert and mountain enthusiast.',
       location: 'Zermatt, Switzerland',
       phone: '+41 27 966 81 00',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      image: null,
       hostProfile: {
         create: {
           businessName: 'Alpine Retreats',
@@ -44,7 +44,7 @@ async function main() {
       bio: 'Architecture lover and city explorer. I help travelers discover the best urban experiences in Barcelona.',
       location: 'Barcelona, Spain',
       phone: '+34 93 285 38 32',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b332c7e0?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      image: null,
       hostProfile: {
         create: {
           businessName: 'Urban Escapes',
@@ -66,7 +66,7 @@ async function main() {
       bio: 'Digital nomad and adventure seeker. Love exploring new cultures and sharing travel experiences.',
       location: 'Currently in Europe',
       phone: '+1 555 123 4567',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      image: null,
       travelerProfile: {
         create: {
           preferences: {
@@ -92,7 +92,7 @@ async function main() {
       bio: 'Travel photographer and storyteller. Capturing memories one destination at a time.',
       location: 'London, UK',
       phone: '+44 20 7946 0958',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      image: null,
       travelerProfile: {
         create: {
           preferences: {
@@ -117,7 +117,7 @@ async function main() {
       bio: 'Beachfront property owner with deep knowledge of Balinese culture and hidden gems.',
       location: 'Ubud, Bali',
       phone: '+62 361 123456',
-      image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      image: null,
       hostProfile: {
         create: {
           businessName: 'Tropical Retreats Bali',
@@ -144,10 +144,7 @@ async function main() {
       bedrooms: 2,
       bathrooms: 1,
       amenities: ['WiFi', 'Kitchen', 'Fireplace', 'Mountain View', 'Parking'],
-      images: [
-        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       rules: ['No smoking', 'No pets', 'Quiet hours 10 PM - 8 AM'],
       isActive: true,
       isVerified: true,
@@ -171,10 +168,7 @@ async function main() {
       bedrooms: 1,
       bathrooms: 1,
       amenities: ['WiFi', 'Kitchen', 'Balcony', 'Air Conditioning', 'Washing Machine'],
-      images: [
-        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       rules: ['No smoking', 'No parties', 'Check-in after 3 PM'],
       isActive: true,
       isVerified: true,
@@ -198,10 +192,7 @@ async function main() {
       bedrooms: 3,
       bathrooms: 2,
       amenities: ['WiFi', 'Kitchen', 'Private Pool', 'Beach Access', 'Garden', 'Air Conditioning'],
-      images: [
-        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       rules: ['No smoking', 'No pets', 'Respect quiet hours'],
       isActive: true,
       isVerified: true,
@@ -218,9 +209,7 @@ async function main() {
       location: 'Barcelona, Spain',
       price: 45,
       currency: 'EUR',
-      images: [
-        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       contactInfo: 'cooking@localexperience.com',
       isActive: true,
     },
@@ -234,9 +223,7 @@ async function main() {
       location: 'Zermatt, Switzerland',
       price: 80,
       currency: 'EUR',
-      images: [
-        'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       contactInfo: 'hiking@localexperience.com',
       isActive: true,
     },
@@ -317,10 +304,7 @@ async function main() {
   const post1 = await prisma.post.create({
     data: {
       content: 'Just had the most incredible stay at this mountain cabin! The views were absolutely breathtaking and the fresh Alpine air was exactly what I needed. Thanks @Marco for being such an amazing host! 🏔️',
-      images: [
-        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       location: 'Zermatt, Switzerland',
       propertyId: property1.id,
       authorId: traveler1.id,
@@ -330,9 +314,7 @@ async function main() {
   const post2 = await prisma.post.create({
     data: {
       content: 'Barcelona never fails to amaze me! From the stunning architecture to the vibrant street life, this city has my heart. Currently exploring the Gothic Quarter and discovering hidden gems around every corner. 🏛️✨',
-      images: [
-        'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       location: 'Barcelona, Spain',
       authorId: host2.id,
     },
@@ -341,10 +323,7 @@ async function main() {
   const post3 = await prisma.post.create({
     data: {
       content: 'Sunset from our beachfront villa in Bali 🌅 There\'s something magical about the way the light dances on the water here. Grateful to share this slice of paradise with travelers from around the world.',
-      images: [
-        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       location: 'Ubud, Bali',
       propertyId: property3.id,
       authorId: host3.id,
@@ -354,9 +333,7 @@ async function main() {
   const post4 = await prisma.post.create({
     data: {
       content: 'Photography tip of the day: Golden hour lighting makes every travel photo 10x better! 📸 Currently capturing the magic of European countryside and loving every moment of this nomadic lifestyle.',
-      images: [
-        'https://images.unsplash.com/photo-1516680224141-86bc862537ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       location: 'Tuscany, Italy',
       authorId: traveler2.id,
     },
@@ -406,9 +383,7 @@ async function main() {
     data: {
       title: 'Featured: Alpine Mountain Cabin',
       description: 'Experience the Swiss Alps like never before! Book now for 20% off your first stay.',
-      images: [
-        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       link: '/property/1',
       priority: 10,
       propertyId: property1.id,
@@ -419,9 +394,7 @@ async function main() {
     data: {
       title: 'New in Barcelona: Modern City Loft',
       description: 'Discover Barcelona from this stylish loft in the heart of the city.',
-      images: [
-        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       link: '/property/2',
       priority: 8,
       propertyId: property2.id,
@@ -432,9 +405,7 @@ async function main() {
     data: {
       title: 'Paradise Found: Bali Villa',
       description: 'Escape to tropical bliss with private beach access and luxury amenities.',
-      images: [
-        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       link: '/property/3',
       priority: 9,
       propertyId: property3.id,

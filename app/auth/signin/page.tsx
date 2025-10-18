@@ -76,8 +76,8 @@ export default function SignInPage() {
   const hasSocialAuth = hasGoogleAuth || hasFacebookAuth || hasAppleAuth
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex justify-center bg-gradient-to-br from-background to-muted p-4 pt-12">
+      <div className="w-full max-w-md h-fit">
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">

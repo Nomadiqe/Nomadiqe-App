@@ -16,6 +16,7 @@ type EditableUser = {
   username?: string | null
   image?: string | null
   profilePictureUrl?: string | null
+  backgroundPictureUrl?: string | null
   bio?: string | null
   location?: string | null
   phone?: string | null
@@ -36,6 +37,7 @@ export default function EditProfileForm({ user }: EditProfileFormProps) {
   const [location, setLocation] = useState<string>(user.location || '')
   const [phone, setPhone] = useState<string>(user.phone || '')
   const [avatar, setAvatar] = useState<string | null>(user.profilePictureUrl || user.image || null)
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(user.backgroundPictureUrl || null)
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,6 +53,7 @@ export default function EditProfileForm({ user }: EditProfileFormProps) {
             location,
             phone,
             profilePicture: avatar || undefined,
+            backgroundPicture: backgroundImage || undefined,
           })
         })
 
@@ -93,6 +96,17 @@ export default function EditProfileForm({ user }: EditProfileFormProps) {
                     <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username" />
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Background Picture</label>
+                <SingleImageUpload
+                  value={backgroundImage || undefined}
+                  onChange={(url) => setBackgroundImage(url)}
+                  variant="cover"
+                  size="lg"
+                  placeholder="Upload background image"
+                />
               </div>
 
               <div>

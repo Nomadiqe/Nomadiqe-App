@@ -64,8 +64,13 @@ interface ListingWizardProps {
 }
 
 export default function ListingWizard({ onComplete }: ListingWizardProps) {
-  const { role, completeStep, setStep } = useOnboarding()
+  const onboardingContext = useOnboarding()
   const router = useRouter()
+  
+  // Make onboarding context optional for standalone use
+  const role = onboardingContext?.role
+  const completeStep = onboardingContext?.completeStep
+  const setStep = onboardingContext?.setStep
   
   const [currentStep, setCurrentStep] = useState<'basic' | 'location' | 'details' | 'amenities' | 'photos' | 'pricing'>('basic')
   const [formData, setFormData] = useState<FormData>({
@@ -81,7 +86,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
     bedrooms: 1,
     bathrooms: 1,
     amenities: Object.keys(PROPERTY_AMENITIES).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-    photos: [],
+    photos: [], // Start with no photos
     pricing: {
       basePrice: 100,
       cleaningFee: 25,
@@ -175,14 +180,20 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
       const result = await response.json()
 
       if (response.ok && result.success) {
-        completeStep('listing-creation')
-        const nextStep = getNextStep('listing-creation', role!)
-        setStep(nextStep)
+        // If used in onboarding flow
+        if (role && completeStep && setStep) {
+          completeStep('listing-creation')
+          const nextStep = getNextStep('listing-creation', role)
+          setStep(nextStep)
+          router.push(`/onboarding/${nextStep}`)
+        }
         
+        // If used as standalone component
         if (onComplete) {
           onComplete()
-        } else {
-          router.push(`/onboarding/${nextStep}`)
+        } else if (!role) {
+          // Default redirect to dashboard if no onboarding context
+          router.push('/dashboard')
         }
       } else {
         setErrors({ general: result.error || 'Failed to create listing' })
@@ -461,7 +472,7 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
               </ul>
             </div>
 
-            {/* Show existing demo photos if any */}
+            {/* Show uploaded photos */}
             {formData.photos.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {formData.photos.map((photo, index) => (
@@ -471,13 +482,6 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
                       alt={`Property photo ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
                     />
-                    {photo.includes('unsplash') && (
-                      <div className="absolute top-2 right-2">
-                        <div className="bg-green-500 text-white px-2 py-1 rounded text-xs">
-                          Demo
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

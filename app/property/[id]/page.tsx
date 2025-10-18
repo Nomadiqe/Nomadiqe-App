@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { MapPin, Users, Bed, Bath, Star, Heart, Share2, ChevronLeft } from "lucide-react"
+import { MapPin, Users, Bed, Bath, Star, Heart, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
+import { PropertyBookingCard } from "@/components/property-booking-card"
+import { PropertyBackButton } from "@/components/property-back-button"
 
 interface PropertyPageProps {
   params: {
@@ -69,12 +69,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     <div className="min-h-screen bg-background">
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <Link href="/">
-          <Button variant="ghost" size="sm">
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Back to Feed
-          </Button>
-        </Link>
+        <PropertyBackButton />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -259,92 +254,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24 shadow-lg">
-              <CardContent className="p-6">
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-bold">
-                      {property.currency === "EUR" ? "€" : "$"}{property.price}
-                    </span>
-                    <span className="text-muted-foreground">/ night</span>
-                  </div>
-                  {property.reviews.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="gap-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        {averageRating.toFixed(1)}
-                      </Badge>
-                      <span className="text-muted-foreground">·</span>
-                      <span className="text-muted-foreground">{property.reviews.length} reviews</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <Label htmlFor="check-in">Check-in</Label>
-                    <input
-                      id="check-in"
-                      type="date"
-                      className="w-full px-4 py-2 border border-border rounded-md mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="check-out">Check-out</Label>
-                    <input
-                      id="check-out"
-                      type="date"
-                      className="w-full px-4 py-2 border border-border rounded-md mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="guests">Guests</Label>
-                    <select id="guests" className="w-full px-4 py-2 border border-border rounded-md mt-2">
-                      {Array.from({ length: property.maxGuests }, (_, i) => i + 1).map((num) => (
-                        <option key={num} value={num}>
-                          {num} {num === 1 ? "guest" : "guests"}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <Button className="w-full" size="lg">
-                  Reserve
-                </Button>
-
-                <p className="text-center text-sm text-muted-foreground mt-4">
-                  You won&apos;t be charged yet
-                </p>
-
-                <Separator className="my-6" />
-
-                {/* Host Info */}
-                <div>
-                  <h3 className="font-semibold mb-4">Hosted by</h3>
-                  <Link href={`/profile/${property.host.id}`}>
-                    <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={property.host.image} alt={property.host.name || "Host"} />
-                        <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white p-1">
-                          <Image 
-                            src="/nomadiqe-logo-transparent.png" 
-                            alt="Nomadiqe" 
-                            width={44} 
-                            height={44}
-                            className="object-contain"
-                          />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">{property.host.name}</p>
-                        <p className="text-sm text-muted-foreground">View profile</p>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            <PropertyBookingCard
+              propertyId={property.id}
+              price={property.price}
+              currency={property.currency}
+              maxGuests={property.maxGuests}
+              averageRating={averageRating}
+              reviewsCount={property.reviews.length}
+              host={{
+                id: property.host.id,
+                name: property.host.name,
+                image: property.host.image,
+              }}
+            />
           </div>
         </div>
       </div>

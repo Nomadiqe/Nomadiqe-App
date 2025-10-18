@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { UserAvatar } from '@/components/user-avatar'
 import { Badge } from '@/components/ui/badge'
 import {
   Heart,
@@ -119,20 +119,12 @@ export function PostCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link href={`/profile/${author.id}`}>
-              <Avatar className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200">
-                <AvatarImage src={author.image} alt={author.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground font-semibold p-1">
-                  <Image 
-                    src="/nomadiqe-logo-transparent.png" 
-                    alt="Nomadiqe" 
-                    width={40} 
-                    height={40}
-                    className="object-contain"
-                  />
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+            <UserAvatar 
+              user={author} 
+              size="md" 
+              linkToProfile={true}
+              className="hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background"
+            />
             <div>
               <Link href={`/profile/${author.id}`}>
                 <h3 className="font-semibold text-sm hover:text-primary transition-colors hover:underline decoration-primary/30">

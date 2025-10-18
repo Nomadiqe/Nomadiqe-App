@@ -30,38 +30,53 @@ export async function PUT(req: NextRequest) {
       }
     })
 
-    // Create appropriate profile based on role
-    if (data.role === 'HOST') {
-      await prisma.hostProfile.upsert({
-        where: { userId: session.user.id },
-        create: {
-          userId: session.user.id,
-          businessName: null,
-          businessType: null,
-          businessRegistration: null,
-          taxId: null,
-          identityVerified: false,
-          businessVerified: false,
-        },
-        update: {}
-      })
-    } else if (data.role === 'DIGITAL_CREATOR') {
-      await prisma.digitalCreatorProfile.upsert({
-        where: { userId: session.user.id },
-        create: {
-          userId: session.user.id,
-          contentTypes: [],
-          platforms: [],
-          portfolioImages: [],
-          collaborationTypes: [],
-          languages: [],
-          specialties: [],
-          equipment: [],
-        },
-        update: {}
-      })
+    // Create appropriate profile based on role (if needed)
+    try {
+      if (data.role === 'HOST') {
+        // Check if host profile already exists
+        const existingHostProfile = await prisma.hostProfile.findUnique({
+          where: { userId: session.user.id }
+        })
+        
+        if (!existingHostProfile) {
+          await prisma.hostProfile.create({
+            data: {
+              userId: session.user.id,
+              businessName: null,
+              businessType: null,
+              businessRegistration: null,
+              taxId: null,
+              identityVerified: false,
+              businessVerified: false,
+            }
+          })
+        }
+      } else if (data.role === 'DIGITAL_CREATOR') {
+        // Check if digital creator profile already exists
+        const existingCreatorProfile = await prisma.digitalCreatorProfile.findUnique({
+          where: { userId: session.user.id }
+        })
+        
+        if (!existingCreatorProfile) {
+          await prisma.digitalCreatorProfile.create({
+            data: {
+              userId: session.user.id,
+              contentTypes: [],
+              platforms: [],
+              portfolioImages: [],
+              collaborationTypes: [],
+              languages: [],
+              specialties: [],
+              equipment: [],
+            }
+          })
+        }
+      }
+      // TRAVELER profile is already created during signup
+    } catch (profileError) {
+      console.error('Profile creation error:', profileError)
+      // Continue even if profile creation fails
     }
-    // TRAVELER profile is already created during signup
 
     return NextResponse.json({ 
       success: true, 

@@ -1,7 +1,7 @@
 'use client'
 
-import { ReactNode, useState, useEffect } from 'react'
-import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
+import { ReactNode, useState } from 'react'
+import { useOnboarding } from '@/contexts/OnboardingContext'
 import { getStepProgress, getStepTitle, getStepDescription, getNextStep, getPreviousStep, ONBOARDING_STEPS } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -167,18 +167,10 @@ export default function OnboardingWizard({
   customActions
 }: OnboardingWizardProps) {
   const { currentStep, completedSteps, role, isLoading, error } = useOnboarding()
-  const { fetchProgress } = useOnboardingApi()
   const [isNavigating, setIsNavigating] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  // Load progress on mount
-  useEffect(() => {
-    fetchProgress().catch((err) => {
-      console.error('Failed to fetch progress:', err)
-      setHasError(true)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // Progress loading is handled by individual step components to avoid duplicate calls
 
   // Error boundary for runtime errors
   if (hasError) {

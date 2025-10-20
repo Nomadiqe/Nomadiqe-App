@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { getNextStep } from '@/lib/onboarding'
@@ -42,10 +42,17 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoadingData, setIsLoadingData] = useState(true)
+  const hasLoadedDataRef = useRef(false)
 
   // Fetch and pre-fill user data on mount
   useEffect(() => {
+    // Prevent multiple simultaneous fetches
+    if (hasLoadedDataRef.current) {
+      return
+    }
+
     const loadUserData = async () => {
+      hasLoadedDataRef.current = true
       try {
         const progressData = await fetchProgress()
         if (progressData?.userData) {
@@ -57,6 +64,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
         }
       } catch (error) {
         console.error('Failed to load user data:', error)
+        hasLoadedDataRef.current = false // Allow retry on error
       } finally {
         setIsLoadingData(false)
       }

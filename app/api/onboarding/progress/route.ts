@@ -41,7 +41,13 @@ export async function GET(req: NextRequest) {
       onboardingStatus: user.onboardingStatus,
       metadata: progress?.metadata || {},
       startedAt: progress?.startedAt,
-      completedAt: progress?.completedAt
+      completedAt: progress?.completedAt,
+      userData: {
+        fullName: user.fullName,
+        username: user.username,
+        profilePictureUrl: user.profilePictureUrl,
+        email: user.email
+      }
     })
 
   } catch (error) {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { TRAVEL_INTERESTS } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
@@ -60,7 +61,8 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
   const { completeStep, setStep } = useOnboarding()
   const { submitGuestInterests } = useOnboardingApi()
   const router = useRouter()
-  
+  const { update: updateSession } = useSession()
+
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -74,16 +76,19 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
 
   const handleSubmit = async () => {
     if (selectedInterests.length === 0) return
-    
+
     setIsSubmitting(true)
 
     try {
       const result = await submitGuestInterests(selectedInterests)
-      
+
       if (result.success) {
         completeStep('interest-selection')
         setStep('complete')
-        
+
+        // Refresh the session to update the onboarding status in the token
+        await updateSession()
+
         if (onComplete) {
           onComplete(selectedInterests)
         } else {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,7 +44,8 @@ interface ProfileMediaKitProps {
 export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
   const { completeStep, setStep } = useOnboarding()
   const router = useRouter()
-  
+  const { update: updateSession } = useSession()
+
   const [formData, setFormData] = useState<FormData>({
     contentNiches: [],
     deliverables: {
@@ -155,7 +157,10 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       if (response.ok && result.success) {
         completeStep('profile-setup')
         setStep('complete')
-        
+
+        // Refresh the session to update the onboarding status in the token
+        await updateSession()
+
         if (onComplete) {
           onComplete()
         } else {

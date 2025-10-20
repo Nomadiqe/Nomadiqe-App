@@ -29,18 +29,41 @@ interface ProfileSetupProps {
 
 export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
   const { data: session } = useSession()
-  const { error, setError, setStep, completeStep } = useOnboarding()
-  const { updateProfile } = useOnboardingApi()
+  const { error, setError, setStep, completeStep, progress } = useOnboarding()
+  const { updateProfile, fetchProgress } = useOnboardingApi()
   const router = useRouter()
-  
+
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     username: '',
     profilePicture: session?.user?.image || ''
   })
-  
+
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingData, setIsLoadingData] = useState(true)
+
+  // Fetch and pre-fill user data on mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const progressData = await fetchProgress()
+        if (progressData?.userData) {
+          setFormData({
+            fullName: progressData.userData.fullName || '',
+            username: progressData.userData.username || '',
+            profilePicture: progressData.userData.profilePictureUrl || session?.user?.image || ''
+          })
+        }
+      } catch (error) {
+        console.error('Failed to load user data:', error)
+      } finally {
+        setIsLoadingData(false)
+      }
+    }
+
+    loadUserData()
+  }, [fetchProgress, session?.user?.image])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -120,6 +143,18 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
     // Convert to lowercase and remove invalid characters as user types
     const cleanValue = value.toLowerCase().replace(/[^a-z0-9_]/g, '')
     handleInputChange('username', cleanValue)
+  }
+
+  // Show loading state while fetching user data
+  if (isLoadingData) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-sm text-muted-foreground mt-4">Loading your profile...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

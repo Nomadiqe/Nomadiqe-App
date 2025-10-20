@@ -21,10 +21,11 @@ export default withAuth(
 
     // Check if authenticated user needs onboarding
     if (token && !pathname.startsWith('/onboarding')) {
-      // Only redirect to onboarding if onboardingStatus is not COMPLETED
-      // and user has GUEST role (new users start as GUEST)
-      if (token.role === 'GUEST' && token.onboardingStatus !== 'COMPLETED') {
-        return NextResponse.redirect(new URL('/onboarding/profile-setup', req.url))
+      // Redirect to onboarding if onboardingStatus is not COMPLETED (regardless of role)
+      // Users may have any role (GUEST, HOST, INFLUENCER) during onboarding
+      if (token.onboardingStatus !== 'COMPLETED') {
+        // Redirect to /onboarding (not /profile-setup) to let the page handle smart routing to current step
+        return NextResponse.redirect(new URL('/onboarding', req.url))
       }
     }
 

@@ -5,7 +5,7 @@ import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { UserRole } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MapPin, Home, Instagram, Users, Camera, Building2, MoreHorizontal, Plus } from 'lucide-react'
+import { MapPin, Home, Instagram, Users, Camera } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface RoleOption {
@@ -67,7 +67,6 @@ export default function RoleSelection() {
   
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showInfluencerOption, setShowInfluencerOption] = useState(false)
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role)
@@ -100,7 +99,6 @@ export default function RoleSelection() {
       {/* Primary Role Options */}
       <div className="grid gap-4 md:gap-6">
         {roleOptions
-          .filter(option => option.id !== 'INFLUENCER' || showInfluencerOption)
           .map((option) => {
             const Icon = option.icon
             const isSelected = selectedRole === option.id
@@ -165,28 +163,6 @@ export default function RoleSelection() {
               </Card>
             )
           })}
-
-        {/* Show Influencer Option Toggle */}
-        {!showInfluencerOption && (
-          <Card
-            className="cursor-pointer transition-all duration-200 hover:shadow-md border-border hover:border-border/80 border-dashed"
-            onClick={() => setShowInfluencerOption(true)}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="p-3 rounded-lg bg-muted text-muted-foreground">
-                  <Plus className="h-6 w-6" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">More Options</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Are you a content creator or influencer?
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       {/* Special Note for Influencer */}

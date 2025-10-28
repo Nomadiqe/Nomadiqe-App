@@ -6,6 +6,7 @@ import { PostCard } from '@/components/post-card'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { SearchHeaderImproved } from '@/components/search-header-improved'
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
@@ -65,6 +66,21 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Hero Search Section */}
+      <section className="bg-gradient-to-br from-nomadiqe-600/5 via-purple-500/5 to-pink-500/5 border-b border-border py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-nomadiqe-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Discover Your Next Adventure
+            </h1>
+            <p className="text-muted-foreground">
+              Search for unique stays and experiences around the world
+            </p>
+          </div>
+          <SearchHeaderImproved />
+        </div>
+      </section>
+
       {/* Main Feed */}
       <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto space-y-6">

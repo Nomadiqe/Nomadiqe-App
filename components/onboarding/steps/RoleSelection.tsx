@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { UserRole } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
@@ -61,10 +62,11 @@ const roleOptions: RoleOption[] = [
 ]
 
 export default function RoleSelection() {
+  const { update: updateSession } = useSession()
   const { setRole, setStep, completeStep, error } = useOnboarding()
   const { selectRole } = useOnboardingApi()
   const router = useRouter()
-  
+
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -79,8 +81,11 @@ export default function RoleSelection() {
 
     try {
       const result = await selectRole(selectedRole)
-      
+
       if (result.success) {
+        // Update the session token with fresh data from database
+        await updateSession()
+
         setRole(selectedRole)
         completeStep('role-selection')
         setStep(result.nextStep)

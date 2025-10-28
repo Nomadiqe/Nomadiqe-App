@@ -28,7 +28,7 @@ interface ProfileSetupProps {
 }
 
 export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
-  const { data: session } = useSession()
+  const { data: session, update: updateSession } = useSession()
   const { error, setError, setStep, completeStep, progress } = useOnboarding()
   const { updateProfile, fetchProgress } = useOnboardingApi()
   const router = useRouter()
@@ -114,9 +114,12 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
       })
 
       if (result.success) {
+        // Update the session token with fresh data from database
+        await updateSession()
+
         completeStep('profile-setup')
         setStep(result.nextStep)
-        
+
         // Call onNext if provided (for wizard integration)
         if (onNext) {
           onNext()

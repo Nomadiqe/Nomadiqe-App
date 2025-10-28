@@ -20,12 +20,18 @@ export default withAuth(
     }
 
     // Check if authenticated user needs onboarding
-    if (token && !pathname.startsWith('/onboarding')) {
+    if (token && !pathname.startsWith('/onboarding') && !pathname.startsWith('/api/')) {
       // Redirect to onboarding if onboardingStatus is not COMPLETED (regardless of role)
       // Users may have any role (GUEST, HOST, INFLUENCER) during onboarding
       if (token.onboardingStatus !== 'COMPLETED') {
-        // Redirect to /onboarding (not /profile-setup) to let the page handle smart routing to current step
-        return NextResponse.redirect(new URL('/onboarding', req.url))
+        // Only redirect if they're trying to access protected pages (not public pages)
+        const publicPages = ['/', '/auth', '/search', '/experiences', '/property', '/terms', '/privacy']
+        const isPublicPage = publicPages.some(page => pathname === page || pathname.startsWith(page + '/'))
+
+        if (!isPublicPage) {
+          // Redirect to /onboarding (not /profile-setup) to let the page handle smart routing to current step
+          return NextResponse.redirect(new URL('/onboarding', req.url))
+        }
       }
     }
 

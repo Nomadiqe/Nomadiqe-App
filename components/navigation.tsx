@@ -24,6 +24,12 @@ export function Navigation() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
+  // Hide navigation on auth pages (signin, signup, etc.)
+  const isAuthPage = pathname?.startsWith('/auth/')
+  if (isAuthPage) {
+    return null
+  }
+
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
   }

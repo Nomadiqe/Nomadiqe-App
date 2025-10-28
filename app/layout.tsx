@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: 'Revolutionary travel booking platform with blockchain integration, low fees, and authentic local experiences.',
   keywords: 'travel, booking, blockchain, crypto, accommodation, local experiences',
   authors: [{ name: 'Nomadiqe Team' }],
+  manifest: '/manifest.json',
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -25,6 +26,18 @@ export const metadata: Metadata = {
       { rel: 'android-chrome', url: '/android-chrome-192x192.png', sizes: '192x192' },
       { rel: 'android-chrome', url: '/android-chrome-512x512.png', sizes: '512x512' },
     ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Nomadiqe',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
   },
   openGraph: {
     title: 'Nomadiqe - Fairer Stays, Deeper Connections',

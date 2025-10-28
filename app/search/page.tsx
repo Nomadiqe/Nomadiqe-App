@@ -3,6 +3,10 @@ import { SearchHeaderImproved } from '@/components/search-header-improved'
 import { SearchFiltersImproved } from '@/components/search-filters-improved'
 import { SearchResultsImproved } from '@/components/search-results-improved'
 
+// Disable caching for this page to always show latest properties
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface SearchParams {
   location?: string
   checkIn?: string

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
@@ -67,7 +67,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
   const { update: updateSession } = useSession()
   const { role, completeStep, setStep } = useOnboarding()
   const router = useRouter()
-  
+
   const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatform | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStep, setConnectionStep] = useState<'select' | 'mock' | 'connecting' | 'success'>('select')
@@ -79,6 +79,26 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
   })
   const [connectedAccounts, setConnectedAccounts] = useState<any[]>([])
   const [error, setError] = useState<string>('')
+  const [isLoadingConnections, setIsLoadingConnections] = useState(true)
+
+  // Fetch existing social connections on mount
+  useEffect(() => {
+    const fetchConnections = async () => {
+      try {
+        const response = await fetch('/api/onboarding/influencer/social-connections')
+        if (response.ok) {
+          const data = await response.json()
+          setConnectedAccounts(data.connections || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch social connections:', error)
+      } finally {
+        setIsLoadingConnections(false)
+      }
+    }
+
+    fetchConnections()
+  }, [])
 
   const handlePlatformSelect = (platform: SocialPlatform) => {
     setSelectedPlatform(platform)
@@ -141,15 +161,6 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
       return
     }
 
-    // Update the session token with fresh data from database
-    await updateSession()
-
-    // Force Next.js to refresh server components with updated session
-    router.refresh()
-
-    // Small delay to ensure session is fully updated before navigation
-    await new Promise(resolve => setTimeout(resolve, 500))
-
     completeStep('social-connect')
     const nextStep = getNextStep('social-connect', role!)
     setStep(nextStep)
@@ -157,7 +168,9 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     if (onComplete) {
       onComplete()
     } else {
-      router.push(`/onboarding/${nextStep}`)
+      // Use full page navigation to ensure session is properly synchronized
+      // The database was already updated when the social connection was created
+      window.location.href = `/onboarding/${nextStep}`
     }
   }
 

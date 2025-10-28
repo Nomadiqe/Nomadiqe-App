@@ -121,12 +121,9 @@ export default function SignUpPage() {
           description: "Your account has been created successfully.",
         })
 
-        // Wait a moment for the session to be fully established
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        // Redirect to /onboarding to let the page handle smart routing to current step
-        router.push('/onboarding')
-        router.refresh()
+        // Use NextAuth's built-in redirect after successful signin
+        // This ensures the session is fully established before navigation
+        window.location.href = '/onboarding'
       } else {
         toast({
           title: "Account created",

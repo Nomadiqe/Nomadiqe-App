@@ -187,7 +187,8 @@ function OnboardingFlowContent({ step }: OnboardingFlowProps) {
     if (isInitialized && step !== 'welcome') {
       setStep(step)
     }
-  }, [step, isInitialized, setStep])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isInitialized]) // setStep is stable but can't be in deps due to context recreation
 
   if (!isInitialized) {
     return (

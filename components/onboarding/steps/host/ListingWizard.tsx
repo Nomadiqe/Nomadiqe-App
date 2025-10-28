@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PROPERTY_AMENITIES } from '@/lib/onboarding'
-import { Home, MapPin, Camera, Euro, Wifi, Car, Utensils, AlertCircle, Check, Plus, Minus } from 'lucide-react'
+import { Home, MapPin, Camera, Euro, Wifi, Car, Utensils, AlertCircle, Check, Plus, Minus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { getNextStep } from '@/lib/onboarding'
@@ -465,16 +465,42 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
             {formData.photos.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {formData.photos.map((photo, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group">
                     <img
                       src={photo}
                       alt={`Property photo ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
                     />
+
+                    {/* Remove Button */}
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute -top-2 -right-2 w-6 h-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          photos: prev.photos.filter((_, i) => i !== index)
+                        }))
+                      }}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+
                     {photo.includes('unsplash') && (
-                      <div className="absolute top-2 right-2">
+                      <div className="absolute top-2 left-2">
                         <div className="bg-green-500 text-white px-2 py-1 rounded text-xs">
                           Demo
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Main Photo Indicator */}
+                    {index === 0 && (
+                      <div className="absolute bottom-2 left-2">
+                        <div className="bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
+                          Main Photo
                         </div>
                       </div>
                     )}

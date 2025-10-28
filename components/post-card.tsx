@@ -31,6 +31,11 @@ interface PostCardProps {
   property?: {
     id: string
     title: string
+    city?: string
+    country?: string
+    price?: number
+    currency?: string
+    images?: string[]
   }
   likes: number
   comments: number
@@ -161,16 +166,45 @@ export function PostCard({
           )}
 
           {property && (
-            <Card className="bg-muted/50">
-              <CardContent className="p-3">
-                <Link href={`/property/${property.id}`}>
-                  <Badge variant="secondary" className="mb-1 text-xs">Featured Property</Badge>
-                  <h4 className="font-medium text-sm hover:text-primary transition-colors">
-                    {property.title}
-                  </h4>
-                </Link>
-              </CardContent>
-            </Card>
+            <Link href={`/property/${property.id}`}>
+              <Card className="bg-muted/50 hover:bg-muted/70 transition-colors cursor-pointer border-primary/20">
+                <CardContent className="p-0">
+                  <div className="flex gap-3">
+                    {/* Property Image */}
+                    {property.images && property.images.length > 0 && (
+                      <div className="relative w-24 h-24 flex-shrink-0">
+                        <img
+                          src={property.images[0]}
+                          alt={property.title}
+                          className="w-full h-full object-cover rounded-l-lg"
+                        />
+                      </div>
+                    )}
+
+                    {/* Property Details */}
+                    <div className="flex-1 py-3 pr-3">
+                      <Badge variant="secondary" className="mb-1.5 text-xs">Featured Property</Badge>
+                      <h4 className="font-semibold text-sm hover:text-primary transition-colors line-clamp-1">
+                        {property.title}
+                      </h4>
+                      {property.city && property.country && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <MapPin className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">
+                            {property.city}, {property.country}
+                          </span>
+                        </div>
+                      )}
+                      {property.price && (
+                        <p className="text-sm font-semibold text-primary mt-1.5">
+                          {property.currency || 'EUR'} {property.price}/night
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           )}
         </div>
 

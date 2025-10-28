@@ -161,6 +161,12 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         // Refresh the session to update the onboarding status in the token
         await updateSession()
 
+        // Force refresh the router to pick up updated session
+        router.refresh()
+
+        // Small delay to ensure session is updated before redirect
+        await new Promise(resolve => setTimeout(resolve, 500))
+
         if (onComplete) {
           onComplete()
         } else {

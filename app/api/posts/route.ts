@@ -41,6 +41,11 @@ export async function POST(request: Request) {
           select: {
             id: true,
             title: true,
+            city: true,
+            country: true,
+            price: true,
+            currency: true,
+            images: true,
           }
         }
       }
@@ -98,6 +103,11 @@ export async function GET(request: Request) {
           select: {
             id: true,
             title: true,
+            city: true,
+            country: true,
+            price: true,
+            currency: true,
+            images: true,
           }
         },
         _count: {

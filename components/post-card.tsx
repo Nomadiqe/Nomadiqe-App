@@ -13,7 +13,10 @@ import {
   Heart,
   MessageCircle,
   MapPin,
-  MoreHorizontal
+  MoreHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import { PostComments } from '@/components/post-comments'
 
@@ -60,6 +63,8 @@ export function PostCard({
   const [likeCount, setLikeCount] = useState(likes)
   const [commentCount, setCommentCount] = useState(comments)
   const [showComments, setShowComments] = useState(false)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   const handleLike = async () => {
     // Check if user is authenticated
@@ -159,10 +164,14 @@ export function PostCard({
           <p className="text-sm leading-relaxed">{content}</p>
 
           {location && (
-            <div className="flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{location}</span>
-            </div>
+            <Link
+              href={`/search?location=${encodeURIComponent(location)}`}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors group w-fit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MapPin className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+              <span className="text-sm text-muted-foreground group-hover:text-primary group-hover:underline transition-colors">{location}</span>
+            </Link>
           )}
 
           {property && (
@@ -212,7 +221,13 @@ export function PostCard({
       {images.length > 0 && (
         <div className="space-y-2 -mx-6">
           {images.length === 1 ? (
-            <div className="relative group overflow-hidden">
+            <div
+              className="relative group overflow-hidden cursor-pointer"
+              onClick={() => {
+                setLightboxIndex(0)
+                setLightboxOpen(true)
+              }}
+            >
               <img
                 src={images[0]}
                 alt="Post image"
@@ -223,7 +238,14 @@ export function PostCard({
           ) : (
             <div className="grid grid-cols-2 gap-1">
               {images.slice(0, 4).map((image, index) => (
-                <div key={index} className="relative group overflow-hidden">
+                <div
+                  key={index}
+                  className="relative group overflow-hidden cursor-pointer"
+                  onClick={() => {
+                    setLightboxIndex(index)
+                    setLightboxOpen(true)
+                  }}
+                >
                   <img
                     src={image}
                     alt={`Post image ${index + 1}`}
@@ -276,6 +298,65 @@ export function PostCard({
         onClose={() => setShowComments(false)}
         onCommentAdded={() => setCommentCount(commentCount + 1)}
       />
+
+      {/* Image Lightbox */}
+      {lightboxOpen && images.length > 0 && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close Button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Navigation */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+                }}
+                className="absolute left-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                }}
+                className="absolute right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </>
+          )}
+
+          {/* Image */}
+          <div
+            className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center px-16"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={images[lightboxIndex]}
+              alt={`Image ${lightboxIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
+
+          {/* Image Counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full bg-black/50 text-white text-sm">
+              {lightboxIndex + 1} / {images.length}
+            </div>
+          )}
+        </div>
+      )}
     </Card>
   )
 }

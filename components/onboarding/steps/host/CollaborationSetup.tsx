@@ -178,19 +178,14 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
         completeStep('collaboration-setup')
         setStep('complete')
 
-        // Update the session to refresh JWT token with new onboardingStatus
+        // Update the session token with fresh data from database
         await update()
-
-        // Force refresh the router to pick up updated session
-        router.refresh()
-
-        // Small delay to ensure session is updated before redirect
-        await new Promise(resolve => setTimeout(resolve, 500))
 
         if (onComplete) {
           onComplete()
         } else {
-          router.push('/dashboard/host')
+          // Use full page navigation to ensure middleware sees the updated session
+          window.location.href = '/dashboard/host'
         }
       } else {
         // Display detailed error information

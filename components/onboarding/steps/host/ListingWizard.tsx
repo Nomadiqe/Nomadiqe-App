@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -64,6 +65,7 @@ interface ListingWizardProps {
 }
 
 export default function ListingWizard({ onComplete }: ListingWizardProps) {
+  const { update: updateSession } = useSession()
   const { role, completeStep, setStep } = useOnboarding()
   const router = useRouter()
   
@@ -178,11 +180,15 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         completeStep('listing-creation')
         const nextStep = getNextStep('listing-creation', role!)
         setStep(nextStep)
-        
+
+        // Update the session token with fresh data from database
+        await updateSession()
+
         if (onComplete) {
           onComplete()
         } else {
-          router.push(`/onboarding/${nextStep}`)
+          // Use full page navigation to ensure middleware sees the updated session
+          window.location.href = `/onboarding/${nextStep}`
         }
       } else {
         setErrors({ general: result.error || 'Failed to create listing' })

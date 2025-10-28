@@ -168,7 +168,11 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     if (onComplete) {
       onComplete()
     } else {
-      // Use full page navigation to ensure session is properly synchronized
+      // Update the session token with fresh data from database
+      // This ensures the JWT token includes the updated onboardingStep
+      await updateSession()
+
+      // Use full page navigation to ensure middleware sees the updated session
       // The database was already updated when the social connection was created
       window.location.href = `/onboarding/${nextStep}`
     }

@@ -87,18 +87,19 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as any).role
         token.onboardingStatus = (user as any).onboardingStatus
+        token.onboardingStep = (user as any).onboardingStep
       }
-      
+
       // Handle OAuth providers - always fetch fresh role from database
       if (account?.provider && ['google', 'apple', 'facebook'].includes(account.provider)) {
         try {
           // Wait a bit for PrismaAdapter to finish creating user
           await new Promise(resolve => setTimeout(resolve, 100))
-          
+
           let dbUser = await prisma.user.findUnique({
             where: { email: token.email! }
           })
-          
+
           // If user was just created, set default role
           if (dbUser && !dbUser.role) {
             dbUser = await prisma.user.update({
@@ -110,17 +111,18 @@ export const authOptions: NextAuthOptions = {
               }
             })
           }
-          
+
           if (dbUser) {
             token.role = dbUser.role
             token.onboardingStatus = dbUser.onboardingStatus
+            token.onboardingStep = dbUser.onboardingStep
             token.sub = dbUser.id
           }
         } catch (error) {
           console.error('Error fetching user role:', error)
         }
       }
-      
+
       // On update, refresh user data from database
       if (trigger === 'update') {
         try {
@@ -130,12 +132,13 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             token.role = dbUser.role
             token.onboardingStatus = dbUser.onboardingStatus
+            token.onboardingStep = dbUser.onboardingStep
           }
         } catch (error) {
           console.error('Error refreshing user role:', error)
         }
       }
-      
+
       return token
     },
     async session({ session, token }) {
@@ -143,6 +146,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!
         session.user.role = token.role as string
         session.user.onboardingStatus = token.onboardingStatus as string
+        session.user.onboardingStep = token.onboardingStep as string
       }
       return session
     },

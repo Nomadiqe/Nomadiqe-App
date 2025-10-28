@@ -4,8 +4,9 @@ declare module "next-auth" {
   interface User {
     role?: string
     onboardingStatus?: string
+    onboardingStep?: string
   }
-  
+
   interface Session {
     user: {
       id: string
@@ -14,6 +15,7 @@ declare module "next-auth" {
       image?: string
       role: string
       onboardingStatus?: string
+      onboardingStep?: string
     }
   }
 }
@@ -22,5 +24,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role?: string
     onboardingStatus?: string
+    onboardingStep?: string
   }
 }

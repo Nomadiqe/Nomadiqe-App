@@ -155,7 +155,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     }
   }
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (connectedAccounts.length === 0) {
       setError('Please connect at least one social media account')
       return
@@ -168,13 +168,9 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     if (onComplete) {
       onComplete()
     } else {
-      // Update the session token with fresh data from database
-      // This ensures the JWT token includes the updated onboardingStep
-      await updateSession()
-
-      // Use full page navigation to ensure middleware sees the updated session
-      // The database was already updated when the social connection was created
-      window.location.href = `/onboarding/${nextStep}`
+      // Simple client-side navigation - the database was already updated
+      // when the social connection was created, so just navigate
+      router.push(`/onboarding/${nextStep}`)
     }
   }
 

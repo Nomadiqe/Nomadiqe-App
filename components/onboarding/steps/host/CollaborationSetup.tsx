@@ -178,13 +178,14 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
         completeStep('collaboration-setup')
         setStep('complete')
 
-        // Update the session token with fresh data from database
+        // Update session for the final redirect to dashboard
         await update()
 
         if (onComplete) {
           onComplete()
         } else {
-          // Use full page navigation to ensure middleware sees the updated session
+          // For final dashboard redirect, use window.location to ensure
+          // session is fully refreshed since onboardingStatus changed to COMPLETED
           window.location.href = '/dashboard/host'
         }
       } else {

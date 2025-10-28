@@ -24,17 +24,13 @@ export default async function OnboardingIndexPage() {
 
   // If onboarding is complete, redirect to dashboard
   if (user.onboardingStatus === 'COMPLETED') {
-    const dashboardUrl = user.role === 'HOST' ? '/dashboard/host' 
-      : user.role === 'INFLUENCER' ? '/dashboard/influencer' 
+    const dashboardUrl = user.role === 'HOST' ? '/dashboard/host'
+      : user.role === 'INFLUENCER' ? '/dashboard/influencer'
       : '/dashboard'
     redirect(dashboardUrl)
   }
 
-  // If onboarding is in progress, redirect to current step
-  if (user.onboardingStep) {
-    redirect(`/onboarding/${user.onboardingStep}`)
-  }
-
-  // Default: start onboarding with role selection
-  redirect('/onboarding/role-selection')
+  // For users in onboarding, always start at the beginning
+  // Individual steps will handle their own validation and forward/backward navigation
+  redirect('/onboarding/profile-setup')
 }

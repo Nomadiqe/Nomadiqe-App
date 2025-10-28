@@ -181,14 +181,11 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         const nextStep = getNextStep('listing-creation', role!)
         setStep(nextStep)
 
-        // Update the session token with fresh data from database
-        await updateSession()
-
         if (onComplete) {
           onComplete()
         } else {
-          // Use full page navigation to ensure middleware sees the updated session
-          window.location.href = `/onboarding/${nextStep}`
+          // Simple client-side navigation
+          router.push(`/onboarding/${nextStep}`)
         }
       } else {
         setErrors({ general: result.error || 'Failed to create listing' })

@@ -120,8 +120,12 @@ export default function SignUpPage() {
           title: "Welcome to Nomadiqe!",
           description: "Your account has been created successfully.",
         })
-        // New users will be redirected to onboarding by middleware
-        router.push('/onboarding/profile-setup')
+
+        // Wait a moment for the session to be fully established
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        // Redirect to /onboarding to let the page handle smart routing to current step
+        router.push('/onboarding')
         router.refresh()
       } else {
         toast({
@@ -145,7 +149,7 @@ export default function SignUpPage() {
     setIsLoading(true)
     try {
       // New users will be automatically redirected to onboarding by NextAuth and middleware
-      await signIn(provider, { callbackUrl: '/onboarding/profile-setup' })
+      await signIn(provider, { callbackUrl: '/onboarding' })
     } catch (error) {
       toast({
         title: "Error",

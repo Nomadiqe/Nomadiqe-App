@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,6 +64,7 @@ interface SocialMediaConnectProps {
 }
 
 export default function SocialMediaConnect({ onComplete }: SocialMediaConnectProps) {
+  const { update: updateSession } = useSession()
   const { role, completeStep, setStep } = useOnboarding()
   const router = useRouter()
   
@@ -139,10 +141,19 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
       return
     }
 
+    // Update the session token with fresh data from database
+    await updateSession()
+
+    // Force Next.js to refresh server components with updated session
+    router.refresh()
+
+    // Small delay to ensure session is fully updated before navigation
+    await new Promise(resolve => setTimeout(resolve, 500))
+
     completeStep('social-connect')
     const nextStep = getNextStep('social-connect', role!)
     setStep(nextStep)
-    
+
     if (onComplete) {
       onComplete()
     } else {
@@ -233,10 +244,10 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
         >
           Back to Role Selection
         </Button>
-        
+
         {connectedAccounts.length > 0 && (
           <Button onClick={handleContinue} className="px-8">
-            Continue to Profile Setup
+            Continue to Media Kit
           </Button>
         )}
       </div>
@@ -376,7 +387,7 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
             Connect Another Platform
           </Button>
           <Button onClick={handleContinue} className="w-full">
-            Continue to Profile Setup
+            Continue to Media Kit
           </Button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 // Onboarding flow configuration and utilities
 export const ONBOARDING_STEPS = {
-  common: ['profile-setup', 'role-selection'],
+  common: ['role-selection', 'profile-setup'],
   GUEST: ['interest-selection'],
   HOST: ['listing-creation', 'collaboration-setup'],
   INFLUENCER: ['social-connect', 'media-kit-setup']
@@ -22,17 +22,17 @@ export interface OnboardingProgress {
 export const getNextStep = (currentStep: string, role: UserRole): string => {
   // Validate role before accessing ONBOARDING_STEPS
   if (!role || !ONBOARDING_STEPS[role]) {
-    return 'profile-setup'
+    return 'role-selection'
   }
-  
+
   const allSteps: string[] = [...ONBOARDING_STEPS.common, ...ONBOARDING_STEPS[role]]
   const currentIndex = allSteps.indexOf(currentStep)
-  
+
   if (currentIndex === -1) {
     // If current step not found, return first step
-    return allSteps[0] || 'profile-setup'
+    return allSteps[0] || 'role-selection'
   }
-  
+
   const nextStep = allSteps[currentIndex + 1]
   return nextStep || 'complete'
 }
@@ -40,16 +40,16 @@ export const getNextStep = (currentStep: string, role: UserRole): string => {
 export const getPreviousStep = (currentStep: string, role: UserRole): string => {
   // Validate role before accessing ONBOARDING_STEPS
   if (!role || !ONBOARDING_STEPS[role]) {
-    return 'profile-setup'
+    return 'role-selection'
   }
-  
+
   const allSteps: string[] = [...ONBOARDING_STEPS.common, ...ONBOARDING_STEPS[role]]
   const currentIndex = allSteps.indexOf(currentStep)
-  
+
   if (currentIndex <= 0) {
-    return allSteps[0] || 'profile-setup'
+    return allSteps[0] || 'role-selection'
   }
-  
+
   return allSteps[currentIndex - 1]
 }
 

@@ -179,7 +179,8 @@ function OnboardingFlowContent({ step }: OnboardingFlowProps) {
     }
 
     initializeProgress()
-  }, [fetchProgress]) // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount - fetchProgress is stable from context
 
   // Sync the current step with the page prop
   useEffect(() => {

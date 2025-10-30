@@ -3,9 +3,10 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { awardPoints } from '@/lib/services/points-service'
 
 const interestsSchema = z.object({
-  interests: z.array(z.string().min(1)).max(20, 'Too many interests selected')
+  interests: z.array(z.string().min(1)).max(20, 'Too many interests selected').default([])
 })
 
 export async function POST(req: NextRequest) {
@@ -34,10 +35,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const validatedData = interestsSchema.parse(body)
 
-    // Update guest preferences
-    await prisma.guestPreferences.update({
+    // Update or create guest preferences
+    await prisma.guestPreferences.upsert({
       where: { userId: session.user.id },
-      data: {
+      create: {
+        userId: session.user.id,
+        travelInterests: validatedData.interests
+      },
+      update: {
         travelInterests: validatedData.interests
       }
     })
@@ -49,6 +54,13 @@ export async function POST(req: NextRequest) {
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
       }
+    })
+
+    // Award onboarding completion points
+    await awardPoints({
+      userId: session.user.id,
+      action: 'onboarding_complete',
+      description: 'Onboarding completed successfully!',
     })
 
     // Update progress

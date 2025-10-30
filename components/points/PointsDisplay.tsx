@@ -1,0 +1,57 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+
+interface PointsBalance {
+  totalPoints: number
+  currentPoints: number
+  lifetimeEarned: number
+  lifetimeRedeemed: number
+}
+
+export default function PointsDisplay() {
+  const { data: session } = useSession()
+  const [balance, setBalance] = useState<PointsBalance | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchBalance()
+    }
+  }, [session])
+
+  const fetchBalance = async () => {
+    try {
+      const response = await fetch('/api/points/balance')
+      if (response.ok) {
+        const data = await response.json()
+        setBalance(data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching points balance:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!session?.user || loading) {
+    return null
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 rounded-lg border border-amber-200 dark:border-amber-700">
+      <div className="flex items-center gap-1.5">
+        <span className="text-xl">⭐</span>
+        <div className="flex flex-col">
+          <span className="text-sm font-bold text-amber-900 dark:text-amber-100">
+            {balance?.currentPoints.toLocaleString() || 0}
+          </span>
+          <span className="text-[10px] text-amber-700 dark:text-amber-300">
+            points
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}

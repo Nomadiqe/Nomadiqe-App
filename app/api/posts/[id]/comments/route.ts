@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextResponse } from 'next/server'
+import { awardPoints } from '@/lib/services/points-service'
 
 // GET /api/posts/[id]/comments - Fetch comments for a post
 export async function GET(
@@ -121,6 +122,27 @@ export async function POST(
         }
       }
     })
+
+    // Award points for commenting
+    // Award 3 points to commenter (daily limit of 10)
+    await awardPoints({
+      userId: session.user.id,
+      action: 'comment_created',
+      referenceId: comment.id,
+      referenceType: 'comment',
+      description: 'Wrote a comment',
+    })
+
+    // Award 5 points to post author receiving comment (only if not own post, daily limit of 20)
+    if (session.user.id !== post.authorId) {
+      await awardPoints({
+        userId: post.authorId,
+        action: 'comment_received',
+        referenceId: comment.id,
+        referenceType: 'comment',
+        description: 'Received a comment on your post',
+      })
+    }
 
     // Format the response
     const formattedComment = {

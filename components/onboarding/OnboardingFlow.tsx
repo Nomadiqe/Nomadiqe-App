@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { OnboardingProvider, useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
@@ -159,10 +159,44 @@ function OnboardingComplete() {
 }
 
 function OnboardingFlowContent({ step }: OnboardingFlowProps) {
-  const { setStep, role, completedSteps } = useOnboarding()
+  const { setStep, role, completedSteps, setRole, setProgress } = useOnboarding()
+  const { fetchProgress } = useOnboardingApi()
   const router = useRouter()
+  const [isInitialized, setIsInitialized] = useState(false)
 
-  // Progress loading is handled by OnboardingWizard to avoid duplicate calls
+  // Initialize context with server data on mount
+  useEffect(() => {
+    const initializeProgress = async () => {
+      try {
+        const progress = await fetchProgress()
+        // Context is now populated with correct role and completed steps
+        setIsInitialized(true)
+      } catch (error) {
+        console.error('Failed to initialize onboarding progress:', error)
+        // Still mark as initialized to allow rendering
+        setIsInitialized(true)
+      }
+    }
+
+    initializeProgress()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount - fetchProgress is stable from context
+
+  // Sync the current step with the page prop
+  useEffect(() => {
+    if (isInitialized && step !== 'welcome') {
+      setStep(step)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isInitialized]) // setStep is stable but can't be in deps due to context recreation
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-2 border-primary border-t-transparent"></div>
+      </div>
+    )
+  }
 
   const handleNext = async () => {
     // Most steps handle their own navigation

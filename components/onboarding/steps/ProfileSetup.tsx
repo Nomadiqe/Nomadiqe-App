@@ -53,6 +53,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
 
     const loadUserData = async () => {
       hasLoadedDataRef.current = true
+      setIsLoadingData(true)
       try {
         const progressData = await fetchProgress()
         if (progressData?.userData) {
@@ -114,11 +115,15 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
       })
 
       if (result.success) {
-        // Update the session token with fresh data from database
-        await updateSession()
-
+        // Update context first
         completeStep('profile-setup')
         setStep(result.nextStep)
+        
+        // Update the session token with fresh data from database
+        await updateSession()
+        
+        // Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         // Call onNext if provided (for wizard integration)
         if (onNext) {
@@ -180,11 +185,6 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
           placeholder="Upload profile picture"
           disabled={isSubmitting}
           maxSizeInMB={5}
-          onUploadComplete={(images) => {
-            if (images.length > 0) {
-              handleInputChange('profilePicture', images[0].url)
-            }
-          }}
         />
         <p className="text-sm text-muted-foreground mt-2">
           Upload a profile picture (optional)

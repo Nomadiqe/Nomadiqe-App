@@ -52,6 +52,7 @@ model User {
   posts             Post[]
   postLikes         PostLike[]
   postComments      PostComment[]
+
   // Messaging
   conversationsA    Conversation[] @relation("userA")
   conversationsB    Conversation[] @relation("userB")
@@ -60,6 +61,11 @@ model User {
   // Onboarding relationships
   onboardingProgress OnboardingProgress?
   socialConnections  SocialConnection[]
+
+  // Points relationships
+  userPoints        UserPoints?
+  pointTransactions PointTransaction[]
+  dailyCheckIns     DailyCheckIn[]
 
   @@map("users")
 }
@@ -416,6 +422,67 @@ model Ad {
   property    Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   
   @@map("ads")
+}
+
+// Points Reward System models
+model UserPoints {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalPoints     Int      @default(0)      // All-time points earned
+  currentPoints   Int      @default(0)      // Available points to spend
+  lifetimeEarned  Int      @default(0)      // Total earned (including redeemed)
+  lifetimeRedeemed Int     @default(0)      // Total spent/redeemed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@map("user_points")
+}
+
+model PointTransaction {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points          Int                        // Positive for earned, negative for redeemed
+  action          String                     // 'signup', 'post_created', 'like_received', etc.
+  referenceId     String?                    // ID of related entity (post, booking, etc.)
+  referenceType   String?                    // 'post', 'booking', 'comment', etc.
+  metadata        Json?                      // Additional context
+  description     String?                    // Human-readable description
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([userId, action, createdAt])
+  @@map("point_transactions")
+}
+
+model DailyCheckIn {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkInDate     DateTime                   // Date of check-in (stored as full datetime but compared by day)
+  pointsAwarded   Int      @default(10)
+  streakCount     Int      @default(1)        // Consecutive days
+  createdAt       DateTime @default(now())
+
+  @@unique([userId, checkInDate])
+  @@index([userId, checkInDate])
+  @@map("daily_check_ins")
+}
+
+model PointsRule {
+  id              String   @id @default(cuid())
+  action          String   @unique            // 'signup', 'post_created', etc.
+  points          Int                         // Point value for action
+  dailyLimit      Int?                        // Max times per day (null = unlimited)
+  description     String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("points_rules")
 }
 
 // NextAuth.js models

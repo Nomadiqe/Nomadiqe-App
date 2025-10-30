@@ -175,11 +175,15 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
       const result = await response.json()
 
       if (response.ok && result.success) {
+        // Update context
         completeStep('collaboration-setup')
         setStep('complete')
 
         // Update session for the final redirect to dashboard
         await update()
+        
+        // Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         if (onComplete) {
           onComplete()

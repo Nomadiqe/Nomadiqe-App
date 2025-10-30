@@ -155,15 +155,22 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     }
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (connectedAccounts.length === 0) {
       setError('Please connect at least one social media account')
       return
     }
 
+    // Update context
     completeStep('social-connect')
     const nextStep = getNextStep('social-connect', role!)
     setStep(nextStep)
+
+    // Update session after connecting social accounts
+    await updateSession()
+    
+    // Small delay to ensure session is fully updated
+    await new Promise(resolve => setTimeout(resolve, 300))
 
     if (onComplete) {
       onComplete()

@@ -155,22 +155,21 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
       const result = await response.json()
 
       if (response.ok && result.success) {
-        completeStep('profile-setup')
+        // Update context
+        completeStep('media-kit-setup')
         setStep('complete')
 
         // Refresh the session to update the onboarding status in the token
         await updateSession()
-
-        // Force refresh the router to pick up updated session
-        router.refresh()
-
+        
         // Small delay to ensure session is updated before redirect
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         if (onComplete) {
           onComplete()
         } else {
-          router.push('/dashboard/influencer')
+          // For final redirect, use window.location to ensure session is fully refreshed
+          window.location.href = '/dashboard/influencer'
         }
       } else {
         setErrors({ general: result.error || 'Failed to setup profile' })

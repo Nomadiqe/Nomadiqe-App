@@ -75,19 +75,22 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
   }
 
   const handleSubmit = async () => {
-    if (selectedInterests.length === 0) return
-
     setIsSubmitting(true)
 
     try {
+      // Allow empty interests array
       const result = await submitGuestInterests(selectedInterests)
 
       if (result.success) {
+        // Update context
         completeStep('interest-selection')
         setStep('complete')
 
         // Refresh the session to update the onboarding status in the token
         await updateSession()
+        
+        // Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         if (onComplete) {
           onComplete(selectedInterests)
@@ -103,7 +106,7 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
   }
 
   const handleSkip = async () => {
-    // Submit with empty interests
+    // Submit with empty interests - just call handleSubmit
     await handleSubmit()
   }
 
@@ -198,7 +201,7 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
 
         <Button
           onClick={handleSubmit}
-          disabled={selectedInterests.length === 0 || isSubmitting}
+          disabled={isSubmitting}
           className="px-8"
         >
           {isSubmitting ? 'Saving...' : 'Complete Setup'}

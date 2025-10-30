@@ -441,6 +441,43 @@ async function main() {
     },
   })
 
+  // Seed Points Rules
+  console.log('🎯 Seeding points rules...')
+
+  const pointsRules = [
+    // High-value actions (Critical for business)
+    { action: 'signup', points: 100, dailyLimit: null, description: 'User signs up and verifies email' },
+    { action: 'onboarding_complete', points: 75, dailyLimit: null, description: 'User completes full onboarding' },
+    { action: 'booking_completed', points: 50, dailyLimit: null, description: 'User completes a booking' },
+    { action: 'review_created', points: 25, dailyLimit: null, description: 'User leaves a review after booking' },
+    { action: 'daily_check_in', points: 10, dailyLimit: 1, description: 'User checks in for the day' },
+
+    // Medium-value actions (Engagement & Content)
+    { action: 'post_created', points: 15, dailyLimit: 5, description: 'User creates a new post' },
+    { action: 'comment_received', points: 5, dailyLimit: 20, description: 'User receives a comment on their post' },
+    { action: 'comment_created', points: 3, dailyLimit: 10, description: 'User writes a comment' },
+    { action: 'property_created', points: 30, dailyLimit: null, description: 'Host uploads a property listing' },
+    { action: 'profile_completed', points: 20, dailyLimit: null, description: 'User completes their profile' },
+
+    // Lower-value actions (Easy engagement)
+    { action: 'post_liked', points: 1, dailyLimit: 50, description: 'User likes a post' },
+    { action: 'like_received', points: 2, dailyLimit: 30, description: 'User receives a like on their post' },
+    { action: 'follow_user', points: 2, dailyLimit: 20, description: 'User follows another user' },
+    { action: 'follower_gained', points: 3, dailyLimit: null, description: 'User gains a new follower' },
+  ]
+
+  for (const rule of pointsRules) {
+    await prisma.pointsRule.upsert({
+      where: { action: rule.action },
+      update: {
+        points: rule.points,
+        dailyLimit: rule.dailyLimit,
+        description: rule.description,
+      },
+      create: rule,
+    })
+  }
+
   console.log('✅ Database seeded successfully!')
   console.log(`Created ${await prisma.user.count()} users`)
   console.log(`Created ${await prisma.property.count()} properties`)
@@ -453,6 +490,7 @@ async function main() {
   console.log(`Created ${await prisma.postLike.count()} post likes`)
   console.log(`Created ${await prisma.postComment.count()} post comments`)
   console.log(`Created ${await prisma.ad.count()} ads`)
+  console.log(`Created ${await prisma.pointsRule.count()} points rules`)
 }
 
 main()

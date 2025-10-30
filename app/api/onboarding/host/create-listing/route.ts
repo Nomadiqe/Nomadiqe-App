@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
         images: validatedData.photos,
         rules: validatedData.rules,
         hostId: session.user.id,
-        isActive: false, // Require review before activation
+        isActive: true, // Properties are immediately visible
         isVerified: false
       }
     })

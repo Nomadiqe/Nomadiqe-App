@@ -51,7 +51,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount] = await Promise.all([
+  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw] = await Promise.all([
     prisma.post.findMany({
       where: { authorId: dbUser.id, isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -65,6 +65,27 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     prisma.follow.count({ where: { followingId: dbUser.id } }),
     prisma.follow.count({ where: { followerId: dbUser.id } }),
     prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
+    dbUser.role === 'HOST' ? prisma.property.findMany({
+      where: { hostId: dbUser.id, isActive: true },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        type: true,
+        city: true,
+        country: true,
+        price: true,
+        currency: true,
+        images: true,
+        _count: {
+          select: {
+            bookings: true,
+            reviews: true,
+          }
+        }
+      }
+    }) : null,
   ])
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
@@ -217,6 +238,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <section className="max-w-4xl mx-auto px-4 py-8">
         <ProfileTabs
           posts={posts}
+          properties={propertiesRaw || []}
           userRole={user.role}
           isOwnProfile={isOwnProfile}
           userName={user.name}

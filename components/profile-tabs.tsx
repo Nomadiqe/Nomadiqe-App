@@ -1,6 +1,7 @@
 "use client"
 
 import { PostCard } from '@/components/post-card'
+import { PropertyCard } from '@/components/property-card'
 import { Camera, Home, Image, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -10,12 +11,13 @@ import Link from 'next/link'
 
 interface ProfileTabsProps {
   posts: any[]
+  properties?: any[]
   userRole: string
   isOwnProfile: boolean
   userName: string
 }
 
-export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: ProfileTabsProps) {
+export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, userName }: ProfileTabsProps) {
   const EmptyState = ({ icon: Icon, title, description, actionLabel, actionHref }: any) => (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -65,17 +67,36 @@ export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: Profile
 
       {userRole === 'HOST' && (
         <TabsContent value="properties" className="mt-6">
-          <EmptyState
-            icon={Home}
-            title="No properties listed"
-            description={
-              isOwnProfile
-                ? 'List your first property to start hosting!'
-                : `${userName} hasn't listed any properties yet.`
-            }
-            actionLabel={isOwnProfile ? 'List Your Property' : undefined}
-            actionHref="/host/create-property"
-          />
+          {properties.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((property: any) => (
+                <PropertyCard
+                  key={property.id}
+                  id={property.id}
+                  title={property.title}
+                  location={`${property.city}, ${property.country}`}
+                  price={property.price}
+                  rating={0}
+                  image={property.images[0] || '/placeholder-property.jpg'}
+                  guests={0}
+                  bedrooms={0}
+                  currency={property.currency}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Home}
+              title="No properties listed"
+              description={
+                isOwnProfile
+                  ? 'List your first property to start hosting!'
+                  : `${userName} hasn't listed any properties yet.`
+              }
+              actionLabel={isOwnProfile ? 'List Your Property' : undefined}
+              actionHref="/host/create-property"
+            />
+          )}
         </TabsContent>
       )}
 

@@ -6,16 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Home, 
-  Calendar, 
-  Users, 
-  Euro, 
-  Star, 
-  TrendingUp, 
-  Plus, 
-  Share2, 
-  Camera, 
+import {
+  Home,
+  Calendar,
+  Users,
+  Euro,
+  Star,
+  TrendingUp,
+  Plus,
+  Share2,
+  Camera,
   Settings,
   Eye,
   Edit,
@@ -30,6 +30,8 @@ import {
   Heart
 } from 'lucide-react'
 import Link from 'next/link'
+import PointsDisplay from '@/components/points/PointsDisplay'
+import DailyCheckIn from '@/components/points/DailyCheckIn'
 
 interface HostDashboardProps {
   user: any // User with hostProfile and properties
@@ -114,6 +116,14 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                   Add Property
                 </Link>
               </Button>
+            </div>
+          </div>
+
+          {/* Points and Daily Check-in */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3">
+              <PointsDisplay />
+              <DailyCheckIn />
             </div>
           </div>
         </div>

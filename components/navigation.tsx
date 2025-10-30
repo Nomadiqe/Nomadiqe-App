@@ -272,6 +272,11 @@ export function Navigation() {
 
           {/* Mobile Right Menu */}
           <div className="flex items-center space-x-2">
+            {session && (
+              <div className="scale-90 origin-right">
+                <PointsDisplay />
+              </div>
+            )}
             <Button
               variant="ghost"
               size="sm"

@@ -4,11 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  MapPin, 
-  Heart, 
-  Star, 
-  Calendar, 
+import {
+  MapPin,
+  Heart,
+  Star,
+  Calendar,
   Search,
   Plus,
   Compass,
@@ -27,6 +27,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import InterestSelection from '@/components/onboarding/steps/guest/InterestSelection'
+import PointsDisplay from '@/components/points/PointsDisplay'
+import DailyCheckIn from '@/components/points/DailyCheckIn'
 
 interface GuestDashboardProps {
   user: any // User with guestPreferences
@@ -49,6 +51,46 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="bg-card border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+                Welcome, {user.fullName || user.name}! 🌍
+              </h1>
+              <p className="text-muted-foreground mt-1 text-sm lg:text-base">
+                {isNewGuest ? 'Ready to discover amazing places? Let&apos;s find your perfect stay!' : 'Discover your next adventure'}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full lg:w-auto">
+              <Button variant="outline" asChild className="w-full sm:w-auto">
+                <Link href="/profile">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Profile</span>
+                  <span className="sm:hidden">Profile</span>
+                </Link>
+              </Button>
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="/search">
+                  <Search className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Search Properties</span>
+                  <span className="sm:hidden">Search</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Points and Daily Check-in */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3">
+              <PointsDisplay />
+              <DailyCheckIn />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
         {/* New Guest Welcome Banner */}
         {isNewGuest && (

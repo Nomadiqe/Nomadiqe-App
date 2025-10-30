@@ -6,16 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Instagram, 
+import {
+  Instagram,
   Music,
   Youtube,
-  Users, 
-  Star, 
-  TrendingUp, 
-  Plus, 
-  Share2, 
-  Camera, 
+  Users,
+  Star,
+  TrendingUp,
+  Plus,
+  Share2,
+  Camera,
   Settings,
   Eye,
   Edit,
@@ -32,6 +32,8 @@ import {
   Calendar
 } from 'lucide-react'
 import Link from 'next/link'
+import PointsDisplay from '@/components/points/PointsDisplay'
+import DailyCheckIn from '@/components/points/DailyCheckIn'
 
 interface InfluencerDashboardProps {
   user: any // User with influencerProfile and socialConnections
@@ -127,6 +129,14 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                   <span className="hidden sm:inline">Find </span>Opportunities
                 </Link>
               </Button>
+            </div>
+          </div>
+
+          {/* Points and Daily Check-in */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3">
+              <PointsDisplay />
+              <DailyCheckIn />
             </div>
           </div>
         </div>

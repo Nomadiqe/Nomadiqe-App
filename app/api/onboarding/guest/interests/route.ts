@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { awardPoints } from '@/lib/services/points-service'
 
 const interestsSchema = z.object({
   interests: z.array(z.string().min(1)).max(20, 'Too many interests selected').default([])
@@ -53,6 +54,13 @@ export async function POST(req: NextRequest) {
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
       }
+    })
+
+    // Award onboarding completion points
+    await awardPoints({
+      userId: session.user.id,
+      action: 'onboarding_complete',
+      description: 'Onboarding completed successfully!',
     })
 
     // Update progress

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { awardPoints } from '@/lib/services/points-service'
 
 const profileSetupSchema = z.object({
   contentNiches: z.array(z.string()).min(1, 'At least one content niche is required').max(5, 'Maximum 5 niches allowed'),
@@ -134,6 +135,13 @@ export async function POST(req: NextRequest) {
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
       }
+    })
+
+    // Award onboarding completion points
+    await awardPoints({
+      userId: session.user.id,
+      action: 'onboarding_complete',
+      description: 'Influencer onboarding completed successfully!',
     })
 
     // Update progress

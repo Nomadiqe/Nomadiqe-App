@@ -18,6 +18,8 @@ import {
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import PointsDisplay from './points/PointsDisplay'
+import DailyCheckIn from './points/DailyCheckIn'
 
 export function Navigation() {
   const { data: session } = useSession()
@@ -113,34 +115,37 @@ export function Navigation() {
             </div>
 
             {/* Desktop Right Menu */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               {session ? (
-                <div className="relative group">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                    <Menu className="w-4 h-4" />
-                  </Button>
+                <>
+                  <PointsDisplay />
+                  <div className="relative group">
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                      <Menu className="w-4 h-4" />
+                    </Button>
 
-                  {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <div className="py-1">
-                      {session.user?.role === 'ADMIN' && (
-                        <Link href="/admin">
-                          <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
-                            <Shield className="h-4 w-4 mr-3" />
-                            Admin
-                          </div>
-                        </Link>
-                      )}
-                      <button
-                        onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center"
-                      >
-                        <LogOut className="h-4 w-4 mr-3" />
-                        Sign Out
-                      </button>
+                    {/* Dropdown Menu */}
+                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                      <div className="py-1">
+                        {session.user?.role === 'ADMIN' && (
+                          <Link href="/admin">
+                            <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
+                              <Shield className="h-4 w-4 mr-3" />
+                              Admin
+                            </div>
+                          </Link>
+                        )}
+                        <button
+                          onClick={handleSignOut}
+                          className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center"
+                        >
+                          <LogOut className="h-4 w-4 mr-3" />
+                          Sign Out
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </>
               ) : (
                 <div className="flex items-center space-x-2">
                   <Button variant="ghost" asChild>

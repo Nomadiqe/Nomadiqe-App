@@ -153,3 +153,4 @@ The middleware (`middleware.ts`) now:
 ✅ No TypeScript errors
 ✅ No linting errors in modified files
 
+

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/db'
 import { UserRole } from '@prisma/client'
+import { awardPoints } from '@/lib/services/points-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,6 +65,13 @@ export async function POST(request: NextRequest) {
           accommodationTypes: []
         }
       }
+    })
+
+    // Award signup bonus points
+    await awardPoints({
+      userId: user.id,
+      action: 'signup',
+      description: 'Welcome to Nomadiqe! Signup bonus',
     })
 
     return NextResponse.json(

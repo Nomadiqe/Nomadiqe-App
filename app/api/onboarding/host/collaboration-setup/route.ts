@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { awardPoints } from '@/lib/services/points-service'
 
 const collaborationSchema = z.object({
   standardOffer: z.object({
@@ -96,6 +97,13 @@ export async function POST(req: NextRequest) {
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
       }
+    })
+
+    // Award onboarding completion points
+    await awardPoints({
+      userId: session.user.id,
+      action: 'onboarding_complete',
+      description: 'Host onboarding completed successfully!',
     })
 
     // Update progress

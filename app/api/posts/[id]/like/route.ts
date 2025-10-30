@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextResponse } from 'next/server'
+import { awardPoints } from '@/lib/services/points-service'
 
 export async function POST(
   request: Request,
@@ -66,6 +67,27 @@ export async function POST(
           postId: postId
         }
       })
+
+      // Award points (only if not liking own post)
+      if (session.user.id !== post.authorId) {
+        // Award 1 point to user giving the like (daily limit of 50)
+        await awardPoints({
+          userId: session.user.id,
+          action: 'post_liked',
+          referenceId: postId,
+          referenceType: 'post',
+          description: 'Liked a post',
+        })
+
+        // Award 2 points to post author receiving the like (daily limit of 30)
+        await awardPoints({
+          userId: post.authorId,
+          action: 'like_received',
+          referenceId: postId,
+          referenceType: 'post',
+          description: 'Received a like on your post',
+        })
+      }
 
       // Get updated like count
       const likeCount = await prisma.postLike.count({

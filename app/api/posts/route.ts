@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { awardPoints } from '@/lib/services/points-service'
 
 export async function POST(request: Request) {
   try {
@@ -49,6 +50,15 @@ export async function POST(request: Request) {
           }
         }
       }
+    })
+
+    // Award points for post creation (daily limit of 5 enforced by service)
+    await awardPoints({
+      userId: session.user.id,
+      action: 'post_created',
+      referenceId: post.id,
+      referenceType: 'post',
+      description: 'Created a new post',
     })
 
     return NextResponse.json({

@@ -39,9 +39,25 @@ export function Navigation() {
     await signOut({ callbackUrl: '/' })
   }
 
+  // Get the appropriate home URL based on user role
+  const getHomeHref = () => {
+    if (!session) return '/'
+    switch (session.user.role) {
+      case 'HOST':
+        return '/dashboard/host'
+      case 'GUEST':
+        return '/dashboard/guest'
+      case 'INFLUENCER':
+        return '/dashboard/influencer'
+      case 'TRAVELER':
+      default:
+        return '/dashboard'
+    }
+  }
+
   // Desktop navigation items - filter based on authentication
   const navItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: getHomeHref(), label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
     { href: '/search', label: 'Explore', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
@@ -52,7 +68,7 @@ export function Navigation() {
 
   // Mobile navigation items - filter based on authentication
   const mobileNavItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: getHomeHref(), label: 'Home', icon: Home },
     { href: '/', label: 'Discover', icon: Compass },
   ] : [
     { href: '/', label: 'Discover', icon: Compass },

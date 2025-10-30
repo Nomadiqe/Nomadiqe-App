@@ -47,8 +47,22 @@ async function HostDashboardPageContent() {
     }
   })
 
-  if (!user || user.role !== 'HOST') {
-    redirect('/dashboard')
+  // If user doesn't exist in DB, redirect to sign in
+  if (!user) {
+    redirect('/auth/signin')
+  }
+
+  // Only redirect if the user's role is explicitly NOT HOST
+  if (user.role !== 'HOST') {
+    // Redirect to appropriate dashboard based on role
+    if (user.role === 'GUEST') {
+      redirect('/dashboard/guest')
+    } else if (user.role === 'INFLUENCER') {
+      redirect('/dashboard/influencer')
+    } else {
+      // Fallback to general dashboard
+      redirect('/dashboard')
+    }
   }
 
   return <HostDashboard user={user} />

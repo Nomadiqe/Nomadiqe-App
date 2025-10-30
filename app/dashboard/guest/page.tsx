@@ -20,8 +20,22 @@ async function GuestDashboardPageContent() {
     }
   })
 
-  if (!user || !['GUEST', 'TRAVELER'].includes(user.role)) {
-    redirect('/dashboard')
+  // If user doesn't exist in DB, redirect to sign in
+  if (!user) {
+    redirect('/auth/signin')
+  }
+
+  // Only redirect if the user's role is explicitly NOT a guest/traveler
+  if (!['GUEST', 'TRAVELER'].includes(user.role)) {
+    // Redirect to appropriate dashboard based on role
+    if (user.role === 'HOST') {
+      redirect('/dashboard/host')
+    } else if (user.role === 'INFLUENCER') {
+      redirect('/dashboard/influencer')
+    } else {
+      // Fallback to general dashboard
+      redirect('/dashboard')
+    }
   }
 
   return <GuestDashboard user={user} />

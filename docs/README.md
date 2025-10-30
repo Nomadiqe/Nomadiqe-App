@@ -11,15 +11,6 @@ Welcome to the Nomadiqe App documentation! This directory contains comprehensive
 
 ### Feature Documentation
 
-#### Core Features
-
-- **[Points Reward System](./POINTS_SYSTEM_DESIGN.md)** - Comprehensive gamification system
-  - Point values and business rationale
-  - 14 point-earning actions (signup, posts, likes, comments, etc.)
-  - Anti-abuse mechanisms and daily limits
-  - Database schema and API design
-  - **[Testing Guide](./POINTS_SYSTEM_TESTING_GUIDE.md)** - Complete testing scenarios and verification
-
 - **[Geocoding Service](./GEOCODING.md)** - Automatic address-to-coordinates conversion
   - How the geocoding service works
   - Multi-level fallback strategy
@@ -31,14 +22,6 @@ Welcome to the Nomadiqe App documentation! This directory contains comprehensive
   - Callback URL setup
   - Testing and troubleshooting
 
-#### User Experience
-
-- **[Onboarding Flow](./ONBOARDING_FIXES_SUMMARY.md)** - User onboarding system documentation
-  - Multi-role onboarding (Guest, Host, Influencer)
-  - Session synchronization and navigation
-  - **[Fixes Applied](./ONBOARDING_FIX_COMPLETE.md)** - Complete fix documentation
-  - **[Test Results](./ONBOARDING_TEST_RESULTS.md)** - Comprehensive test scenarios
-
 ### Maintenance & Reference
 
 - **[Changelog](./CHANGELOG.md)** - Version history and feature additions
@@ -47,9 +30,6 @@ Welcome to the Nomadiqe App documentation! This directory contains comprehensive
 ## 🚀 Quick Links
 
 ### For Developers
-- **New Feature**: Implementing points? See [POINTS_SYSTEM_DESIGN.md](./POINTS_SYSTEM_DESIGN.md)
-- Testing points system? Follow [POINTS_SYSTEM_TESTING_GUIDE.md](./POINTS_SYSTEM_TESTING_GUIDE.md)
-- Working on onboarding? Check [ONBOARDING_FIXES_SUMMARY.md](./ONBOARDING_FIXES_SUMMARY.md)
 - Setting up OAuth? Start with [QUICKSTART_SOCIAL_AUTH.md](./QUICKSTART_SOCIAL_AUTH.md)
 - Working with maps? See [GEOCODING.md](./GEOCODING.md)
 - Deployment issues? Check [VERCEL_SETUP.md](./VERCEL_SETUP.md)

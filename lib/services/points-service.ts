@@ -9,6 +9,7 @@
  */
 
 import { prisma } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 import { startOfDay, subDays, differenceInDays } from 'date-fns'
 
 // Types
@@ -150,7 +151,7 @@ export async function awardPoints(
     const pointsToAward = customPoints !== undefined ? customPoints : rule.points
 
     // Use a transaction to ensure atomicity
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create the point transaction record
       await tx.pointTransaction.create({
         data: {
@@ -363,7 +364,7 @@ export async function performDailyCheckIn(userId: string): Promise<DailyCheckInR
     const totalPoints = basePoints + bonusPoints
 
     // Use transaction for atomicity
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create check-in record
       const checkIn = await tx.dailyCheckIn.create({
         data: {
@@ -518,7 +519,7 @@ export async function adjustUserPoints(
   adminId: string
 ) {
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create transaction
       await tx.pointTransaction.create({
         data: {
@@ -583,7 +584,7 @@ export async function getLeaderboard(limit: number = 10) {
       },
     })
 
-    return topUsers.map((entry, index) => ({
+    return topUsers.map((entry: typeof topUsers[0], index: number) => ({
       rank: index + 1,
       userId: entry.userId,
       user: entry.user,

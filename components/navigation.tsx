@@ -74,7 +74,10 @@ export function Navigation() {
                 alt="Nomadiqe Logo"
                 className="w-8 h-auto object-contain"
               />
-              <span className="text-xl font-bold text-primary">Nomadiqe</span>
+              <span className="text-xl font-bold text-primary">
+                Nomadiqe
+                <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+              </span>
             </Link>
 
             {/* Desktop Navigation Items */}

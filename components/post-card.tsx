@@ -417,12 +417,12 @@ export function PostCard({
       {/* Image Lightbox */}
       {lightboxOpen && images.length > 0 && (
         <div
-          className="fixed inset-0 z-[1200] bg-black flex flex-col"
+          className="fixed top-0 left-0 right-0 bottom-0 z-[1200] bg-black flex flex-col"
           onClick={() => {
             setLightboxOpen(false)
             setCaptionExpanded(false)
           }}
-          style={{ marginBottom: 0 }}
+          style={{ width: '100%', height: '100%' }}
         >
           {/* Top Bar with Close Button */}
           <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">

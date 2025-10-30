@@ -416,59 +416,143 @@ export function PostCard({
       {/* Image Lightbox */}
       {lightboxOpen && images.length > 0 && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black flex flex-col"
           onClick={() => setLightboxOpen(false)}
         >
-          {/* Close Button */}
-          <button
-            onClick={() => setLightboxOpen(false)}
-            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          {/* Navigation */}
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-                }}
-                className="absolute left-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-                }}
-                className="absolute right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            </>
-          )}
-
-          {/* Image */}
-          <div
-            className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center px-16"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={images[lightboxIndex]}
-              alt={`Image ${lightboxIndex + 1}`}
-              className="max-w-full max-h-full object-contain"
-            />
+          {/* Top Bar with Close Button */}
+          <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+            <div></div>
+            <button
+              onClick={() => setLightboxOpen(false)}
+              className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
 
-          {/* Image Counter */}
-          {images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full bg-black/50 text-white text-sm">
-              {lightboxIndex + 1} / {images.length}
+          {/* Main Content Area */}
+          <div className="flex-1 flex items-center justify-center relative">
+            {/* Navigation Buttons */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+                  }}
+                  className="absolute left-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                  }}
+                  className="absolute right-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </button>
+              </>
+            )}
+
+            {/* Image with Swipe Support */}
+            <div
+              className="relative w-full h-full flex items-center justify-center px-16"
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => {
+                const touch = e.touches[0]
+                const startX = touch.clientX
+                
+                const handleTouchEnd = (e: TouchEvent) => {
+                  const touch = e.changedTouches[0]
+                  const endX = touch.clientX
+                  const diffX = startX - endX
+                  
+                  // Swipe threshold (50px)
+                  if (Math.abs(diffX) > 50 && images.length > 1) {
+                    if (diffX > 0) {
+                      // Swipe left - next image
+                      setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                    } else {
+                      // Swipe right - previous image
+                      setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+                    }
+                  }
+                  
+                  document.removeEventListener('touchend', handleTouchEnd)
+                }
+                
+                document.addEventListener('touchend', handleTouchEnd)
+              }}
+            >
+              <img
+                src={images[lightboxIndex]}
+                alt={`Image ${lightboxIndex + 1}`}
+                className="max-w-full max-h-[80vh] object-contain select-none"
+                draggable={false}
+              />
             </div>
-          )}
+          </div>
+
+          {/* Bottom Bar with Caption and Actions */}
+          <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/90 via-black/80 to-transparent p-6">
+            {/* Caption */}
+            <div className="max-w-3xl mx-auto mb-4">
+              <p className="text-white text-sm leading-relaxed">{content}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="max-w-3xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleLike()
+                  }}
+                  className={`gap-2 text-white hover:bg-white/20 ${
+                    liked ? 'text-red-400 hover:text-red-300' : ''
+                  }`}
+                >
+                  <Heart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
+                  <span className="font-medium">{likeCount}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setLightboxOpen(false)
+                    handleCommentClick()
+                  }}
+                  className="gap-2 text-white hover:bg-white/20"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span className="font-medium">{commentCount}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleShare()
+                  }}
+                  className="gap-2 text-white hover:bg-white/20"
+                >
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              {/* Image Counter */}
+              {images.length > 1 && (
+                <div className="px-3 py-1 rounded-full bg-black/50 text-white text-sm">
+                  {lightboxIndex + 1} / {images.length}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </Card>

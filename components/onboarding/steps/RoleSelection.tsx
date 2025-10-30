@@ -83,12 +83,18 @@ export default function RoleSelection() {
       const result = await selectRole(selectedRole)
 
       if (result.success) {
-        // Update the session token with fresh data from database
-        await updateSession()
-
+        // Update context first
         setRole(selectedRole)
         completeStep('role-selection')
         setStep(result.nextStep)
+        
+        // Update the session token with fresh data from database
+        await updateSession()
+        
+        // Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        // Navigate to next step
         router.push(`/onboarding/${result.nextStep}`)
       }
     } catch (error) {

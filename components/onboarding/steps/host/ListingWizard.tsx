@@ -177,9 +177,16 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
       const result = await response.json()
 
       if (response.ok && result.success) {
+        // Update context
         completeStep('listing-creation')
         const nextStep = getNextStep('listing-creation', role!)
         setStep(nextStep)
+
+        // Update session after creating listing
+        await updateSession()
+        
+        // Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         if (onComplete) {
           onComplete()

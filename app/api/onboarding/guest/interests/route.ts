@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { z } from 'zod'
 
 const interestsSchema = z.object({
-  interests: z.array(z.string().min(1)).max(20, 'Too many interests selected')
+  interests: z.array(z.string().min(1)).max(20, 'Too many interests selected').default([])
 })
 
 export async function POST(req: NextRequest) {
@@ -34,10 +34,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const validatedData = interestsSchema.parse(body)
 
-    // Update guest preferences
-    await prisma.guestPreferences.update({
+    // Update or create guest preferences
+    await prisma.guestPreferences.upsert({
       where: { userId: session.user.id },
-      data: {
+      create: {
+        userId: session.user.id,
+        travelInterests: validatedData.interests
+      },
+      update: {
         travelInterests: validatedData.interests
       }
     })

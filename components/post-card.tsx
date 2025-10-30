@@ -76,6 +76,7 @@ export function PostCard({
   const [showUserSearch, setShowUserSearch] = useState(false)
   const [showCommentCard, setShowCommentCard] = useState(false)
   const [selectedUserForShare, setSelectedUserForShare] = useState<any>(null)
+  const [captionExpanded, setCaptionExpanded] = useState(false)
 
   const handleLike = async () => {
     // Check if user is authenticated
@@ -416,14 +417,22 @@ export function PostCard({
       {/* Image Lightbox */}
       {lightboxOpen && images.length > 0 && (
         <div
-          className="fixed inset-0 z-50 bg-black flex flex-col"
-          onClick={() => setLightboxOpen(false)}
+          className="fixed inset-0 z-[1200] bg-black flex flex-col"
+          onClick={() => {
+            setLightboxOpen(false)
+            setCaptionExpanded(false)
+          }}
+          style={{ marginBottom: 0 }}
         >
           {/* Top Bar with Close Button */}
           <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
             <div></div>
             <button
-              onClick={() => setLightboxOpen(false)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setLightboxOpen(false)
+                setCaptionExpanded(false)
+              }}
               className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
             >
               <X className="w-6 h-6" />
@@ -489,7 +498,7 @@ export function PostCard({
               <img
                 src={images[lightboxIndex]}
                 alt={`Image ${lightboxIndex + 1}`}
-                className="max-w-full max-h-[80vh] object-contain select-none"
+                className="max-w-full max-h-full object-contain select-none"
                 draggable={false}
               />
             </div>
@@ -497,9 +506,19 @@ export function PostCard({
 
           {/* Bottom Bar with Caption and Actions */}
           <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/90 via-black/80 to-transparent p-6">
-            {/* Caption */}
+            {/* Caption with expand/collapse */}
             <div className="max-w-3xl mx-auto mb-4">
-              <p className="text-white text-sm leading-relaxed">{content}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setCaptionExpanded(!captionExpanded)
+                }}
+                className="w-full text-left"
+              >
+                <p className={`text-white text-sm leading-relaxed ${captionExpanded ? '' : 'line-clamp-2'}`}>
+                  {content}
+                </p>
+              </button>
             </div>
 
             {/* Actions */}
@@ -525,6 +544,7 @@ export function PostCard({
                   onClick={(e) => {
                     e.stopPropagation()
                     setLightboxOpen(false)
+                    setCaptionExpanded(false)
                     handleCommentClick()
                   }}
                   className="gap-2 text-white hover:bg-white/20"

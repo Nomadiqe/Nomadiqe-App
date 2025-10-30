@@ -85,9 +85,9 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
           </Link>
         </Button>
         <Button asChild className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
-          <Link href="/create-post" className="flex items-center space-x-2">
-            <Camera className="w-4 h-4" />
-            <span>Add Photo</span>
+          <Link href="/messages" className="flex items-center space-x-2">
+            <MessageCircle className="w-4 h-4" />
+            <span>Messages</span>
           </Link>
         </Button>
         <Button

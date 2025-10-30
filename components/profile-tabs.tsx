@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
-import { ThemeToggle } from '@/components/theme-toggle'
+// Theme toggle removed here since it's available in the main navigation menu
 
 interface ProfileTabsProps {
   posts: any[]
@@ -35,16 +35,14 @@ export function ProfileTabs({ posts, userRole, isOwnProfile, userName }: Profile
 
   return (
     <Tabs defaultValue="posts" className="w-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <TabsList className="grid w-full max-w-md grid-cols-3 lg:grid-cols-4">
           <TabsTrigger value="posts">Posts</TabsTrigger>
           {userRole === 'HOST' && <TabsTrigger value="properties">Properties</TabsTrigger>}
           <TabsTrigger value="photos">Photos</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
-        <div className="ml-4">
-          <ThemeToggle />
-        </div>
+        {/* Theme toggle removed */}
       </div>
 
       <TabsContent value="posts" className="mt-6 space-y-6">

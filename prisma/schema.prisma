@@ -52,6 +52,10 @@ model User {
   posts             Post[]
   postLikes         PostLike[]
   postComments      PostComment[]
+  // Messaging
+  conversationsA    Conversation[] @relation("userA")
+  conversationsB    Conversation[] @relation("userB")
+  messages          Message[]
   
   // Onboarding relationships
   onboardingProgress OnboardingProgress?
@@ -364,6 +368,36 @@ model PostComment {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("post_comments")
+}
+
+// Simple two-party conversation model
+model Conversation {
+  id        String   @id @default(cuid())
+  userAId   String
+  userA     User     @relation("userA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId   String
+  userB     User     @relation("userB", fields: [userBId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages  Message[]
+
+  @@unique([userAId, userBId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content        String?
+  postId         String?
+  createdAt      DateTime @default(now())
+  isRead         Boolean  @default(false)
+
+  @@map("messages")
 }
 
 model Ad {

@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -16,9 +17,14 @@ import {
   MoreHorizontal,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Share2,
+  Send,
+  Repeat
 } from 'lucide-react'
 import { PostComments } from '@/components/post-comments'
+import { UserMentionSearch } from '@/components/user-mention-search'
+import { ShareCommentCard } from '@/components/share-comment-card'
 
 interface PostCardProps {
   id: string
@@ -65,6 +71,11 @@ export function PostCard({
   const [showComments, setShowComments] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [imageError, setImageError] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [showUserSearch, setShowUserSearch] = useState(false)
+  const [showCommentCard, setShowCommentCard] = useState(false)
+  const [selectedUserForShare, setSelectedUserForShare] = useState<any>(null)
 
   const handleLike = async () => {
     // Check if user is authenticated
@@ -113,6 +124,47 @@ export function PostCard({
     setShowComments(true)
   }
 
+  const handleShare = () => {
+    if (!session?.user?.id) {
+      router.push('/auth/signin')
+      return
+    }
+    setShareOpen(true)
+  }
+
+  const handleSendMessage = () => {
+    setShareOpen(false)
+    setShowUserSearch(true)
+  }
+
+  const handleSelectUser = (user: any) => {
+    setSelectedUserForShare(user)
+    setShowUserSearch(false)
+    setShowCommentCard(true)
+  }
+
+  const handleSendSharedMessage = async (message: string) => {
+    try {
+      if (!selectedUserForShare?.id) return
+      await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientId: selectedUserForShare.id, postId: id, content: message }),
+      })
+      // Close and reset, stay on page
+      setShowCommentCard(false)
+      setSelectedUserForShare(null)
+    } catch (error) {
+      console.error('Errore durante l\'invio del messaggio:', error)
+    }
+  }
+
+  const handleRepost = () => {
+    // TODO: Implement repost functionality
+    console.log('Repost post:', id)
+    setShareOpen(false)
+  }
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -130,18 +182,23 @@ export function PostCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
-              <Avatar className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200">
-                <AvatarImage src={author.image} alt={author.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground font-semibold p-1">
+              <div className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200 rounded-full overflow-hidden flex items-center justify-center bg-primary/10">
+                {author.image && !imageError ? (
                   <Image 
-                    src="/nomadiqe-logo-transparent.png" 
-                    alt="Nomadiqe" 
-                    width={40} 
-                    height={40}
-                    className="object-contain"
+                    src={author.image} 
+                    alt={author.name}
+                    width={44}
+                    height={44}
+                    className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
+                    unoptimized
                   />
-                </AvatarFallback>
-              </Avatar>
+                ) : (
+                  <span className="text-primary font-semibold text-lg">
+                    {author.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
             </Link>
             <div>
               <Link href={`/profile/${author.id}`}>
@@ -267,29 +324,86 @@ export function PostCard({
       )}
 
         {/* Actions */}
-        <div className="flex items-center gap-3 pt-3 border-t border-border/50">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLike}
-            className={`gap-2 transition-all duration-200 hover:scale-105 ${
-              liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
-            }`}
-          >
-            <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
-            <span className="text-sm font-medium">{likeCount}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleCommentClick}
-            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
-          >
-            <MessageCircle className="h-4 w-4" />
-            <span className="text-sm font-medium">{commentCount}</span>
-          </Button>
+        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={`gap-2 transition-all duration-200 hover:scale-105 ${
+                liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
+              }`}
+            >
+              <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
+              <span className="text-sm font-medium">{likeCount}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCommentClick}
+              className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="text-sm font-medium">{commentCount}</span>
+            </Button>
+          </div>
+          
+          {/* Share Button */}
+          <div className="relative">
+            <Popover open={shareOpen} onOpenChange={setShareOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 hover:bg-muted/80"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-0" align="end">
+                <div className="py-2">
+                  <button
+                    onClick={handleSendMessage}
+                    className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
+                  >
+                    <Send className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">send by message</span>
+                  </button>
+                  <button
+                    onClick={handleRepost}
+                    className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
+                  >
+                    <Repeat className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Share</span>
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+            
+            {/* User Search */}
+            {showUserSearch && (
+              <UserMentionSearch
+                onSelectUser={handleSelectUser}
+                onClose={() => setShowUserSearch(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
+
+      {/* Share Comment Card */}
+      {showCommentCard && selectedUserForShare && (
+        <ShareCommentCard
+          isOpen={showCommentCard}
+          onClose={() => {
+            setShowCommentCard(false)
+            setSelectedUserForShare(null)
+          }}
+          onSend={handleSendSharedMessage}
+          selectedUser={selectedUserForShare}
+          post={{ id, content, images }}
+        />
+      )}
 
       {/* Comments Panel */}
       <PostComments

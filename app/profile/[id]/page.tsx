@@ -107,12 +107,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     },
   }
 
+  const statsCols = user.role === 'HOST' ? 'grid-cols-4' : 'grid-cols-3'
+
   return (
     <div className="min-h-screen bg-background">
       {/* Profile Header */}
       <section className="bg-card border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-8">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">
             {/* Profile Image */}
             <div className="relative">
               <img
@@ -131,13 +133,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             <div className="flex-1 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div>
-                  <h1 className="text-3xl font-bold flex items-center space-x-2">
+              <h1 className="text-2xl font-bold flex items-center space-x-2">
                     <span>{user.name}</span>
                     {user.isVerified && (
                       <Star className="w-6 h-6 text-nomadiqe-500 fill-current" />
                     )}
                   </h1>
-                  <p className="text-muted-foreground capitalize">{user.role.toLowerCase()}</p>
+              <p className="text-muted-foreground capitalize text-sm">{user.role.toLowerCase()}</p>
                 </div>
 
                 {/* Action Buttons */}
@@ -149,10 +151,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
 
               {/* Bio */}
-              <p className="text-foreground leading-relaxed">{user.bio}</p>
+              <p className="text-foreground leading-relaxed text-sm">{user.bio}</p>
 
               {/* Contact Info */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                 {user.location && (
                   <div className="flex items-center space-x-1">
                     <MapPin className="w-4 h-4" />
@@ -178,31 +180,31 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-6 pt-4">
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.posts}</p>
-                    <p className="text-xs text-muted-foreground">Posts</p>
-                  </CardContent>
+              <div className={`grid ${statsCols} gap-3 pt-2 w-full`}>
+                <Card className="px-3 py-2 w-full">
+                  <div className="text-center">
+                    <p className="text-base font-bold">{user.stats.posts}</p>
+                    <p className="text-[10px] text-muted-foreground">Posts</p>
+                  </div>
                 </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.followers}</p>
-                    <p className="text-xs text-muted-foreground">Followers</p>
-                  </CardContent>
+                <Card className="px-3 py-2 w-full">
+                  <div className="text-center">
+                    <p className="text-base font-bold">{user.stats.followers}</p>
+                    <p className="text-[10px] text-muted-foreground">Followers</p>
+                  </div>
                 </Card>
-                <Card className="flex-1">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-2xl font-bold">{user.stats.following}</p>
-                    <p className="text-xs text-muted-foreground">Following</p>
-                  </CardContent>
+                <Card className="px-3 py-2 w-full">
+                  <div className="text-center">
+                    <p className="text-base font-bold">{user.stats.following}</p>
+                    <p className="text-[10px] text-muted-foreground">Following</p>
+                  </div>
                 </Card>
                 {user.role === 'HOST' && (
-                  <Card className="flex-1">
-                    <CardContent className="p-4 text-center">
-                      <p className="text-2xl font-bold">{user.stats.properties}</p>
-                      <p className="text-xs text-muted-foreground">Properties</p>
-                    </CardContent>
+                  <Card className="px-3 py-2 w-full">
+                    <div className="text-center">
+                      <p className="text-base font-bold">{user.stats.properties}</p>
+                      <p className="text-[10px] text-muted-foreground">Properties</p>
+                    </div>
                   </Card>
                 )}
               </div>

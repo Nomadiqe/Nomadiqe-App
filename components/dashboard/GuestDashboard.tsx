@@ -4,11 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  MapPin, 
-  Heart, 
-  Star, 
-  Calendar, 
+import {
+  MapPin,
+  Heart,
+  Star,
+  Calendar,
   Search,
   Plus,
   Compass,
@@ -23,6 +23,8 @@ import {
   Eye
 } from 'lucide-react'
 import Link from 'next/link'
+import PointsDisplay from '@/components/points/PointsDisplay'
+import DailyCheckIn from '@/components/points/DailyCheckIn'
 
 interface GuestDashboardProps {
   user: any // User with guestPreferences
@@ -70,6 +72,14 @@ export default function GuestDashboard({ user }: GuestDashboardProps) {
                   <span className="sm:hidden">Search</span>
                 </Link>
               </Button>
+            </div>
+          </div>
+
+          {/* Points and Daily Check-in */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3">
+              <PointsDisplay />
+              <DailyCheckIn />
             </div>
           </div>
         </div>

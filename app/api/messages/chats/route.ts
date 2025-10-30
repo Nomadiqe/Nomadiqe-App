@@ -22,7 +22,7 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
     })
 
-    const chats = await Promise.all(conversations.map(async (c) => {
+    const chats = await Promise.all(conversations.map(async (c: any) => {
       const other = c.userAId === userId ? c.userB : c.userA
       const unreadCount = await prisma.message.count({
         where: { conversationId: c.id, senderId: { not: userId }, isRead: false },

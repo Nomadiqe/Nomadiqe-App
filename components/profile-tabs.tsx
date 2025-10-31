@@ -2,7 +2,7 @@
 
 import { PostCard } from '@/components/post-card'
 import { PropertyCard } from '@/components/property-card'
-import { Camera, Home, Image, Star } from 'lucide-react'
+import { Camera, Home, Image, Star, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
@@ -47,7 +47,7 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
         {/* Theme toggle removed */}
       </div>
 
-      <TabsContent value="posts" className="mt-6 space-y-4 md:space-y-6 w-full md:max-w-[600px] md:mx-auto">
+      <TabsContent value="posts" className="mt-6 space-y-6 max-w-[600px] mx-auto">
         {posts.length > 0 ? (
           posts.map((post: any) => <PostCard key={post.id} {...post} layout="profile" />)
         ) : (
@@ -68,21 +68,33 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
       {userRole === 'HOST' && (
         <TabsContent value="properties" className="mt-6">
           {properties.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property: any) => (
-                <PropertyCard
-                  key={property.id}
-                  id={property.id}
-                  title={property.title}
-                  location={`${property.city}, ${property.country}`}
-                  price={property.price}
-                  rating={0}
-                  image={property.images[0] || '/placeholder-property.jpg'}
-                  guests={0}
-                  bedrooms={0}
-                  currency={property.currency}
-                />
-              ))}
+            <div className="space-y-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {properties.map((property: any) => (
+                  <PropertyCard
+                    key={property.id}
+                    id={property.id}
+                    title={property.title}
+                    location={`${property.city}, ${property.country}`}
+                    price={property.price}
+                    rating={0}
+                    image={property.images[0] || '/placeholder-property.jpg'}
+                    guests={0}
+                    bedrooms={0}
+                    currency={property.currency}
+                  />
+                ))}
+              </div>
+              {isOwnProfile && (
+                <div className="flex justify-center pt-4">
+                  <Button asChild className="gap-2">
+                    <Link href="/host/create-property">
+                      <Plus className="h-4 w-4" />
+                      Add Property
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <EmptyState

@@ -49,7 +49,7 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
 
       <TabsContent value="posts" className="mt-6 space-y-6">
         {posts.length > 0 ? (
-          posts.map((post: any) => <PostCard key={post.id} {...post} />)
+          posts.map((post: any) => <PostCard key={post.id} {...post} layout="profile" />)
         ) : (
           <EmptyState
             icon={Camera}

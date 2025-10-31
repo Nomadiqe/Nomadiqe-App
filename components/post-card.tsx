@@ -49,6 +49,7 @@ interface PostCardProps {
   likes: number
   comments: number
   isLiked?: boolean
+  layout?: 'discover' | 'profile' // New prop to determine layout
 }
 
 export function PostCard({
@@ -61,7 +62,8 @@ export function PostCard({
   property,
   likes,
   comments,
-  isLiked = false
+  isLiked = false,
+  layout = 'discover' // Default to discover layout
 }: PostCardProps) {
   const { data: session } = useSession()
   const router = useRouter()
@@ -280,7 +282,7 @@ export function PostCard({
         <div className="space-y-2 -mx-6">
           {images.length === 1 ? (
             <div
-              className="relative group overflow-hidden cursor-pointer"
+              className={`relative group overflow-hidden cursor-pointer ${layout === 'discover' ? 'aspect-[4/5]' : 'aspect-square'}`}
               onClick={() => {
                 setLightboxIndex(0)
                 setLightboxOpen(true)
@@ -289,7 +291,7 @@ export function PostCard({
               <img
                 src={images[0]}
                 alt="Post image"
-                className="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -298,7 +300,7 @@ export function PostCard({
               {images.slice(0, 4).map((image, index) => (
                 <div
                   key={index}
-                  className="relative group overflow-hidden cursor-pointer"
+                  className={`relative group overflow-hidden cursor-pointer ${layout === 'discover' ? 'aspect-[4/5]' : 'aspect-square'}`}
                   onClick={() => {
                     setLightboxIndex(index)
                     setLightboxOpen(true)
@@ -307,7 +309,7 @@ export function PostCard({
                   <img
                     src={image}
                     alt={`Post image ${index + 1}`}
-                    className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {index === 3 && images.length > 4 && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center group-hover:bg-black/70 transition-colors">

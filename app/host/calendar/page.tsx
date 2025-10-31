@@ -73,14 +73,14 @@ export default async function HostCalendarPage() {
   }
 
   // Serialize dates to ISO strings for client component
-  const serializedProperties = user.properties.map(property => ({
+  const serializedProperties = user.properties.map((property: any) => ({
     ...property,
-    bookings: property.bookings.map(booking => ({
+    bookings: property.bookings.map((booking: any) => ({
       ...booking,
       checkIn: booking.checkIn.toISOString(),
       checkOut: booking.checkOut.toISOString(),
     })),
-    availability: property.availability.map(avail => ({
+    availability: property.availability.map((avail: any) => ({
       ...avail,
       date: avail.date.toISOString(),
     })),

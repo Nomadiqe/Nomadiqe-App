@@ -674,7 +674,6 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
           </CardContent>
         </Card>
       </div>
-      </div>
 
       <ComingSoonDialog 
         open={comingSoonOpen} 

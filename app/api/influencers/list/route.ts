@@ -51,13 +51,13 @@ export async function GET() {
     })
 
     // Format influencers with total follower count
-    const formattedInfluencers = influencers.map((influencer) => {
+    const formattedInfluencers = influencers.map((influencer: any) => {
       const totalFollowers = influencer.socialConnections.reduce(
-        (acc, conn) => acc + (conn.followerCount || 0),
+        (acc: number, conn: any) => acc + (conn.followerCount || 0),
         0
       )
 
-      const primarySocial = influencer.socialConnections.find(conn => conn.isPrimary) ||
+      const primarySocial = influencer.socialConnections.find((conn: any) => conn.isPrimary) ||
         influencer.socialConnections[0]
 
       return {

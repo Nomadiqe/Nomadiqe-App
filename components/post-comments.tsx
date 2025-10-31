@@ -37,6 +37,9 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Debug log
+  console.log('PostComments rendered - isOpen:', isOpen, 'session:', !!session, 'comments:', comments.length)
+
   const fetchComments = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -91,7 +94,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-[1300] bg-black/50" onClick={onClose}>
       <div
         className="fixed bottom-0 left-0 right-0 h-[75vh] bg-background shadow-lg rounded-t-2xl animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
@@ -114,8 +117,8 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
             </Button>
           </div>
 
-          {/* Comments List */}
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* Scrollable comments area */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
             {isLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -158,23 +161,17 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
 
           {/* Comment Input - Fixed at bottom */}
           {session ? (
-            <div className="border-t bg-background pb-safe">
+            <div className="border-t bg-background flex-shrink-0">
               <form onSubmit={handleSubmit} className="p-4">
                 <div className="flex items-end gap-2">
-                  <div className="flex-1">
-                    <Textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Lascia un commento pubblico..."
-                      className="w-full resize-none min-h-[44px] max-h-32 bg-background border-border rounded-lg"
-                      disabled={isSubmitting}
-                      rows={1}
-                      style={{ 
-                        height: 'auto',
-                        minHeight: '44px'
-                      }}
-                    />
-                  </div>
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Lascia un commento pubblico..."
+                    className="flex-1 resize-none min-h-[44px] max-h-32"
+                    disabled={isSubmitting}
+                    rows={1}
+                  />
                   <Button
                     type="submit"
                     size="icon"
@@ -191,7 +188,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
               </form>
             </div>
           ) : (
-            <div className="border-t p-4 space-y-3 bg-background">
+            <div className="border-t p-4 space-y-3 bg-background flex-shrink-0">
               <p className="text-center text-sm text-muted-foreground">
                 Sign in to join the conversation
               </p>

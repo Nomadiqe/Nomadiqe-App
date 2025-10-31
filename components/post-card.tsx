@@ -274,9 +274,9 @@ export function PostCard({
             {/* Menu Button */}
             <Popover open={menuOpen} onOpenChange={setMenuOpen}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-0" align="end">
                 <div className="py-2">
@@ -326,7 +326,7 @@ export function PostCard({
 
       <CardContent className="space-y-2 px-4 pb-3">
         {/* Property Link (if exists) - shown before images */}
-        {property && (
+          {property && (
           <div className="pb-2">
             <Link href={`/property/${property.id}`}>
               <Card className="bg-gradient-to-br from-muted/40 via-muted/30 to-muted/20 hover:from-muted/60 hover:via-muted/50 hover:to-muted/40 transition-all duration-300 cursor-pointer border-0 shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-xl overflow-hidden">
@@ -368,7 +368,7 @@ export function PostCard({
               </Card>
             </Link>
           </div>
-        )}
+          )}
 
       {/* Images */}
       {images.length > 0 && (
@@ -481,26 +481,26 @@ export function PostCard({
         {/* Actions */}
         <div className="flex items-center justify-between px-4 pt-2 pb-2 border-t border-border/50">
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLike}
-              className={`gap-2 transition-all duration-200 hover:scale-105 ${
-                liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
-              }`}
-            >
-              <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
-              <span className="text-sm font-medium">{likeCount}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCommentClick}
-              className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm font-medium">{commentCount}</span>
-            </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLike}
+            className={`gap-2 transition-all duration-200 hover:scale-105 ${
+              liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
+            }`}
+          >
+            <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
+            <span className="text-sm font-medium">{likeCount}</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCommentClick}
+            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span className="text-sm font-medium">{commentCount}</span>
+          </Button>
           </div>
           
           {/* Share Button */}
@@ -581,16 +581,16 @@ export function PostCard({
           {/* Top Bar with Close Button */}
           <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
             <div></div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
                 setLightboxOpen(false)
                 setCaptionExpanded(false)
-              }}
+                }}
               className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-            >
+              >
               <X className="w-6 h-6" />
-            </button>
+              </button>
           </div>
 
           {/* Main Content Area */}
@@ -610,7 +610,7 @@ export function PostCard({
                 if (Math.abs(diffX) > 50) {
                   if (diffX > 0) {
                     // Swipe left - next image
-                    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                  setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
                   } else {
                     // Swipe right - previous image
                     setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
@@ -624,13 +624,13 @@ export function PostCard({
             }}
           >
             {/* Image with 4:5 aspect ratio */}
-            <div
+          <div
               className="relative w-full aspect-[4/5] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={images[lightboxIndex]}
-                alt={`Image ${lightboxIndex + 1}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={images[lightboxIndex]}
+              alt={`Image ${lightboxIndex + 1}`}
                 className="w-full h-full object-cover select-none"
                 draggable={false}
               />
@@ -696,14 +696,14 @@ export function PostCard({
                 >
                   <Share2 className="h-5 w-5" />
                 </Button>
-              </div>
-              
-              {/* Image Counter */}
-              {images.length > 1 && (
+          </div>
+
+          {/* Image Counter */}
+          {images.length > 1 && (
                 <div className="px-3 py-1 rounded-full bg-black/50 text-white text-sm">
-                  {lightboxIndex + 1} / {images.length}
-                </div>
-              )}
+              {lightboxIndex + 1} / {images.length}
+            </div>
+          )}
             </div>
           </div>
         </div>

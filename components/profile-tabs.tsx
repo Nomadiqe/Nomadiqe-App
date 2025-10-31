@@ -97,17 +97,17 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
               )}
             </div>
           ) : (
-            <EmptyState
-              icon={Home}
-              title="No properties listed"
-              description={
-                isOwnProfile
-                  ? 'List your first property to start hosting!'
-                  : `${userName} hasn't listed any properties yet.`
-              }
-              actionLabel={isOwnProfile ? 'List Your Property' : undefined}
-              actionHref="/host/create-property"
-            />
+          <EmptyState
+            icon={Home}
+            title="No properties listed"
+            description={
+              isOwnProfile
+                ? 'List your first property to start hosting!'
+                : `${userName} hasn't listed any properties yet.`
+            }
+            actionLabel={isOwnProfile ? 'List Your Property' : undefined}
+            actionHref="/host/create-property"
+          />
           )}
         </TabsContent>
       )}

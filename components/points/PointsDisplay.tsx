@@ -42,7 +42,7 @@ export default function PointsDisplay() {
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 rounded-lg border border-amber-200 dark:border-amber-700">
       <div className="flex items-center gap-1.5">
-        <span className="text-xl">⭐</span>
+        <span className="text-lg font-bold">€$</span>
         <div className="flex flex-col">
           <span className="text-sm font-bold text-amber-900 dark:text-amber-100">
             {balance?.currentPoints.toLocaleString() || 0}

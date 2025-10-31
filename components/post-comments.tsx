@@ -36,6 +36,8 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [newComment, setNewComment] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [swipeStartY, setSwipeStartY] = useState(0)
+  const [currentY, setCurrentY] = useState(0)
 
   // Debug log
   console.log('PostComments rendered - isOpen:', isOpen, 'session:', !!session, 'comments:', comments.length)
@@ -91,6 +93,29 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
     }
   }
 
+  // Swipe down to close handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setSwipeStartY(e.touches[0].clientY)
+    setCurrentY(e.touches[0].clientY)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setCurrentY(e.touches[0].clientY)
+  }
+
+  const handleTouchEnd = () => {
+    const diffY = currentY - swipeStartY
+    
+    // Close if swiped down more than 100px
+    if (diffY > 100) {
+      onClose()
+    }
+    
+    // Reset
+    setSwipeStartY(0)
+    setCurrentY(0)
+  }
+
   if (!isOpen) return null
 
   return (
@@ -100,8 +125,13 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex h-full flex-col">
-          {/* Drag Handle */}
-          <div className="flex justify-center pt-3 pb-2">
+          {/* Drag Handle - Swipe to close */}
+          <div 
+            className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
           </div>
           

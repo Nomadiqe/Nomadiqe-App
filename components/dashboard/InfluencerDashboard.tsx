@@ -533,11 +533,13 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                     )
                   })}
 
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/profile/social-accounts">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Connect More Platforms
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Connect More Platforms
                   </Button>
                 </CardContent>
               </Card>
@@ -654,11 +656,12 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                     <Share2 className="h-4 w-4 mr-2" />
                     {copiedProfileLink ? 'Link Copied!' : 'Copy Profile Link'}
                   </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/influencer/promotion-toolkit">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Promotion Toolkit
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Promotion Toolkit
                   </Button>
                 </div>
               </div>

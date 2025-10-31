@@ -280,7 +280,7 @@ export function PostCard({
         <div className="space-y-2 -mx-6">
           {images.length === 1 ? (
             <div
-              className={`relative group overflow-hidden cursor-pointer ${layout === 'discover' ? 'aspect-[4/5]' : 'aspect-square'}`}
+              className={`relative group overflow-hidden cursor-pointer aspect-square`}
               onClick={() => {
                 setLightboxIndex(0)
                 setLightboxOpen(true)
@@ -298,7 +298,7 @@ export function PostCard({
               {images.slice(0, 4).map((image, index) => (
                 <div
                   key={index}
-                  className={`relative group overflow-hidden cursor-pointer ${layout === 'discover' ? 'aspect-[4/5]' : 'aspect-square'}`}
+                  className={`relative group overflow-hidden cursor-pointer aspect-square`}
                   onClick={() => {
                     setLightboxIndex(index)
                     setLightboxOpen(true)

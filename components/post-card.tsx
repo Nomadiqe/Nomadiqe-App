@@ -178,8 +178,8 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 w-full md:max-w-[600px] md:mx-auto">
-      <CardHeader className="pb-2 px-3 md:px-4 pt-3 md:pt-4">
+    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto">
+      <CardHeader className="pb-1.5 px-4 pt-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
@@ -216,9 +216,9 @@ export function PostCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 px-3 md:px-4 pb-3 md:pb-4">
+      <CardContent className="space-y-2 px-4 pb-3">
         {/* Content */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <p className="text-sm leading-relaxed text-foreground/90 font-medium">{content}</p>
 
           {location && (
@@ -277,7 +277,7 @@ export function PostCard({
 
       {/* Images */}
       {images.length > 0 && (
-        <div className="space-y-0 -mx-3 md:-mx-4">
+        <div className="space-y-0 -mx-4">
           {images.length === 1 ? (
             <div
               className={`relative group overflow-hidden cursor-pointer aspect-square`}
@@ -325,7 +325,7 @@ export function PostCard({
       )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between px-3 md:px-4 pt-3 pb-3 border-t border-border/50">
+        <div className="flex items-center justify-between px-4 pt-2 pb-2 border-t border-border/50">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"

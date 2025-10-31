@@ -47,7 +47,7 @@ export function ProfileTabs({ posts, properties = [], userRole, isOwnProfile, us
         {/* Theme toggle removed */}
       </div>
 
-      <TabsContent value="posts" className="mt-6 space-y-6">
+      <TabsContent value="posts" className="mt-6 space-y-6 max-w-[600px] mx-auto">
         {posts.length > 0 ? (
           posts.map((post: any) => <PostCard key={post.id} {...post} layout="profile" />)
         ) : (

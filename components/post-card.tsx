@@ -178,12 +178,12 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95">
-      <CardHeader className="pb-3 px-5 pt-5">
+    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto">
+      <CardHeader className="pb-2 px-4 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
-              <div className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
+              <div className="h-10 w-10 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
                 {author.image && !imageError ? (
                   <Image 
                     src={author.image} 
@@ -203,7 +203,7 @@ export function PostCard({
             </Link>
             <div>
               <Link href={`/profile/${author.id}`}>
-                <h3 className="font-bold text-base hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
+                <h3 className="font-bold text-sm hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
                   {author.name}
                 </h3>
               </Link>
@@ -216,9 +216,9 @@ export function PostCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4 px-5 pb-5">
+      <CardContent className="space-y-3 px-4 pb-4">
         {/* Content */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <p className="text-sm leading-relaxed text-foreground/90 font-medium">{content}</p>
 
           {location && (
@@ -277,7 +277,7 @@ export function PostCard({
 
       {/* Images */}
       {images.length > 0 && (
-        <div className="space-y-2 -mx-6">
+        <div className="space-y-0 -mx-4">
           {images.length === 1 ? (
             <div
               className={`relative group overflow-hidden cursor-pointer aspect-square`}
@@ -325,7 +325,7 @@ export function PostCard({
       )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+        <div className="flex items-center justify-between px-4 pt-3 pb-3 border-t border-border/50">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"

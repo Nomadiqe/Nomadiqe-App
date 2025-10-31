@@ -75,7 +75,7 @@ export default async function HomePage() {
 
       {/* Main Feed */}
       <section className="py-8 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-[600px] mx-auto space-y-6">
           {/* Sign up banner for unauthenticated users */}
           {!session && (
             <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-primary/20">

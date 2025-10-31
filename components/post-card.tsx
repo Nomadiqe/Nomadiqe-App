@@ -16,8 +16,6 @@ import {
   MapPin,
   MoreHorizontal,
   X,
-  ChevronLeft,
-  ChevronRight,
   Share2,
   Send,
   Repeat
@@ -442,65 +440,44 @@ export function PostCard({
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 flex items-center justify-center relative">
-            {/* Navigation Buttons */}
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-                  }}
-                  className="absolute left-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-                >
-                  <ChevronLeft className="w-8 h-8" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-                  }}
-                  className="absolute right-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-                >
-                  <ChevronRight className="w-8 h-8" />
-                </button>
-              </>
-            )}
-
-            {/* Image with Swipe Support */}
-            <div
-              className="relative w-full h-full flex items-center justify-center px-16"
-              onClick={(e) => e.stopPropagation()}
-              onTouchStart={(e) => {
-                const touch = e.touches[0]
-                const startX = touch.clientX
+          <div 
+            className="flex-1 flex items-center justify-center relative"
+            onTouchStart={(e) => {
+              if (images.length <= 1) return
+              const touch = e.touches[0]
+              const startX = touch.clientX
+              
+              const handleTouchEnd = (e: TouchEvent) => {
+                const touch = e.changedTouches[0]
+                const endX = touch.clientX
+                const diffX = startX - endX
                 
-                const handleTouchEnd = (e: TouchEvent) => {
-                  const touch = e.changedTouches[0]
-                  const endX = touch.clientX
-                  const diffX = startX - endX
-                  
-                  // Swipe threshold (50px)
-                  if (Math.abs(diffX) > 50 && images.length > 1) {
-                    if (diffX > 0) {
-                      // Swipe left - next image
-                      setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-                    } else {
-                      // Swipe right - previous image
-                      setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-                    }
+                // Swipe threshold (50px)
+                if (Math.abs(diffX) > 50) {
+                  if (diffX > 0) {
+                    // Swipe left - next image
+                    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                  } else {
+                    // Swipe right - previous image
+                    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
                   }
-                  
-                  document.removeEventListener('touchend', handleTouchEnd)
                 }
                 
-                document.addEventListener('touchend', handleTouchEnd)
-              }}
+                document.removeEventListener('touchend', handleTouchEnd)
+              }
+              
+              document.addEventListener('touchend', handleTouchEnd)
+            }}
+          >
+            {/* Image with 4:5 aspect ratio */}
+            <div
+              className="relative w-full aspect-[4/5] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
             >
               <img
                 src={images[lightboxIndex]}
                 alt={`Image ${lightboxIndex + 1}`}
-                className="max-w-full max-h-full object-contain select-none"
+                className="w-full h-full object-cover select-none"
                 draggable={false}
               />
             </div>

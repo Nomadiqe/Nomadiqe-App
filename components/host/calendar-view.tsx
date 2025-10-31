@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -44,6 +45,7 @@ interface Property {
   country: string
   bookings: Booking[]
   availability: Availability[]
+  [key: string]: any // Allow additional properties
 }
 
 interface HostCalendarViewProps {
@@ -51,6 +53,7 @@ interface HostCalendarViewProps {
 }
 
 export function HostCalendarView({ properties }: HostCalendarViewProps) {
+  const router = useRouter()
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [selectedProperty, setSelectedProperty] = useState<string | null>(
     properties.length > 0 ? properties[0].id : null
@@ -126,7 +129,7 @@ export function HostCalendarView({ properties }: HostCalendarViewProps) {
       }
 
       // Refresh the page to update the calendar
-      window.location.reload()
+      router.refresh()
     } catch (error) {
       console.error('Error updating availability:', error)
       alert('Errore durante l\'aggiornamento della disponibilità')

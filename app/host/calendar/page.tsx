@@ -57,9 +57,34 @@ export default async function HostCalendarPage() {
     }
   })
 
-  if (!user || user.role !== 'HOST') {
-    redirect('/dashboard')
+  if (!user) {
+    redirect('/auth/signin')
   }
 
-  return <HostCalendarView properties={user.properties} />
+  if (user.role !== 'HOST') {
+    // Redirect based on actual role
+    if (user.role === 'GUEST' || user.role === 'TRAVELER') {
+      redirect('/dashboard/guest')
+    } else if (user.role === 'INFLUENCER') {
+      redirect('/dashboard/influencer')
+    } else {
+      redirect('/dashboard')
+    }
+  }
+
+  // Serialize dates to ISO strings for client component
+  const serializedProperties = user.properties.map(property => ({
+    ...property,
+    bookings: property.bookings.map(booking => ({
+      ...booking,
+      checkIn: booking.checkIn.toISOString(),
+      checkOut: booking.checkOut.toISOString(),
+    })),
+    availability: property.availability.map(avail => ({
+      ...avail,
+      date: avail.date.toISOString(),
+    })),
+  }))
+
+  return <HostCalendarView properties={serializedProperties} />
 }

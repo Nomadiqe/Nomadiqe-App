@@ -421,7 +421,7 @@ export function PostCard({
 
       {/* Caption - shown after images */}
       {content && (
-        <div className="px-4 pt-2 pb-0">
+        <div className="px-2 pt-2 pb-0">
           {!captionExpanded ? (
             <>
               <p className="text-sm leading-relaxed text-foreground/90 font-medium line-clamp-2">
@@ -466,7 +466,7 @@ export function PostCard({
 
       {/* Location - shown after caption */}
       {location && (
-        <div className="px-4 pt-1 pb-0">
+        <div className="px-2 pt-1 pb-0">
           <Link
             href={`/search?location=${encodeURIComponent(location)}`}
             className="flex items-center gap-1.5 hover:text-primary transition-colors group w-fit"

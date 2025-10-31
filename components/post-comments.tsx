@@ -94,12 +94,17 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   return (
     <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose}>
       <div
-        className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-lg"
+        className="fixed bottom-0 left-0 right-0 h-[75vh] bg-background shadow-lg rounded-t-2xl animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex h-full flex-col">
+          {/* Drag Handle */}
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
+          </div>
+          
           {/* Header */}
-          <div className="flex items-center justify-between border-b p-4">
+          <div className="flex items-center justify-between border-b px-4 pb-3">
             <h2 className="text-lg font-semibold">Comments</h2>
             <Button
               variant="ghost"
@@ -154,31 +159,32 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
 
           {/* Comment Input */}
           {session ? (
-            <form onSubmit={handleSubmit} className="border-t p-4">
-              <div className="flex space-x-2">
+            <form onSubmit={handleSubmit} className="border-t p-4 bg-background">
+              <div className="flex items-center gap-2">
                 <Textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Write a comment..."
-                  className="min-h-[60px] resize-none"
+                  placeholder="Lascia un commento pubblico..."
+                  className="flex-1 resize-none min-h-[44px] max-h-32"
                   disabled={isSubmitting}
+                  rows={1}
                 />
                 <Button
                   type="submit"
                   size="icon"
                   disabled={!newComment.trim() || isSubmitting}
-                  className="self-end"
+                  className="flex-shrink-0 h-11 w-11 bg-nomadiqe-600 hover:bg-nomadiqe-700"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <Send className="h-4 w-4" />
+                    <Send className="h-5 w-5" />
                   )}
                 </Button>
               </div>
             </form>
           ) : (
-            <div className="border-t p-4 space-y-3">
+            <div className="border-t p-4 space-y-3 bg-background">
               <p className="text-center text-sm text-muted-foreground">
                 Sign in to join the conversation
               </p>

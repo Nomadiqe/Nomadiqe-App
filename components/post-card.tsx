@@ -178,12 +178,12 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-border/50 hover:border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5">
-      <CardHeader className="pb-3">
+    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95">
+      <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href={`/profile/${author.id}`}>
-              <div className="h-11 w-11 cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-2 hover:ring-offset-background transition-all duration-200 rounded-full overflow-hidden flex items-center justify-center bg-primary/10">
+              <div className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
                 {author.image && !imageError ? (
                   <Image 
                     src={author.image} 
@@ -203,11 +203,11 @@ export function PostCard({
             </Link>
             <div>
               <Link href={`/profile/${author.id}`}>
-                <h3 className="font-semibold text-sm hover:text-primary transition-colors hover:underline decoration-primary/30">
+                <h3 className="font-bold text-base hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
                   {author.name}
                 </h3>
               </Link>
-              <p className="text-xs text-muted-foreground">{formatDate(createdAt)}</p>
+              <p className="text-xs text-muted-foreground/70 font-medium mt-0.5">{formatDate(createdAt)}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
@@ -216,10 +216,10 @@ export function PostCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-5 pb-5">
         {/* Content */}
         <div className="space-y-3">
-          <p className="text-sm leading-relaxed">{content}</p>
+          <p className="text-sm leading-relaxed text-foreground/90 font-medium">{content}</p>
 
           {location && (
             <Link
@@ -234,7 +234,7 @@ export function PostCard({
 
           {property && (
             <Link href={`/property/${property.id}`}>
-              <Card className="bg-muted/50 hover:bg-muted/70 transition-colors cursor-pointer border-primary/20">
+              <Card className="bg-gradient-to-br from-muted/40 via-muted/30 to-muted/20 hover:from-muted/60 hover:via-muted/50 hover:to-muted/40 transition-all duration-300 cursor-pointer border-0 shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-xl overflow-hidden">
                 <CardContent className="p-0">
                   <div className="flex gap-3">
                     {/* Property Image */}

@@ -202,29 +202,29 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
               {/* Stats */}
               <div className={`grid ${statsCols} gap-3 pt-2 w-full`}>
-                <Card className="px-3 py-2 w-full">
+                <Card className="px-3 py-2 w-full border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card/90 via-card to-card/80">
                   <div className="text-center">
-                    <p className="text-base font-bold">{user.stats.posts}</p>
-                    <p className="text-[10px] text-muted-foreground">Posts</p>
+                    <p className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{user.stats.posts}</p>
+                    <p className="text-[10px] text-muted-foreground/80 font-medium">Posts</p>
                   </div>
                 </Card>
-                <Card className="px-3 py-2 w-full">
+                <Card className="px-3 py-2 w-full border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card/90 via-card to-card/80">
                   <div className="text-center">
-                    <p className="text-base font-bold">{user.stats.followers}</p>
-                    <p className="text-[10px] text-muted-foreground">Followers</p>
+                    <p className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{user.stats.followers}</p>
+                    <p className="text-[10px] text-muted-foreground/80 font-medium">Followers</p>
                   </div>
                 </Card>
-                <Card className="px-3 py-2 w-full">
+                <Card className="px-3 py-2 w-full border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card/90 via-card to-card/80">
                   <div className="text-center">
-                    <p className="text-base font-bold">{user.stats.following}</p>
-                    <p className="text-[10px] text-muted-foreground">Following</p>
+                    <p className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{user.stats.following}</p>
+                    <p className="text-[10px] text-muted-foreground/80 font-medium">Following</p>
                   </div>
                 </Card>
                 {user.role === 'HOST' && (
-                  <Card className="px-3 py-2 w-full">
+                  <Card className="px-3 py-2 w-full border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card/90 via-card to-card/80">
                     <div className="text-center">
-                      <p className="text-base font-bold">{user.stats.properties}</p>
-                      <p className="text-[10px] text-muted-foreground">Properties</p>
+                      <p className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{user.stats.properties}</p>
+                      <p className="text-[10px] text-muted-foreground/80 font-medium">Properties</p>
                     </div>
                   </Card>
                 )}

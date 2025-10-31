@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 import {
   UserPlus,
   MessageCircle,
@@ -23,8 +24,10 @@ interface ProfileActionsProps {
 
 export function ProfileActions({ isOwnProfile, userId, userName }: ProfileActionsProps) {
   const { toast } = useToast()
+  const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [isFollowing, setIsFollowing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleCopyProfileLink = async () => {
     try {
@@ -45,21 +48,60 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
     }
   }
 
+  // Check initial follow status
+  useEffect(() => {
+    if (isOwnProfile) return
+
+    const checkFollowStatus = async () => {
+      try {
+        const response = await fetch(`/api/users/${userId}/follow`)
+        if (response.ok) {
+          const data = await response.json()
+          setIsFollowing(data.isFollowing)
+        }
+      } catch (error) {
+        console.error('Error checking follow status:', error)
+      }
+    }
+
+    checkFollowStatus()
+  }, [userId, isOwnProfile])
+
   const handleFollow = async () => {
+    if (isLoading) return
+
+    setIsLoading(true)
     try {
-      setIsFollowing(!isFollowing)
-      toast({
-        title: isFollowing ? 'Unfollowed' : 'Following',
-        description: isFollowing
-          ? `You unfollowed ${userName}`
-          : `You are now following ${userName}`,
+      const method = isFollowing ? 'DELETE' : 'POST'
+      const response = await fetch(`/api/users/${userId}/follow`, {
+        method,
       })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to update follow status')
+      }
+
+      const data = await response.json()
+      setIsFollowing(data.isFollowing)
+
+      toast({
+        title: data.isFollowing ? 'Following' : 'Unfollowed',
+        description: data.isFollowing
+          ? `You are now following ${userName}`
+          : `You unfollowed ${userName}`,
+      })
+
+      // Refresh the page to update follower/following counts
+      router.refresh()
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update follow status.',
+        description: error instanceof Error ? error.message : 'Failed to update follow status.',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -113,9 +155,10 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
         variant="outline"
         className="flex items-center space-x-2"
         onClick={handleFollow}
+        disabled={isLoading}
       >
         <UserPlus className="w-4 h-4" />
-        <span>{isFollowing ? 'Unfollow' : 'Follow'}</span>
+        <span>{isLoading ? '...' : isFollowing ? 'Unfollow' : 'Follow'}</span>
       </Button>
       <Button
         onClick={handleMessage}

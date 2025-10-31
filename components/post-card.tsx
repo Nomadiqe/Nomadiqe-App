@@ -217,22 +217,9 @@ export function PostCard({
       </CardHeader>
 
       <CardContent className="space-y-2 px-4 pb-3">
-        {/* Content */}
-        <div className="space-y-1.5">
-          <p className="text-sm leading-relaxed text-foreground/90 font-medium">{content}</p>
-
-          {location && (
-            <Link
-              href={`/search?location=${encodeURIComponent(location)}`}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors group w-fit"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MapPin className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-sm text-muted-foreground group-hover:text-primary group-hover:underline transition-colors">{location}</span>
-            </Link>
-          )}
-
-          {property && (
+        {/* Property Link (if exists) - shown before images */}
+        {property && (
+          <div className="pb-2">
             <Link href={`/property/${property.id}`}>
               <Card className="bg-gradient-to-br from-muted/40 via-muted/30 to-muted/20 hover:from-muted/60 hover:via-muted/50 hover:to-muted/40 transition-all duration-300 cursor-pointer border-0 shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-xl overflow-hidden">
                 <CardContent className="p-0">
@@ -272,8 +259,8 @@ export function PostCard({
                 </CardContent>
               </Card>
             </Link>
-          )}
-        </div>
+          </div>
+        )}
 
       {/* Images */}
       {images.length > 0 && (
@@ -321,6 +308,65 @@ export function PostCard({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Caption - shown after images */}
+      {content && (
+        <div className="px-4 pt-2 pb-1">
+          {!captionExpanded ? (
+            <>
+              <p className="text-sm leading-relaxed text-foreground/90 font-medium line-clamp-2">
+                {content}
+              </p>
+              {content.length > 150 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setCaptionExpanded(true)
+                  }}
+                  className="text-xs text-muted-foreground hover:text-primary mt-1 transition-colors"
+                >
+                  Mostra di più
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="relative">
+              <div
+                className="text-sm leading-relaxed text-foreground/90 font-medium overflow-y-auto max-h-[200px] pr-2"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
+                }}
+              >
+                <p>{content}</p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setCaptionExpanded(false)
+                }}
+                className="text-xs text-muted-foreground hover:text-primary mt-1 transition-colors"
+              >
+                Mostra meno
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Location - shown after caption */}
+      {location && (
+        <div className="px-4 pt-1">
+          <Link
+            href={`/search?location=${encodeURIComponent(location)}`}
+            className="flex items-center gap-1.5 hover:text-primary transition-colors group w-fit"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MapPin className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="text-sm text-muted-foreground group-hover:text-primary group-hover:underline transition-colors">{location}</span>
+          </Link>
         </div>
       )}
 

@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDistanceToNow } from 'date-fns'
@@ -116,7 +115,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
           </div>
 
           {/* Comments List */}
-          <ScrollArea className="flex-1 p-4">
+          <div className="flex-1 overflow-y-auto p-4">
             {isLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -155,36 +154,38 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                 <p className="text-sm text-muted-foreground">Be the first to comment!</p>
               </div>
             )}
-          </ScrollArea>
+          </div>
 
-          {/* Comment Input */}
+          {/* Comment Input - Always visible at bottom */}
           {session ? (
-            <form onSubmit={handleSubmit} className="border-t p-4 bg-background">
-              <div className="flex items-center gap-2">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Lascia un commento pubblico..."
-                  className="flex-1 resize-none min-h-[44px] max-h-32"
-                  disabled={isSubmitting}
-                  rows={1}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!newComment.trim() || isSubmitting}
-                  className="flex-shrink-0 h-11 w-11 bg-nomadiqe-600 hover:bg-nomadiqe-700"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Send className="h-5 w-5" />
-                  )}
-                </Button>
-              </div>
-            </form>
+            <div className="border-t bg-background sticky bottom-0">
+              <form onSubmit={handleSubmit} className="p-4">
+                <div className="flex items-center gap-2">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Lascia un commento pubblico..."
+                    className="flex-1 resize-none min-h-[44px] max-h-32 bg-background border-border"
+                    disabled={isSubmitting}
+                    rows={1}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!newComment.trim() || isSubmitting}
+                    className="flex-shrink-0 h-11 w-11 bg-nomadiqe-600 hover:bg-nomadiqe-700"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           ) : (
-            <div className="border-t p-4 space-y-3 bg-background">
+            <div className="border-t p-4 space-y-3 bg-background sticky bottom-0">
               <p className="text-center text-sm text-muted-foreground">
                 Sign in to join the conversation
               </p>

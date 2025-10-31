@@ -32,6 +32,7 @@ import {
 import Link from 'next/link'
 import PointsDisplay from '@/components/points/PointsDisplay'
 import DailyCheckIn from '@/components/points/DailyCheckIn'
+import { ComingSoonDialog } from '@/components/ui/coming-soon-dialog'
 
 interface HostDashboardProps {
   user: any // User with hostProfile and properties
@@ -39,6 +40,7 @@ interface HostDashboardProps {
 
 export default function HostDashboard({ user }: HostDashboardProps) {
   const [copiedReferral, setCopiedReferral] = useState(false)
+  const [comingSoonOpen, setComingSoonOpen] = useState(false)
   
   const hostProfile = user.hostProfile
   const properties = user.properties || []
@@ -249,10 +251,12 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </div>
                   ))}
                   
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/dashboard/host/bookings">
-                      View All Bookings
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    View All Bookings
                   </Button>
                 </CardContent>
               </Card>
@@ -295,10 +299,12 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </div>
                   ))}
                   
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/dashboard/host/collaborations">
-                      View All Requests
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    View All Requests
                   </Button>
                 </CardContent>
               </Card>
@@ -319,18 +325,22 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </Link>
                   </Button>
                   
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
-                    <Link href="/host/pricing">
-                      <Euro className="h-6 w-6" />
-                      <span className="text-sm">Update Pricing</span>
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col items-center justify-center space-y-2" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Euro className="h-6 w-6" />
+                    <span className="text-sm">Update Pricing</span>
                   </Button>
                   
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
-                    <Link href="/host/analytics">
-                      <TrendingUp className="h-6 w-6" />
-                      <span className="text-sm">View Analytics</span>
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col items-center justify-center space-y-2" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <TrendingUp className="h-6 w-6" />
+                    <span className="text-sm">View Analytics</span>
                   </Button>
                 </div>
               </CardContent>
@@ -415,17 +425,23 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       </div>
 
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="flex-1" asChild>
-                          <Link href={`/host/property/${property.id}`}>
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1" 
+                          onClick={() => setComingSoonOpen(true)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
                         </Button>
-                        <Button variant="outline" size="sm" className="flex-1" asChild>
-                          <Link href={`/host/property/${property.id}/edit`}>
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1" 
+                          onClick={() => setComingSoonOpen(true)}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
                         </Button>
                       </div>
                     </CardContent>
@@ -519,11 +535,9 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 <h2 className="text-2xl font-bold">Influencer Collaborations</h2>
                 <p className="text-gray-600">Manage partnerships with content creators</p>
               </div>
-              <Button asChild>
-                <Link href="/host/find-influencers">
-                  <Users className="h-4 w-4 mr-2" />
-                  Find Influencers
-                </Link>
+              <Button onClick={() => setComingSoonOpen(true)}>
+                <Users className="h-4 w-4 mr-2" />
+                Find Influencers
               </Button>
             </div>
 
@@ -638,6 +652,11 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ComingSoonDialog 
+        open={comingSoonOpen} 
+        onOpenChange={setComingSoonOpen}
+      />
     </div>
   )
 }

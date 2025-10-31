@@ -34,6 +34,7 @@ import {
 import Link from 'next/link'
 import PointsDisplay from '@/components/points/PointsDisplay'
 import DailyCheckIn from '@/components/points/DailyCheckIn'
+import { ComingSoonDialog } from '@/components/ui/coming-soon-dialog'
 
 interface InfluencerDashboardProps {
   user: any // User with influencerProfile and socialConnections
@@ -42,6 +43,7 @@ interface InfluencerDashboardProps {
 export default function InfluencerDashboard({ user }: InfluencerDashboardProps) {
   const [copiedProfileLink, setCopiedProfileLink] = useState(false)
   const [appliedOpportunities, setAppliedOpportunities] = useState<string[]>([])
+  const [comingSoonOpen, setComingSoonOpen] = useState(false)
   
   const influencerProfile = user.influencerProfile
   const socialConnections = user.socialConnections || []
@@ -435,11 +437,9 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                 <p className="text-gray-600 mb-6">
                   Ready to start your first collaboration? Browse available opportunities and connect with hosts!
                 </p>
-                <Button asChild>
-                  <Link href="/influencer/browse">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Browse Opportunities
-                  </Link>
+                <Button onClick={() => setComingSoonOpen(true)}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Browse Opportunities
                 </Button>
               </Card>
             )}
@@ -671,6 +671,12 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
           </CardContent>
         </Card>
       </div>
+      </div>
+
+      <ComingSoonDialog 
+        open={comingSoonOpen} 
+        onOpenChange={setComingSoonOpen}
+      />
     </div>
   )
 }

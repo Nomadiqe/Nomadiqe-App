@@ -156,19 +156,25 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
             )}
           </div>
 
-          {/* Comment Input - Always visible at bottom */}
+          {/* Comment Input - Fixed at bottom */}
           {session ? (
-            <div className="border-t bg-background sticky bottom-0">
+            <div className="border-t bg-background pb-safe">
               <form onSubmit={handleSubmit} className="p-4">
-                <div className="flex items-center gap-2">
-                  <Textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Lascia un commento pubblico..."
-                    className="flex-1 resize-none min-h-[44px] max-h-32 bg-background border-border"
-                    disabled={isSubmitting}
-                    rows={1}
-                  />
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Lascia un commento pubblico..."
+                      className="w-full resize-none min-h-[44px] max-h-32 bg-background border-border rounded-lg"
+                      disabled={isSubmitting}
+                      rows={1}
+                      style={{ 
+                        height: 'auto',
+                        minHeight: '44px'
+                      }}
+                    />
+                  </div>
                   <Button
                     type="submit"
                     size="icon"
@@ -185,7 +191,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
               </form>
             </div>
           ) : (
-            <div className="border-t p-4 space-y-3 bg-background sticky bottom-0">
+            <div className="border-t p-4 space-y-3 bg-background">
               <p className="text-center text-sm text-muted-foreground">
                 Sign in to join the conversation
               </p>

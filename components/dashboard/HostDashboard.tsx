@@ -535,9 +535,11 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 <h2 className="text-2xl font-bold">Influencer Collaborations</h2>
                 <p className="text-gray-600">Manage partnerships with content creators</p>
               </div>
-              <Button onClick={() => setComingSoonOpen(true)}>
-                <Users className="h-4 w-4 mr-2" />
-                Find Influencers
+              <Button asChild>
+                <Link href="/host/find-influencers">
+                  <Users className="h-4 w-4 mr-2" />
+                  Find Influencers
+                </Link>
               </Button>
             </div>
 

@@ -102,6 +102,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       id: dbUser.id,
       name: displayName,
       image: avatarUrl,
+      role: dbUser.role,
     },
     property: p.property ? { id: p.property.id, title: p.property.title } : undefined,
     likes: p._count?.likes || 0,

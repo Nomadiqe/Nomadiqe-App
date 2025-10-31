@@ -26,6 +26,7 @@ export default async function HomePage() {
           fullName: true,
           image: true,
           profilePictureUrl: true,
+          role: true,
         }
       },
       property: {
@@ -57,6 +58,7 @@ export default async function HomePage() {
       id: post.author.id,
       name: post.author.fullName || post.author.name || 'User',
       image: post.author.image || post.author.profilePictureUrl || undefined,
+      role: post.author.role,
     },
     property: post.property ? { id: post.property.id, title: post.property.title } : undefined,
     likes: post._count.likes,
@@ -74,8 +76,8 @@ export default async function HomePage() {
       </section>
 
       {/* Main Feed */}
-      <section className="py-4 md:py-8 px-0 md:px-4">
-        <div className="w-full md:max-w-[600px] md:mx-auto space-y-4 md:space-y-6">
+      <section className="py-8 px-4">
+        <div className="max-w-[600px] mx-auto space-y-6">
           {/* Sign up banner for unauthenticated users */}
           {!session && (
             <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-primary/20">

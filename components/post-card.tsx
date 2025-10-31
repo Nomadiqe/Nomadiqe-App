@@ -18,7 +18,12 @@ import {
   X,
   Share2,
   Send,
-  Repeat
+  Repeat,
+  User,
+  Home,
+  Sparkles,
+  Edit,
+  Trash2
 } from 'lucide-react'
 import { PostComments } from '@/components/post-comments'
 import { UserMentionSearch } from '@/components/user-mention-search'
@@ -34,6 +39,7 @@ interface PostCardProps {
     id: string
     name: string
     image?: string
+    role?: string
   }
   property?: {
     id: string
@@ -77,6 +83,8 @@ export function PostCard({
   const [showCommentCard, setShowCommentCard] = useState(false)
   const [selectedUserForShare, setSelectedUserForShare] = useState<any>(null)
   const [captionExpanded, setCaptionExpanded] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleLike = async () => {
     // Check if user is authenticated
@@ -177,6 +185,52 @@ export function PostCard({
     return date.toLocaleDateString()
   }
 
+  const getRoleIcon = () => {
+    const role = author.role || 'GUEST'
+    switch (role) {
+      case 'HOST':
+        return <Home className="h-4 w-4 text-blue-500" />
+      case 'INFLUENCER':
+        return <Sparkles className="h-4 w-4 text-purple-500" />
+      case 'GUEST':
+      case 'TRAVELER':
+      default:
+        return <User className="h-4 w-4 text-gray-500" />
+    }
+  }
+
+  const isOwnPost = session?.user?.id === author.id
+
+  const handleDelete = async () => {
+    if (!isOwnPost || !session?.user?.id) return
+    
+    if (!confirm('Sei sicuro di voler eliminare questo post?')) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/posts/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete post')
+      }
+
+      // Refresh the page to remove the deleted post
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      alert('Errore durante l\'eliminazione del post')
+    } finally {
+      setIsDeleting(false)
+      setMenuOpen(false)
+    }
+  }
+
+  const handleEdit = () => {
+    router.push(`/create-post?edit=${id}`)
+  }
+
   return (
     <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto">
       <CardHeader className="pb-1.5 px-4 pt-3">
@@ -210,9 +264,63 @@ export function PostCard({
               <p className="text-xs text-muted-foreground/70 font-medium mt-0.5">{formatDate(createdAt)}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Role Icon */}
+            {author.role && (
+              <div className="h-7 w-7 rounded-full bg-muted/50 flex items-center justify-center border border-border/50">
+                {getRoleIcon()}
+              </div>
+            )}
+            {/* Menu Button */}
+            <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-0" align="end">
+                <div className="py-2">
+                  {isOwnPost ? (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEdit()
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
+                      >
+                        <Edit className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Modifica</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete()
+                        }}
+                        disabled={isDeleting}
+                        className="w-full px-4 py-3 text-left hover:bg-destructive/10 hover:text-destructive flex items-center gap-3 transition-colors disabled:opacity-50"
+                      >
+                        <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">
+                          {isDeleting ? 'Eliminazione...' : 'Elimina'}
+                        </span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setMenuOpen(false)
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors text-sm text-muted-foreground"
+                    >
+                      Segnala post
+                    </button>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </CardHeader>
 

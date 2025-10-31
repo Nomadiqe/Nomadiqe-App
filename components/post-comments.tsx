@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -38,13 +38,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (isOpen && postId) {
-      fetchComments()
-    }
-  }, [isOpen, postId])
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/posts/${postId}/comments`)
@@ -57,7 +51,13 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [postId])
+
+  useEffect(() => {
+    if (isOpen && postId) {
+      fetchComments()
+    }
+  }, [isOpen, postId, fetchComments])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

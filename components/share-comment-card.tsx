@@ -19,7 +19,8 @@ interface ShareCommentCardProps {
   onSend: (message: string) => void
   selectedUser: {
     id: string
-    name: string
+    name?: string
+    fullName?: string
     username?: string
     image?: string
     profilePictureUrl?: string
@@ -52,7 +53,7 @@ export function ShareCommentCard({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Condividi Post con {selectedUser.username || selectedUser.name}</DialogTitle>
+          <DialogTitle>Condividi Post con {selectedUser.fullName || selectedUser.name || selectedUser.username || 'Utente'}</DialogTitle>
           <DialogDescription>
             Aggiungi un messaggio personale da inviare insieme a questo post.
           </DialogDescription>
@@ -60,14 +61,14 @@ export function ShareCommentCard({
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={selectedUser.image || selectedUser.profilePictureUrl} alt={selectedUser.name} />
+              <AvatarImage src={selectedUser.image || selectedUser.profilePictureUrl} alt={selectedUser.fullName || selectedUser.name || selectedUser.username || 'User'} />
               <AvatarFallback className="bg-primary/10 text-primary">
-                {selectedUser.name.charAt(0).toUpperCase()}
+                {(selectedUser.fullName || selectedUser.name || selectedUser.username || 'U').charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold">{selectedUser.name}</p>
-              {selectedUser.username && <p className="text-sm text-muted-foreground">@{selectedUser.username}</p>}
+              <p className="font-semibold">{selectedUser.fullName || selectedUser.name || selectedUser.username || 'User'}</p>
+              {selectedUser.username && (selectedUser.fullName || selectedUser.name) && <p className="text-sm text-muted-foreground">@{selectedUser.username}</p>}
             </div>
           </div>
           <div className="border rounded-md p-3 bg-muted/20">

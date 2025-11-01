@@ -16,14 +16,13 @@ import {
   Plus,
   Moon,
   Sun,
-  Briefcase
+  Briefcase,
+  Globe
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import PointsDisplay from './points/PointsDisplay'
-import DailyCheckIn from './points/DailyCheckIn'
 
 export function Navigation() {
   const { data: session } = useSession()
@@ -59,28 +58,30 @@ export function Navigation() {
 
   // Desktop navigation items - filter based on authentication
   const navItems = session ? [
-    { href: getHomeHref(), label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
-  // Mobile navigation items - filter based on authentication
+  // Mobile navigation items - order: Home, Explore, [+], Search, Profile
   const mobileNavItems = session ? [
-    { href: getHomeHref(), label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
   return (
@@ -139,7 +140,6 @@ export function Navigation() {
             <div className="flex items-center space-x-3">
               {session ? (
                 <>
-                  <PointsDisplay />
                   <div className="relative group">
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                       <Menu className="w-4 h-4" />
@@ -267,14 +267,17 @@ export function Navigation() {
               alt="Nomadiqe Logo"
               className="w-8 h-auto object-contain"
             />
-            <span className="text-xl font-bold text-primary">Nomadiqe</span>
+            <span className="text-xl font-bold text-primary">
+              Nomadiqe
+              <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+            </span>
           </Link>
 
           {/* Mobile Right Menu */}
           <div className="flex items-center space-x-2">
-            {session && (
-              <div className="scale-90 origin-right">
-                <PointsDisplay />
+            {session?.user?.role && (
+              <div className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full uppercase shadow-md">
+                {session.user.role === 'INFLUENCER' ? 'Creator' : session.user.role}
               </div>
             )}
             <Button
@@ -307,14 +310,25 @@ export function Navigation() {
                       Admin
                     </Link>
                   )}
-                  <Link
-                    href="/host"
-                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Briefcase className="h-4 w-4 mr-3" />
-                    Host Mode
-                  </Link>
+                  {session.user?.role === 'HOST' ? (
+                    <Link
+                      href="/"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <User className="h-4 w-4 mr-3" />
+                      Guest Mode
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/host"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Briefcase className="h-4 w-4 mr-3" />
+                      Host Mode
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       setTheme(theme === 'light' ? 'dark' : 'light')

@@ -27,6 +27,7 @@ model User {
   onboardingStep   String?
   fullName         String?
   profilePictureUrl String?
+  coverPhotoUrl     String?
 
   // Profile fields
   bio           String?

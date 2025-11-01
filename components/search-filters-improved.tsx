@@ -125,8 +125,8 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
       {/* Price Range */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label>Price Range</Label>
-          <span className="text-sm text-muted-foreground">
+          <Label className="text-white">Price Range</Label>
+          <span className="text-sm text-gray-300">
             €{priceRange[0]} - €{priceRange[1] >= 500 ? '500+' : priceRange[1]}
           </span>
         </div>
@@ -144,7 +144,7 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
 
       {/* Property Type */}
       <div className="space-y-3">
-        <Label>Property Type</Label>
+        <Label className="text-white">Property Type</Label>
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
             <SelectValue placeholder="Any type" />
@@ -164,7 +164,7 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
 
       {/* Amenities */}
       <div className="space-y-3">
-        <Label>Amenities</Label>
+        <Label className="text-white">Amenities</Label>
         <div className="grid grid-cols-2 gap-3">
           {amenitiesList.map(amenity => (
             <div key={amenity} className="flex items-center space-x-2">
@@ -175,7 +175,7 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
               />
               <label
                 htmlFor={amenity}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-gray-200"
               >
                 {amenity}
               </label>
@@ -188,7 +188,7 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
 
       {/* Rating */}
       <div className="space-y-3">
-        <Label>Minimum Rating</Label>
+        <Label className="text-white">Minimum Rating</Label>
         <Select value={minRating} onValueChange={setMinRating}>
           <SelectTrigger>
             <SelectValue placeholder="Any rating" />
@@ -205,11 +205,18 @@ export function SearchFiltersContent({ onApply }: { onApply?: () => void }) {
 
       {/* Actions */}
       <div className="flex gap-2 pt-4">
-        <Button onClick={applyFilters} className="flex-1">
+        <Button 
+          onClick={applyFilters} 
+          className="flex-1 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-xl"
+        >
           Apply Filters
         </Button>
         {activeFiltersCount > 0 && (
-          <Button onClick={clearFilters} variant="outline">
+          <Button 
+            onClick={clearFilters} 
+            variant="outline"
+            className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+          >
             <X className="w-4 h-4" />
           </Button>
         )}
@@ -248,10 +255,10 @@ export function SearchFiltersImproved() {
               )}
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh]">
+          <SheetContent side="bottom" className="h-[85vh] bg-gray-800/95 border-blue-400/30 backdrop-blur-sm">
             <SheetHeader>
-              <SheetTitle>Filters</SheetTitle>
-              <SheetDescription>
+              <SheetTitle className="text-white">Filters</SheetTitle>
+              <SheetDescription className="text-gray-300">
                 Refine your search with these filters
               </SheetDescription>
             </SheetHeader>
@@ -264,12 +271,12 @@ export function SearchFiltersImproved() {
 
       {/* Desktop: Inline */}
       <div className="hidden lg:block">
-        <Card>
+        <Card className="bg-gray-800/90 border border-blue-400/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Filters</h3>
+              <h3 className="font-semibold text-white">Filters</h3>
               {activeFiltersCount > 0 && (
-                <Badge variant="secondary">{activeFiltersCount} active</Badge>
+                <Badge className="bg-pink-500 text-white">{activeFiltersCount} active</Badge>
               )}
             </div>
           </CardHeader>

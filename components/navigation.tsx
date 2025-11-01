@@ -13,18 +13,22 @@ import {
   Compass,
   Shield,
   Search,
-  Plus
+  Plus,
+  Moon,
+  Sun,
+  Briefcase,
+  Globe
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import PointsDisplay from './points/PointsDisplay'
-import DailyCheckIn from './points/DailyCheckIn'
 
 export function Navigation() {
   const { data: session } = useSession()
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   // Hide navigation on auth pages (signin, signup, etc.)
   const isAuthPage = pathname?.startsWith('/auth/')
@@ -36,30 +40,48 @@ export function Navigation() {
     await signOut({ callbackUrl: '/' })
   }
 
+  // Get the appropriate home URL based on user role
+  const getHomeHref = () => {
+    if (!session) return '/'
+    switch (session.user.role) {
+      case 'HOST':
+        return '/dashboard/host'
+      case 'GUEST':
+        return '/dashboard/guest'
+      case 'INFLUENCER':
+        return '/dashboard/influencer'
+      case 'TRAVELER':
+      default:
+        return '/dashboard'
+    }
+  }
+
   // Desktop navigation items - filter based on authentication
   const navItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
-  // Mobile navigation items - filter based on authentication
+  // Mobile navigation items - order: Home, Explore, [+], Search, Profile
   const mobileNavItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
   return (
@@ -118,7 +140,6 @@ export function Navigation() {
             <div className="flex items-center space-x-3">
               {session ? (
                 <>
-                  <PointsDisplay />
                   <div className="relative group">
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                       <Menu className="w-4 h-4" />
@@ -246,14 +267,17 @@ export function Navigation() {
               alt="Nomadiqe Logo"
               className="w-8 h-auto object-contain"
             />
-            <span className="text-xl font-bold text-primary">Nomadiqe</span>
+            <span className="text-xl font-bold text-primary">
+              Nomadiqe
+              <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+            </span>
           </Link>
 
           {/* Mobile Right Menu */}
           <div className="flex items-center space-x-2">
-            {session && (
-              <div className="scale-90 origin-right">
-                <PointsDisplay />
+            {session?.user?.role && (
+              <div className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full uppercase shadow-md">
+                {session.user.role === 'INFLUENCER' ? 'Creator' : session.user.role}
               </div>
             )}
             <Button
@@ -286,6 +310,44 @@ export function Navigation() {
                       Admin
                     </Link>
                   )}
+                  {session.user?.role === 'HOST' ? (
+                    <Link
+                      href="/"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <User className="h-4 w-4 mr-3" />
+                      Guest Mode
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/host"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Briefcase className="h-4 w-4 mr-3" />
+                      Host Mode
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setTheme(theme === 'light' ? 'dark' : 'light')
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                  >
+                    {theme === 'light' ? (
+                      <>
+                        <Moon className="h-4 w-4 mr-3" />
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="h-4 w-4 mr-3" />
+                        Light Mode
+                      </>
+                    )}
+                  </button>
                   <button
                     onClick={() => {
                       handleSignOut()
@@ -298,18 +360,47 @@ export function Navigation() {
                   </button>
                 </>
               ) : (
-                <div className="flex flex-col space-y-2 pt-2">
-                  <Button variant="outline" asChild className="w-full">
-                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button asChild className="w-full">
-                    <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign Up
-                    </Link>
-                  </Button>
-                </div>
+                <>
+                  <Link
+                    href="/host"
+                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Briefcase className="h-4 w-4 mr-3" />
+                    Host Mode
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setTheme(theme === 'light' ? 'dark' : 'light')
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                  >
+                    {theme === 'light' ? (
+                      <>
+                        <Moon className="h-4 w-4 mr-3" />
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="h-4 w-4 mr-3" />
+                        Light Mode
+                      </>
+                    )}
+                  </button>
+                  <div className="flex flex-col space-y-2 pt-2">
+                    <Button variant="outline" asChild className="w-full">
+                      <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button asChild className="w-full">
+                      <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>

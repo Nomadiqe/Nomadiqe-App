@@ -6,6 +6,11 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
 
+    // Always allow manifest files (must not be intercepted or redirected)
+    if (pathname === '/manifest.webmanifest' || pathname === '/manifest.json') {
+      return NextResponse.next()
+    }
+
     // Redirect completed users away from onboarding pages
     if (pathname.startsWith('/onboarding') && token?.onboardingStatus === 'COMPLETED') {
       const dashboardUrl = token.role === 'HOST' ? '/dashboard/host'
@@ -87,6 +92,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public assets (images, fonts, etc.)
      */
-    '/((?!api|_next/static|_next/image|favicon|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf)).*)',
+    '/((?!api|_next/static|_next/image|favicon|manifest\\.webmanifest|manifest\\.json|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf)).*)',
   ],
 }

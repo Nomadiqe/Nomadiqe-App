@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDistanceToNow } from 'date-fns'
@@ -37,14 +36,13 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [newComment, setNewComment] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [swipeStartY, setSwipeStartY] = useState(0)
+  const [currentY, setCurrentY] = useState(0)
 
-  useEffect(() => {
-    if (isOpen && postId) {
-      fetchComments()
-    }
-  }, [isOpen, postId])
+  // Debug log
+  console.log('PostComments rendered - isOpen:', isOpen, 'session:', !!session, 'comments:', comments.length)
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/posts/${postId}/comments`)
@@ -57,7 +55,13 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [postId])
+
+  useEffect(() => {
+    if (isOpen && postId) {
+      fetchComments()
+    }
+  }, [isOpen, postId, fetchComments])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,17 +93,50 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
     }
   }
 
+  // Swipe down to close handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setSwipeStartY(e.touches[0].clientY)
+    setCurrentY(e.touches[0].clientY)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setCurrentY(e.touches[0].clientY)
+  }
+
+  const handleTouchEnd = () => {
+    const diffY = currentY - swipeStartY
+    
+    // Close if swiped down more than 100px
+    if (diffY > 100) {
+      onClose()
+    }
+    
+    // Reset
+    setSwipeStartY(0)
+    setCurrentY(0)
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-[1300] bg-black/50" onClick={onClose}>
       <div
-        className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-lg"
+        className="fixed bottom-0 left-0 right-0 h-[75vh] bg-background shadow-lg rounded-t-2xl animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex h-full flex-col">
+          {/* Drag Handle - Swipe to close */}
+          <div 
+            className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
+          </div>
+          
           {/* Header */}
-          <div className="flex items-center justify-between border-b p-4">
+          <div className="flex items-center justify-between border-b px-4 pb-3">
             <h2 className="text-lg font-semibold">Comments</h2>
             <Button
               variant="ghost"
@@ -110,8 +147,8 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
             </Button>
           </div>
 
-          {/* Comments List */}
-          <ScrollArea className="flex-1 p-4">
+          {/* Scrollable comments area */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
             {isLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -150,35 +187,38 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                 <p className="text-sm text-muted-foreground">Be the first to comment!</p>
               </div>
             )}
-          </ScrollArea>
+          </div>
 
-          {/* Comment Input */}
+          {/* Comment Input - Fixed at bottom */}
           {session ? (
-            <form onSubmit={handleSubmit} className="border-t p-4">
-              <div className="flex space-x-2">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Write a comment..."
-                  className="min-h-[60px] resize-none"
-                  disabled={isSubmitting}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!newComment.trim() || isSubmitting}
-                  className="self-end"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </form>
+            <div className="border-t bg-background flex-shrink-0">
+              <form onSubmit={handleSubmit} className="p-4">
+                <div className="flex items-end gap-2">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Lascia un commento pubblico..."
+                    className="flex-1 resize-none min-h-[44px] max-h-32"
+                    disabled={isSubmitting}
+                    rows={1}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!newComment.trim() || isSubmitting}
+                    className="flex-shrink-0 h-11 w-11 bg-nomadiqe-600 hover:bg-nomadiqe-700"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           ) : (
-            <div className="border-t p-4 space-y-3">
+            <div className="border-t p-4 space-y-3 bg-background flex-shrink-0">
               <p className="text-center text-sm text-muted-foreground">
                 Sign in to join the conversation
               </p>

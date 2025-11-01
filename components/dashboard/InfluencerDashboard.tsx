@@ -34,6 +34,7 @@ import {
 import Link from 'next/link'
 import PointsDisplay from '@/components/points/PointsDisplay'
 import DailyCheckIn from '@/components/points/DailyCheckIn'
+import { ComingSoonDialog } from '@/components/ui/coming-soon-dialog'
 
 interface InfluencerDashboardProps {
   user: any // User with influencerProfile and socialConnections
@@ -42,6 +43,7 @@ interface InfluencerDashboardProps {
 export default function InfluencerDashboard({ user }: InfluencerDashboardProps) {
   const [copiedProfileLink, setCopiedProfileLink] = useState(false)
   const [appliedOpportunities, setAppliedOpportunities] = useState<string[]>([])
+  const [comingSoonOpen, setComingSoonOpen] = useState(false)
   
   const influencerProfile = user.influencerProfile
   const socialConnections = user.socialConnections || []
@@ -435,11 +437,9 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                 <p className="text-gray-600 mb-6">
                   Ready to start your first collaboration? Browse available opportunities and connect with hosts!
                 </p>
-                <Button asChild>
-                  <Link href="/influencer/browse">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Browse Opportunities
-                  </Link>
+                <Button onClick={() => setComingSoonOpen(true)}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Browse Opportunities
                 </Button>
               </Card>
             )}
@@ -533,11 +533,13 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                     )
                   })}
 
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/profile/social-accounts">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Connect More Platforms
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Connect More Platforms
                   </Button>
                 </CardContent>
               </Card>
@@ -654,11 +656,12 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                     <Share2 className="h-4 w-4 mr-2" />
                     {copiedProfileLink ? 'Link Copied!' : 'Copy Profile Link'}
                   </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/influencer/promotion-toolkit">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Promotion Toolkit
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Promotion Toolkit
                   </Button>
                 </div>
               </div>
@@ -671,6 +674,11 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
           </CardContent>
         </Card>
       </div>
+
+      <ComingSoonDialog 
+        open={comingSoonOpen} 
+        onOpenChange={setComingSoonOpen}
+      />
     </div>
   )
 }

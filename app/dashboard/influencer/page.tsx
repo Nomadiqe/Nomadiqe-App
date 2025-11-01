@@ -21,8 +21,22 @@ async function InfluencerDashboardPageContent() {
     }
   })
 
-  if (!user || user.role !== 'INFLUENCER') {
-    redirect('/dashboard')
+  // If user doesn't exist in DB, redirect to sign in
+  if (!user) {
+    redirect('/auth/signin')
+  }
+
+  // Only redirect if the user's role is explicitly NOT INFLUENCER
+  if (user.role !== 'INFLUENCER') {
+    // Redirect to appropriate dashboard based on role
+    if (user.role === 'GUEST') {
+      redirect('/dashboard/guest')
+    } else if (user.role === 'HOST') {
+      redirect('/dashboard/host')
+    } else {
+      // Fallback to general dashboard
+      redirect('/dashboard')
+    }
   }
 
   return <InfluencerDashboard user={user} />

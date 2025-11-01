@@ -11,6 +11,7 @@ const profileUpdateSchema = z.object({
   location: z.string().max(100).optional().nullable(),
   phone: z.string().max(30).optional().nullable(),
   profilePicture: z.string().url().optional(),
+  coverPhoto: z.string().url().optional(),
 })
 
 export async function PUT(req: NextRequest) {
@@ -39,6 +40,7 @@ export async function PUT(req: NextRequest) {
         location: data.location ?? undefined,
         phone: data.phone ?? undefined,
         profilePictureUrl: data.profilePicture,
+        coverPhotoUrl: data.coverPhoto,
       }
     })
 

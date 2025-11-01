@@ -219,6 +219,11 @@ export default function SignInPage() {
                   )}
                 </button>
               </div>
+              <div className="mt-2 text-right">
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>

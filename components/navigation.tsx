@@ -17,7 +17,8 @@ import {
   Moon,
   Sun,
   Briefcase,
-  Globe
+  Globe,
+  Sparkles
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -87,7 +88,7 @@ export function Navigation() {
   return (
     <>
       {/* Desktop Header Navigation */}
-      <nav className="hidden md:block bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+      <nav className="hidden md:block bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -96,11 +97,11 @@ export function Navigation() {
               <img
                 src="/nomadiqe-logo-transparent.png"
                 alt="Nomadiqe Logo"
-                className="w-8 h-auto object-contain"
+                className="w-8 h-auto object-contain brightness-0 invert"
               />
-              <span className="text-xl font-bold text-primary">
+              <span className="text-xl font-bold text-white">
                 Nomadiqe
-                <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+                <sup className="text-[0.5em] ml-1 font-semibold text-white/70">BETA</sup>
               </span>
             </Link>
 
@@ -116,8 +117,8 @@ export function Navigation() {
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
                       isActive
-                        ? "text-primary bg-primary/10"
-                        : "text-foreground hover:text-primary hover:bg-accent"
+                        ? "text-primary bg-primary/20"
+                        : "text-white hover:text-primary hover:bg-white/10"
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -128,7 +129,7 @@ export function Navigation() {
               {session && (
                 <Link
                   href="/create-post"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-white hover:bg-primary/90"
                 >
                   <Plus className="w-5 h-5" />
                   <span className="font-medium">Create Post</span>
@@ -141,7 +142,7 @@ export function Navigation() {
               {session ? (
                 <>
                   <div className="relative group">
-                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:bg-white/10">
                       <Menu className="w-4 h-4" />
                     </Button>
 
@@ -169,10 +170,10 @@ export function Navigation() {
                 </>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" asChild>
+                  <Button variant="ghost" asChild className="text-white hover:bg-white/10">
                     <Link href="/auth/signin">Sign In</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
                     <Link href="/auth/signup">Sign Up</Link>
                   </Button>
                 </div>
@@ -257,26 +258,26 @@ export function Navigation() {
       </nav>
 
       {/* Mobile Top Bar with Logo and Menu */}
-      <nav className="md:hidden bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-40" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
-        <div className="flex justify-between items-center h-16 px-4">
+      <nav className="md:hidden bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-40 w-full overflow-x-hidden" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="flex justify-between items-center h-16 px-3 w-full max-w-full">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-1.5 flex-shrink min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/nomadiqe-logo-transparent.png"
               alt="Nomadiqe Logo"
-              className="w-8 h-auto object-contain"
+              className="w-7 h-auto object-contain flex-shrink-0 brightness-0 invert"
             />
-            <span className="text-xl font-bold text-primary">
+            <span className="text-lg font-bold text-white truncate">
               Nomadiqe
-              <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+              <sup className="text-[0.45em] ml-0.5 font-semibold text-white/70">BETA</sup>
             </span>
           </Link>
 
           {/* Mobile Right Menu */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5 flex-shrink-0">
             {session?.user?.role && (
-              <div className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full uppercase shadow-md">
+              <div className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase shadow-md whitespace-nowrap">
                 {session.user.role === 'INFLUENCER' ? 'Creator' : session.user.role}
               </div>
             )}
@@ -284,6 +285,7 @@ export function Navigation() {
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex-shrink-0 text-white hover:bg-white/10"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -296,14 +298,14 @@ export function Navigation() {
 
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="border-t border-border py-3">
+          <div className="border-t border-white/20 py-3 bg-secondary/95">
             <div className="flex flex-col space-y-1 px-2">
               {session ? (
                 <>
                   {session.user?.role === 'ADMIN' && (
                     <Link
                       href="/admin"
-                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Shield className="h-4 w-4 mr-3" />
@@ -312,17 +314,17 @@ export function Navigation() {
                   )}
                   {session.user?.role === 'HOST' ? (
                     <Link
-                      href="/"
-                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      href="/host/find-influencers"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <User className="h-4 w-4 mr-3" />
-                      Guest Mode
+                      <Sparkles className="h-4 w-4 mr-3" />
+                      KOL&BED Creators
                     </Link>
                   ) : (
                     <Link
                       href="/host"
-                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Briefcase className="h-4 w-4 mr-3" />
@@ -334,7 +336,7 @@ export function Navigation() {
                       setTheme(theme === 'light' ? 'dark' : 'light')
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
                   >
                     {theme === 'light' ? (
                       <>
@@ -353,7 +355,7 @@ export function Navigation() {
                       handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
                   >
                     <LogOut className="h-4 w-4 mr-3" />
                     Sign Out
@@ -363,7 +365,7 @@ export function Navigation() {
                 <>
                   <Link
                     href="/host"
-                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                    className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Briefcase className="h-4 w-4 mr-3" />
@@ -374,7 +376,7 @@ export function Navigation() {
                       setTheme(theme === 'light' ? 'dark' : 'light')
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
                   >
                     {theme === 'light' ? (
                       <>
@@ -389,12 +391,12 @@ export function Navigation() {
                     )}
                   </button>
                   <div className="flex flex-col space-y-2 pt-2">
-                    <Button variant="outline" asChild className="w-full">
+                    <Button variant="outline" asChild className="w-full border-white/30 text-white hover:bg-white/10">
                       <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
                         Sign In
                       </Link>
                     </Button>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full bg-primary hover:bg-primary/90">
                       <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
                         Sign Up
                       </Link>

@@ -75,19 +75,11 @@ export function ProfileImageViewer({ imageUrl, userName }: ProfileImageViewerPro
         onClick={() => setIsOpen(true)}
         className="relative cursor-pointer focus:outline-none"
       >
-        <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 opacity-60 blur-xl"></div>
-        <div className="relative">
-          <div className="rounded-full p-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500">
-            <img
-              src={imageUrl}
-              alt={userName}
-              className="w-40 h-40 rounded-full object-cover bg-white dark:bg-gray-800"
-              style={{
-                boxShadow: '0 0 20px rgba(96, 165, 250, 0.6), 0 0 40px rgba(34, 211, 238, 0.4)'
-              }}
-            />
-          </div>
-        </div>
+        <img
+          src={imageUrl}
+          alt={userName}
+          className="w-40 h-40 rounded-full object-cover bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-700 shadow-lg"
+        />
       </button>
 
       {/* Full Screen Viewer */}
@@ -123,14 +115,12 @@ export function ProfileImageViewer({ imageUrl, userName }: ProfileImageViewerPro
           {/* Image Container */}
           <div className="relative w-full h-full flex items-center justify-center p-4">
             <div className="relative max-w-2xl max-h-[90vh]">
-              <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 opacity-40 blur-2xl"></div>
               <img
                 src={imageUrl}
                 alt={userName}
-                className="relative w-full h-full object-contain rounded-2xl"
+                className="relative w-full h-full object-contain rounded-2xl shadow-2xl"
                 style={{
-                  maxHeight: '90vh',
-                  boxShadow: '0 0 40px rgba(96, 165, 250, 0.8), 0 0 80px rgba(34, 211, 238, 0.6)'
+                  maxHeight: '90vh'
                 }}
               />
             </div>

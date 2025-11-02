@@ -142,24 +142,24 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
 
   if (isOwnProfile) {
     return (
-      <div className="flex items-center gap-2 flex-wrap justify-center">
+      <div className="flex items-center gap-1.5 flex-wrap justify-center max-w-full">
         <Button 
           asChild 
-          className="bg-orange-500 hover:bg-orange-600 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg"
+          className="bg-secondary hover:bg-secondary/90 text-white rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex-shrink-0"
         >
-          <Link href="/profile/edit" className="flex items-center gap-1.5">
+          <Link href="/profile/edit" className="flex items-center gap-1">
             <Settings className="w-3.5 h-3.5" />
-            <span>Edit Profile</span>
+            <span className="whitespace-nowrap">Edit Profile</span>
           </Link>
         </Button>
-        <div className="relative">
+        <div className="relative flex-shrink-0">
           <Button 
             asChild 
-            className="bg-pink-500 hover:bg-pink-600 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg"
+            className="bg-primary hover:bg-primary/90 text-white rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg"
           >
-            <Link href="/messages" className="flex items-center gap-1.5">
+            <Link href="/messages" className="flex items-center gap-1">
               <MessageCircle className="w-3.5 h-3.5" />
-              <span>Messages</span>
+              <span className="whitespace-nowrap">Messages</span>
             </Link>
           </Button>
           {unreadMessagesCount > 0 && (
@@ -170,46 +170,46 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
         </div>
         <Button
           onClick={handleCopyProfileLink}
-          className="bg-blue-700 hover:bg-blue-800 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1.5"
+          className="bg-secondary/80 hover:bg-secondary text-white rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1 flex-shrink-0"
         >
           {copied ? (
             <Check className="w-3.5 h-3.5" />
           ) : (
             <Copy className="w-3.5 h-3.5" />
           )}
-          <span>{copied ? 'Copied!' : 'Copy Link'}</span>
+          <span className="whitespace-nowrap">{copied ? 'Copied!' : 'Copy Link'}</span>
         </Button>
       </div>
     )
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap justify-center">
+    <div className="flex items-center gap-1.5 flex-wrap justify-center max-w-full">
       <Button
         onClick={handleFollow}
         disabled={isLoading}
-        className="bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-sm hover:shadow-md flex items-center gap-1.5"
+        className="bg-muted hover:bg-muted/80 text-foreground rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-sm hover:shadow-md flex items-center gap-1 flex-shrink-0"
       >
         <UserPlus className="w-3.5 h-3.5" />
-        <span>{isLoading ? '...' : isFollowing ? 'Unfollow' : 'Follow'}</span>
+        <span className="whitespace-nowrap">{isLoading ? '...' : isFollowing ? 'Unfollow' : 'Follow'}</span>
       </Button>
       <Button
         onClick={handleMessage}
-        className="bg-pink-500 hover:bg-pink-600 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1.5"
+        className="bg-primary hover:bg-primary/90 text-white rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1 flex-shrink-0"
       >
         <MessageCircle className="w-3.5 h-3.5" />
-        <span>Message</span>
+        <span className="whitespace-nowrap">Message</span>
       </Button>
       <Button
         onClick={handleCopyProfileLink}
-        className="bg-blue-700 hover:bg-blue-800 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1.5"
+        className="bg-secondary/80 hover:bg-secondary text-white rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-1 flex-shrink-0"
       >
         {copied ? (
           <Check className="w-3.5 h-3.5" />
         ) : (
           <Share className="w-3.5 h-3.5" />
         )}
-        <span>{copied ? 'Copied!' : 'Share'}</span>
+        <span className="whitespace-nowrap">{copied ? 'Copied!' : 'Share'}</span>
       </Button>
     </div>
   )

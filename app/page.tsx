@@ -68,14 +68,14 @@ export default async function HomePage() {
   }))
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Modern Gradient Background with Glow Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-300/30 via-purple-400/40 to-purple-600/50 -z-10" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
 
       {/* Hero Search Section */}
-      <section className="relative py-8">
+      <section className="relative pt-6 pb-3 z-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex items-start gap-4">
             <div className="flex-1">
@@ -87,29 +87,29 @@ export default async function HomePage() {
       </section>
 
       {/* Main Feed */}
-      <section className="py-8 px-4 relative">
+      <section className="pt-3 pb-8 px-4 relative">
         <div className="max-w-[600px] mx-auto space-y-6">
           {/* Sign up banner for unauthenticated users */}
           {!session && (
-            <Card className="bg-gray-800/90 border border-blue-400/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm rounded-xl">
+            <Card className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-center sm:text-left">
-                    <h3 className="text-lg font-semibold mb-1 text-white">Join the Nomadiqe Community</h3>
-                    <p className="text-sm text-gray-300">
+                    <h3 className="text-lg font-semibold mb-1 text-foreground">Join the Nomadiqe Community</h3>
+                    <p className="text-sm text-muted-foreground">
                       Sign up to share your adventures, connect with travelers, and discover unique stays
                     </p>
                   </div>
                   <div className="flex gap-3 flex-shrink-0">
                     <Button 
                       asChild 
-                      className="bg-gray-700 hover:bg-gray-600 text-white rounded-lg px-4 py-2 font-medium transition-all shadow-md hover:shadow-lg"
+                      className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-4 py-2 font-medium transition-all shadow-md hover:shadow-lg"
                     >
                       <Link href="/auth/signin">Sign In</Link>
                     </Button>
                     <Button 
                       asChild 
-                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-lg px-4 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
+                      className="bg-primary hover:bg-primary/90 text-white rounded-lg px-4 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
                     >
                       <Link href="/auth/signup">Sign Up</Link>
                     </Button>
@@ -128,11 +128,11 @@ export default async function HomePage() {
             </>
           ) : (
             // No posts yet - show empty state
-            <Card className="bg-gray-800/90 border border-blue-400/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm rounded-xl border-dashed">
+            <Card className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm rounded-xl border-dashed">
               <CardContent className="p-12 text-center">
-                <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-white">No Posts Yet</h3>
-                <p className="text-gray-300 mb-6 max-w-md mx-auto">
+                <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-foreground">No Posts Yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   {session
                     ? 'Be the first to share your travel story! Create your first post to get started.'
                     : 'The community feed is empty right now. Check back soon for travel stories and experiences!'}
@@ -140,7 +140,7 @@ export default async function HomePage() {
                 {session && (
                   <Button 
                     asChild
-                    className="bg-pink-500 hover:bg-pink-600 text-white rounded-lg px-6 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
+                    className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
                   >
                     <Link href="/create-post">
                       <Plus className="w-4 h-4 mr-2" />

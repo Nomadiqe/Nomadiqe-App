@@ -178,14 +178,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const bioWithoutHashtags = user.bio?.replace(/#[\w]+/g, '').trim() || ''
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-x-hidden w-full bg-background">
       {/* Modern Gradient Background with Glow Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-300/30 via-purple-400/40 to-purple-600/50 -z-10" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
       
       {/* Profile Header */}
-      <section className="relative">
+      <section className="relative w-full overflow-x-hidden">
         {/* Cover Photo Banner */}
         {user.coverPhoto && (
           <div className="relative h-48 w-full overflow-hidden">
@@ -194,11 +194,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               alt="Cover"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-purple-600/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-secondary/50"></div>
           </div>
         )}
         
-        <div className={`max-w-4xl mx-auto px-4 ${user.coverPhoto ? '-mt-16' : 'py-6'}`}>
+        <div className={`max-w-4xl mx-auto px-4 ${user.coverPhoto ? '-mt-16' : 'py-6'} w-full`}>
           <div className="flex flex-col items-center space-y-4">
             {/* Profile Image with Neon Border */}
             <div className="relative">
@@ -214,17 +214,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             </div>
 
             {/* Profile Info */}
-            <div className="flex flex-col items-center space-y-2 w-full">
+            <div className="flex flex-col items-center space-y-2 w-full max-w-md mx-auto px-2">
               {/* Name */}
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
                 {user.name}
               </h1>
 
               {/* Location */}
               {user.location && (
                 <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 text-xs">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>{user.location}</span>
+                  <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">{user.location}</span>
                 </div>
               )}
 
@@ -238,7 +238,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               )}
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 w-full justify-center flex-wrap px-2">
                 <ProfileActions
                   isOwnProfile={isOwnProfile}
                   userId={user.id}
@@ -247,30 +247,30 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
 
               {/* Stats Cards */}
-              <div className={`grid ${statsCols} gap-2 w-full max-w-md mt-4`}>
-                <div className="rounded-md bg-gray-800/90 border border-blue-400/30 shadow-sm shadow-blue-500/10 px-2 py-2 backdrop-blur-sm">
+              <div className={`grid ${statsCols} gap-2 w-full mt-4 px-2`}>
+                <div className="rounded-md bg-card dark:bg-secondary/40 border border-primary/30 shadow-sm shadow-primary/10 px-1 py-2 backdrop-blur-sm min-w-0">
                   <div className="text-center">
-                    <p className="text-lg font-bold text-white">{user.stats.posts}</p>
-                    <p className="text-[9px] text-gray-300 font-medium">Posts</p>
+                    <p className="text-lg font-bold text-foreground">{user.stats.posts}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium">Posts</p>
                   </div>
                 </div>
-                <div className="rounded-md bg-gray-800/90 border border-blue-400/30 shadow-sm shadow-blue-500/10 px-2 py-2 backdrop-blur-sm">
+                <div className="rounded-md bg-card dark:bg-secondary/40 border border-primary/30 shadow-sm shadow-primary/10 px-1 py-2 backdrop-blur-sm min-w-0">
                   <div className="text-center">
-                    <p className="text-lg font-bold text-white">{user.stats.followers}</p>
-                    <p className="text-[9px] text-gray-300 font-medium">Followers</p>
+                    <p className="text-lg font-bold text-foreground">{user.stats.followers}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium">Followers</p>
                   </div>
                 </div>
-                <div className="rounded-md bg-gray-800/90 border border-blue-400/30 shadow-sm shadow-blue-500/10 px-2 py-2 backdrop-blur-sm">
+                <div className="rounded-md bg-card dark:bg-secondary/40 border border-primary/30 shadow-sm shadow-primary/10 px-1 py-2 backdrop-blur-sm min-w-0">
                   <div className="text-center">
-                    <p className="text-lg font-bold text-white">{user.stats.following}</p>
-                    <p className="text-[9px] text-gray-300 font-medium">Following</p>
+                    <p className="text-lg font-bold text-foreground">{user.stats.following}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium">Following</p>
                   </div>
                 </div>
                 {user.role === 'HOST' && (
-                  <div className="rounded-md bg-gray-800/90 border border-blue-400/30 shadow-sm shadow-blue-500/10 px-2 py-2 backdrop-blur-sm">
+                  <div className="rounded-md bg-card dark:bg-secondary/40 border border-primary/30 shadow-sm shadow-primary/10 px-1 py-2 backdrop-blur-sm min-w-0">
                     <div className="text-center">
-                      <p className="text-lg font-bold text-white">{user.stats.properties}</p>
-                      <p className="text-[9px] text-gray-300 font-medium">Properties</p>
+                      <p className="text-lg font-bold text-foreground">{user.stats.properties}</p>
+                      <p className="text-[9px] text-muted-foreground font-medium whitespace-nowrap">Properties</p>
                     </div>
                   </div>
                 )}
@@ -278,7 +278,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
               {/* Wallet Button */}
               {isOwnProfile && (
-                <div className="w-full max-w-md mt-4">
+                <div className="w-full mt-4 px-2">
                   <WalletDialog userRole={user.role} userName={user.name} />
                 </div>
               )}
@@ -288,7 +288,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       </section>
 
       {/* Content Tabs */}
-      <section className="max-w-4xl mx-auto px-4 py-4">
+      <section className="max-w-4xl mx-auto px-4 py-4 w-full overflow-x-hidden">
         <ProfileTabs
           posts={posts}
           properties={propertiesRaw || []}

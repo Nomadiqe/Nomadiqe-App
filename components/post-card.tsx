@@ -232,11 +232,11 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto">
-      <CardHeader className="pb-1.5 px-4 pt-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link href={`/profile/${author.id}`}>
+    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto w-full">
+      <CardHeader className="pb-1.5 px-3 pt-3">
+        <div className="flex items-center justify-between w-full min-w-0">
+          <div className="flex items-center space-x-2 min-w-0 flex-1">
+            <Link href={`/profile/${author.id}`} className="flex-shrink-0">
               <div className="h-10 w-10 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
                 {author.image && !imageError ? (
                   <Image 
@@ -255,26 +255,26 @@ export function PostCard({
                 )}
               </div>
             </Link>
-            <div>
+            <div className="min-w-0 flex-1">
               <Link href={`/profile/${author.id}`}>
-                <h3 className="font-bold text-sm hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
+                <h3 className="font-bold text-sm hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2 truncate" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
                   {author.name}
                 </h3>
               </Link>
-              <p className="text-xs text-muted-foreground/70 font-medium mt-0.5">{formatDate(createdAt)}</p>
+              <p className="text-xs text-muted-foreground/70 font-medium mt-0.5 truncate">{formatDate(createdAt)}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {/* Role Icon */}
             {author.role && (
-              <div className="h-7 w-7 rounded-full bg-muted/50 flex items-center justify-center border border-border/50">
+              <div className="h-7 w-7 rounded-full bg-muted/50 flex items-center justify-center border border-border/50 flex-shrink-0">
                 {getRoleIcon()}
               </div>
             )}
             {/* Menu Button */}
             <Popover open={menuOpen} onOpenChange={setMenuOpen}>
               <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80 flex-shrink-0">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
               </PopoverTrigger>

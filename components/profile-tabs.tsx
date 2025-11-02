@@ -68,33 +68,33 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
     : (userRole === 'HOST' ? 'grid-cols-3' : 'grid-cols-2')
 
   return (
-    <Tabs defaultValue="posts" className="w-full">
-      <div className="flex items-center justify-center mb-6">
-        <TabsList className={`grid w-full max-w-2xl ${tabCols} bg-gray-200/50 dark:bg-gray-800/50 rounded-xl p-1.5 backdrop-blur-sm`}>
+    <Tabs defaultValue="posts" className="w-full overflow-x-hidden">
+      <div className="flex items-center justify-center mb-6 w-full px-2">
+        <TabsList className={`grid w-full ${tabCols} bg-muted/50 dark:bg-secondary/50 rounded-xl p-1.5 backdrop-blur-sm`}>
           <TabsTrigger 
             value="posts"
-            className="rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
           >
             Posts
           </TabsTrigger>
           {userRole === 'HOST' && (
             <TabsTrigger 
               value="properties"
-              className="rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+              className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
             >
               Properties
             </TabsTrigger>
           )}
           <TabsTrigger 
             value="comments"
-            className="rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
           >
             Comments
           </TabsTrigger>
           {isOwnProfile && (
             <TabsTrigger 
               value="messages"
-              className="rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+              className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
             >
               Messages
             </TabsTrigger>
@@ -172,16 +172,16 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
         {userComments.length > 0 ? (
           <div className="space-y-4">
             {userComments.map((comment: any) => (
-              <Card key={comment.id} className="bg-gray-800/90 border border-blue-400/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm hover:border-blue-400/50 transition-all">
+              <Card key={comment.id} className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm hover:border-primary/50 transition-all">
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     {/* Comment Content */}
-                    <p className="text-white text-sm">{comment.content}</p>
+                    <p className="text-foreground text-sm">{comment.content}</p>
                     
                     {/* Post Preview */}
                     <Link 
                       href={`/post/${comment.postId}`}
-                      className="block rounded-lg bg-gray-700/50 p-3 hover:bg-gray-700/70 transition-colors"
+                      className="block rounded-lg bg-muted/30 dark:bg-muted/20 p-3 hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors"
                     >
                       <div className="flex items-start gap-3">
                         {comment.postImages && comment.postImages.length > 0 && (
@@ -200,9 +200,9 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
                                 className="w-5 h-5 rounded-full"
                               />
                             )}
-                            <span className="text-xs text-gray-300 font-medium">{comment.postAuthor.name}</span>
+                            <span className="text-xs text-foreground font-medium">{comment.postAuthor.name}</span>
                           </div>
-                          <p className="text-xs text-gray-400 line-clamp-2">
+                          <p className="text-xs text-muted-foreground line-clamp-2">
                             {comment.postContent || 'View post'}
                           </p>
                         </div>
@@ -210,7 +210,7 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
                     </Link>
 
                     {/* Timestamp */}
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {new Date(comment.createdAt).toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric',

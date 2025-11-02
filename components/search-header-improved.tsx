@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, MapPin, Calendar, Users, ChevronDown, AtSign } from 'lucide-react'
+import { Search, MapPin, Calendar, Users, ChevronDown, AtSign, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -124,41 +124,34 @@ export function SearchHeaderImproved() {
   const canShowGuests = canShowCheckOut && checkOut !== undefined
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-gray-800/90 border border-blue-400/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm rounded-2xl p-3">
+    <div className="w-full max-w-4xl mx-auto relative" style={{ zIndex: 1000 }}>
+      <div className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm rounded-2xl p-3">
         <div className="flex items-center gap-2 flex-wrap">
           {/* Location - Always visible */}
           <div className="flex-1 min-w-[200px] relative" ref={searchContainerRef}>
             {showUserSearch ? (
-              <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-500 w-4 h-4" />
+              <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary w-4 h-4 z-10" />
             ) : (
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
             )}
             <Input
               placeholder={showUserSearch ? "Search users..." : "Where are you going?"}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="pl-10 h-12 border-0 bg-gray-700/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:border-blue-400"
+              className="pl-10 h-12 border-0 bg-muted/30 dark:bg-muted/20 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
             />
-            {showUserSearch && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800/95 border border-blue-400/30 rounded-lg shadow-lg shadow-blue-500/20 backdrop-blur-sm max-h-64 overflow-y-auto z-50">
-                {loadingUsers && (
-                  <div className="p-4 text-center text-sm text-gray-400">
-                    Loading...
-                  </div>
-                )}
-                {!loadingUsers && searchUsers.length === 0 && location.length > 1 && (
-                  <div className="p-4 text-center text-sm text-gray-400">
-                    No users found
-                  </div>
-                )}
+            {showUserSearch && searchUsers.length > 0 && (
+              <div 
+                className="absolute top-full left-0 right-0 mt-2 bg-card border border-primary/30 rounded-lg shadow-2xl backdrop-blur-sm max-h-64 overflow-y-auto"
+                style={{ zIndex: 99999 }}
+              >
                 {searchUsers.map((user) => (
                   <button
                     key={user.id}
                     onClick={() => handleSelectUser(user)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-700/50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors text-left border-b border-border/50 last:border-0"
                   >
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
                       {user.image || user.profilePictureUrl ? (
                         <Image
                           src={user.image || user.profilePictureUrl || ''}
@@ -169,17 +162,17 @@ export function SearchHeaderImproved() {
                           unoptimized
                         />
                       ) : (
-                        <span className="text-lg font-semibold text-white">
+                        <span className="text-lg font-semibold text-foreground">
                           {(user.name || user.fullName || 'U')[0].toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-white truncate">
+                      <div className="text-sm font-medium text-foreground truncate">
                         {user.fullName || user.name || 'User'}
                       </div>
                       {user.username && (
-                        <div className="text-xs text-gray-400 truncate">
+                        <div className="text-xs text-muted-foreground truncate">
                           @{user.username}
                         </div>
                       )}
@@ -188,25 +181,57 @@ export function SearchHeaderImproved() {
                 ))}
               </div>
             )}
+            {showUserSearch && loadingUsers && (
+              <div 
+                className="absolute top-full left-0 right-0 mt-2 bg-card border border-primary/30 rounded-lg shadow-2xl backdrop-blur-sm p-4"
+                style={{ zIndex: 99999 }}
+              >
+                <div className="text-center text-sm text-muted-foreground">
+                  Loading...
+                </div>
+              </div>
+            )}
+            {showUserSearch && !loadingUsers && searchUsers.length === 0 && location.length > 1 && (
+              <div 
+                className="absolute top-full left-0 right-0 mt-2 bg-card border border-primary/30 rounded-lg shadow-2xl backdrop-blur-sm p-4"
+                style={{ zIndex: 99999 }}
+              >
+                <div className="text-center text-sm text-muted-foreground">
+                  No users found
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Search Button - Small circular button with paper plane icon */}
+          {!showUserSearch && (
+            <Button 
+              onClick={handleSearch} 
+              size="icon"
+              className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-white transition-all shadow-lg hover:shadow-xl flex-shrink-0"
+              aria-label="Search"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          )}
 
           {/* Divider - appears after location */}
           {canShowCheckIn && (
             <>
-              <div className="h-8 w-px bg-gray-600 hidden sm:block" />
+              <div className="h-8 w-px bg-border hidden sm:block" />
               
               {/* Check-in */}
               <Popover open={openPopover === 'checkIn'} onOpenChange={(open) => setOpenPopover(open ? 'checkIn' : null)}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="justify-start text-left font-normal h-12 px-3 bg-gray-700/50 hover:bg-gray-700/70 border-0 min-w-[140px] text-white"
+                    className="justify-start text-left font-normal h-12 px-3 bg-muted/30 dark:bg-muted/20 hover:bg-muted/50 dark:hover:bg-muted/30 border-0 min-w-[140px] text-foreground"
                   >
-                    <Calendar className="mr-2 h-4 w-4 text-gray-400" />
-                    <span className={checkIn ? 'text-white' : 'text-gray-400'}>
+                    <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <span className={checkIn ? 'text-foreground' : 'text-muted-foreground'}>
                       {checkIn ? format(checkIn, 'MMM dd') : 'Check-in'}
                     </span>
-                    <ChevronDown className="ml-auto h-4 w-4 text-gray-400" />
+                    <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -269,13 +294,13 @@ export function SearchHeaderImproved() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="justify-start text-left font-normal h-12 px-3 bg-gray-700/50 hover:bg-gray-700/70 border-0 text-white"
+                    className="justify-start text-left font-normal h-12 px-3 bg-muted/30 dark:bg-muted/20 hover:bg-muted/50 dark:hover:bg-muted/30 border-0 text-foreground"
                   >
-                    <Users className="mr-2 h-4 w-4 text-gray-400" />
-                    <span className="text-white">
+                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <span className="text-foreground">
                       {guests} {guests === 1 ? 'guest' : 'guests'}
                     </span>
-                    <ChevronDown className="ml-auto h-4 w-4 text-gray-400" />
+                    <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-4" align="start">
@@ -304,7 +329,7 @@ export function SearchHeaderImproved() {
                     </div>
                     <Button 
                       onClick={() => setOpenPopover(null)} 
-                      className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-xl"
+                      className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-xl"
                     >
                       Done
                     </Button>
@@ -312,17 +337,6 @@ export function SearchHeaderImproved() {
                 </PopoverContent>
               </Popover>
             </>
-          )}
-
-          {/* Search Button */}
-          {!showUserSearch && (
-            <Button 
-              onClick={handleSearch} 
-              className="h-12 px-6 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-xl flex-shrink-0"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Search
-            </Button>
           )}
         </div>
       </div>

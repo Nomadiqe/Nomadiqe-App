@@ -33,16 +33,16 @@ export function NotificationsDropdown() {
     const viewed = localStorage.getItem('viewedNotifications')
     if (viewed) {
       try {
-        const viewedSet = new Set(JSON.parse(viewed))
+        const viewedSet = new Set<string>(JSON.parse(viewed) as string[])
         setViewedNotifications(viewedSet)
         // Fetch notifications after loading viewed ones
         fetchNotifications(viewedSet)
       } catch (e) {
         console.error('Error loading viewed notifications:', e)
-        fetchNotifications(new Set())
+        fetchNotifications(new Set<string>())
       }
     } else {
-      fetchNotifications(new Set())
+      fetchNotifications(new Set<string>())
     }
   }, [])
 

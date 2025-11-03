@@ -405,7 +405,7 @@ async function upsertData() {
 
     // Step 8: Upsert conversations
     console.log('💬 Step 8: Upserting conversations...');
-    let lucaConversations = [];
+    let lucaConversations: any[] = [];
     try {
       lucaConversations = await lucaDb.conversation.findMany();
     } catch (error: any) {
@@ -458,7 +458,7 @@ async function upsertData() {
 
     // Step 9: Upsert messages
     console.log('✉️  Step 9: Upserting messages...');
-    let lucaMessages = [];
+    let lucaMessages: any[] = [];
     try {
       lucaMessages = await lucaDb.message.findMany();
     } catch (error: any) {

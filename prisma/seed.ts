@@ -277,37 +277,72 @@ async function main() {
   })
 
   // Create sample likes
-  await prisma.like.create({
-    data: {
+  await prisma.like.upsert({
+    where: {
+      userId_propertyId: {
+        userId: traveler1.id,
+        propertyId: property1.id,
+      },
+    },
+    update: {},
+    create: {
       userId: traveler1.id,
       propertyId: property1.id,
     },
   })
 
-  await prisma.like.create({
-    data: {
+  await prisma.like.upsert({
+    where: {
+      userId_propertyId: {
+        userId: traveler1.id,
+        propertyId: property2.id,
+      },
+    },
+    update: {},
+    create: {
       userId: traveler1.id,
       propertyId: property2.id,
     },
   })
 
   // Create sample follows
-  await prisma.follow.create({
-    data: {
+  await prisma.follow.upsert({
+    where: {
+      followerId_followingId: {
+        followerId: traveler1.id,
+        followingId: host1.id,
+      },
+    },
+    update: {},
+    create: {
       followerId: traveler1.id,
       followingId: host1.id,
     },
   })
 
-  await prisma.follow.create({
-    data: {
+  await prisma.follow.upsert({
+    where: {
+      followerId_followingId: {
+        followerId: traveler2.id,
+        followingId: host2.id,
+      },
+    },
+    update: {},
+    create: {
       followerId: traveler2.id,
       followingId: host2.id,
     },
   })
 
-  await prisma.follow.create({
-    data: {
+  await prisma.follow.upsert({
+    where: {
+      followerId_followingId: {
+        followerId: traveler1.id,
+        followingId: traveler2.id,
+      },
+    },
+    update: {},
+    create: {
       followerId: traveler1.id,
       followingId: traveler2.id,
     },
@@ -363,22 +398,43 @@ async function main() {
   })
 
   // Create post likes
-  await prisma.postLike.create({
-    data: {
+  await prisma.postLike.upsert({
+    where: {
+      userId_postId: {
+        userId: traveler2.id,
+        postId: post1.id,
+      },
+    },
+    update: {},
+    create: {
       userId: traveler2.id,
       postId: post1.id,
     },
   })
 
-  await prisma.postLike.create({
-    data: {
+  await prisma.postLike.upsert({
+    where: {
+      userId_postId: {
+        userId: host1.id,
+        postId: post2.id,
+      },
+    },
+    update: {},
+    create: {
       userId: host1.id,
       postId: post2.id,
     },
   })
 
-  await prisma.postLike.create({
-    data: {
+  await prisma.postLike.upsert({
+    where: {
+      userId_postId: {
+        userId: traveler1.id,
+        postId: post3.id,
+      },
+    },
+    update: {},
+    create: {
       userId: traveler1.id,
       postId: post3.id,
     },

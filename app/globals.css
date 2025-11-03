@@ -3,58 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: 40 60% 98%; /* Warm arabesque white */
-  --foreground: 25 30% 20%; /* Warm dark brown text */
+  --background: 0 0% 98%; /* Light neutral white */
+  --foreground: 240 8% 25%; /* Dark gray text */
   --card: 0 0% 100%; /* Pure white cards */
-  --card-foreground: 25 30% 20%; /* Warm dark brown card text */
+  --card-foreground: 240 8% 25%; /* Dark gray card text */
   --popover: 0 0% 100%; /* Pure white popovers */
-  --popover-foreground: 25 30% 20%; /* Warm dark brown popover text */
-  --primary: 200 95% 45%; /* Azure Mediterranean blue */
-  --primary-foreground: 0 0% 100%; /* White text on azure */
-  --secondary: 35 45% 75%; /* Sandy tan/beige */
-  --secondary-foreground: 25 30% 20%; /* Warm dark brown on sand */
-  --muted: 40 30% 94%; /* Light warm neutral */
-  --muted-foreground: 25 15% 45%; /* Medium warm gray */
-  --accent: 15 70% 60%; /* Terracotta accent */
-  --accent-foreground: 0 0% 100%; /* White text on terracotta */
-  --destructive: 0 70% 50%; /* Coral red */
+  --popover-foreground: 240 8% 25%; /* Dark gray popover text */
+  --primary: 328 85% 55%; /* Vibrant fuchsia pink */
+  --primary-foreground: 0 0% 100%; /* White text on pink */
+  --secondary: 260 35% 35%; /* Deep purple/eggplant */
+  --secondary-foreground: 0 0% 100%; /* White text on purple */
+  --muted: 240 5% 90%; /* Light neutral gray */
+  --muted-foreground: 240 8% 45%; /* Medium gray */
+  --accent: 328 85% 55%; /* Fuchsia pink accent */
+  --accent-foreground: 0 0% 100%; /* White text on accent */
+  --destructive: 0 70% 50%; /* Red */
   --destructive-foreground: 0 0% 100%; /* White text on destructive */
-  --border: 40 25% 88%; /* Soft warm border */
+  --border: 240 5% 88%; /* Soft neutral border */
   --input: 0 0% 100%; /* White input backgrounds */
-  --ring: 200 95% 45%; /* Azure ring color */
-  --chart-1: 200 90% 75%; /* Light azure */
-  --chart-2: 200 95% 60%; /* Medium azure */
-  --chart-3: 200 95% 45%; /* Deep azure */
-  --chart-4: 35 45% 65%; /* Sandy tan */
-  --chart-5: 15 70% 60%; /* Terracotta */
+  --ring: 328 85% 55%; /* Fuchsia pink ring */
+  --chart-1: 328 80% 70%; /* Light pink */
+  --chart-2: 328 85% 60%; /* Medium pink */
+  --chart-3: 328 85% 50%; /* Deep pink */
+  --chart-4: 260 30% 40%; /* Medium purple */
+  --chart-5: 260 35% 30%; /* Deep purple */
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 220 20% 12%; /* Deep night blue-gray */
-  --foreground: 40 50% 95%; /* Warm off-white text */
-  --card: 220 18% 16%; /* Slightly lighter card */
-  --card-foreground: 40 50% 95%; /* Warm off-white card text */
-  --popover: 220 18% 16%; /* Card-like popover */
-  --popover-foreground: 40 50% 95%; /* Warm off-white popover text */
-  --primary: 200 90% 55%; /* Bright azure blue */
-  --primary-foreground: 220 20% 12%; /* Dark text on azure */
-  --secondary: 35 35% 45%; /* Muted sandy tan */
-  --secondary-foreground: 40 50% 95%; /* Light text on sand */
-  --muted: 220 15% 20%; /* Dark warm muted */
-  --muted-foreground: 40 25% 70%; /* Light warm muted text */
-  --accent: 15 60% 55%; /* Muted terracotta */
-  --accent-foreground: 40 50% 95%; /* Light text on terracotta */
-  --destructive: 0 60% 45%; /* Deep coral red */
-  --destructive-foreground: 40 50% 95%; /* Light text on destructive */
-  --border: 220 15% 25%; /* Subtle warm border */
-  --input: 220 18% 18%; /* Dark input */
-  --ring: 200 90% 55%; /* Bright azure ring */
-  --chart-1: 200 80% 60%; /* Bright azure */
-  --chart-2: 200 85% 50%; /* Medium azure */
-  --chart-3: 200 90% 40%; /* Deep azure */
-  --chart-4: 35 35% 50%; /* Sandy tan */
-  --chart-5: 15 60% 50%; /* Terracotta */
+  --background: 260 40% 15%; /* Deep purple/eggplant background */
+  --foreground: 0 0% 98%; /* White text */
+  --card: 260 35% 20%; /* Slightly lighter purple card */
+  --card-foreground: 0 0% 98%; /* White card text */
+  --popover: 260 35% 20%; /* Card-like popover */
+  --popover-foreground: 0 0% 98%; /* White popover text */
+  --primary: 328 85% 60%; /* Bright fuchsia pink */
+  --primary-foreground: 0 0% 100%; /* White text on pink */
+  --secondary: 260 30% 30%; /* Medium purple */
+  --secondary-foreground: 0 0% 98%; /* White text on purple */
+  --muted: 260 30% 25%; /* Dark purple muted */
+  --muted-foreground: 240 5% 70%; /* Light gray muted text */
+  --accent: 328 85% 60%; /* Bright fuchsia pink accent */
+  --accent-foreground: 0 0% 100%; /* White text on accent */
+  --destructive: 0 60% 50%; /* Red */
+  --destructive-foreground: 0 0% 98%; /* White text on destructive */
+  --border: 260 25% 30%; /* Purple border */
+  --input: 260 35% 18%; /* Dark purple input */
+  --ring: 328 85% 60%; /* Bright fuchsia pink ring */
+  --chart-1: 328 80% 70%; /* Light pink */
+  --chart-2: 328 85% 60%; /* Medium pink */
+  --chart-3: 328 85% 50%; /* Deep pink */
+  --chart-4: 260 30% 40%; /* Medium purple */
+  --chart-5: 260 35% 30%; /* Deep purple */
 }
 
 
@@ -64,9 +64,15 @@
   }
   body {
     @apply bg-background text-foreground overflow-x-hidden;
+    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
   }
   html {
     @apply overflow-x-hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -131,23 +137,23 @@
 
 /* Brand gradient backgrounds */
 .nomadiqe-gradient-bg {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%);
 }
 
 .dark .nomadiqe-gradient-bg {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
-  opacity: 0.9;
+  background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%);
+  opacity: 0.95;
 }
 
 .nomadiqe-gradient-text {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .nomadiqe-gradient-card {
-  background: linear-gradient(135deg, hsl(var(--muted)) 0%, hsl(var(--card)) 100%);
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
   border: 1px solid hsl(var(--border));
 }
 
@@ -233,4 +239,70 @@
 .dark .leaflet-popup-content-wrapper,
 .dark .leaflet-popup-tip {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3) !important;
+}
+
+/* Background Gradient Animation */
+@keyframes first {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes second {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes third {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fourth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fifth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-first {
+  animation: first 30s linear infinite;
+}
+
+.animate-second {
+  animation: second 20s linear infinite;
+}
+
+.animate-third {
+  animation: third 40s linear infinite;
+}
+
+.animate-fourth {
+  animation: fourth 25s linear infinite;
+}
+
+.animate-fifth {
+  animation: fifth 35s linear infinite;
 }

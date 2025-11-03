@@ -81,13 +81,13 @@ export default function SignInPage() {
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+            <button 
+              onClick={() => router.back()}
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home
-            </Link>
+              Back
+            </button>
             <div className="flex justify-center mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">N</span>
@@ -218,6 +218,11 @@ export default function SignInPage() {
                     <Eye className="h-4 w-4 text-muted-foreground" />
                   )}
                 </button>
+              </div>
+              <div className="mt-2 text-right">
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot your password?
+                </Link>
               </div>
             </div>
 

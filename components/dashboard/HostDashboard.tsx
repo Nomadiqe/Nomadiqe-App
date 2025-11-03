@@ -32,6 +32,7 @@ import {
 import Link from 'next/link'
 import PointsDisplay from '@/components/points/PointsDisplay'
 import DailyCheckIn from '@/components/points/DailyCheckIn'
+import { ComingSoonDialog } from '@/components/ui/coming-soon-dialog'
 
 interface HostDashboardProps {
   user: any // User with hostProfile and properties
@@ -39,6 +40,7 @@ interface HostDashboardProps {
 
 export default function HostDashboard({ user }: HostDashboardProps) {
   const [copiedReferral, setCopiedReferral] = useState(false)
+  const [comingSoonOpen, setComingSoonOpen] = useState(false)
   
   const hostProfile = user.hostProfile
   const properties = user.properties || []
@@ -94,33 +96,8 @@ export default function HostDashboard({ user }: HostDashboardProps) {
       {/* Header */}
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, {user.fullName || user.name}! 👋
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {isNewHost ? 'Thanks for joining as a host! Here\'s your dashboard.' : 'Manage your properties and bookings'}
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" asChild>
-                <Link href="/profile">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link href="/host/create-property">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Property
-                </Link>
-              </Button>
-            </div>
-          </div>
-
           {/* Points and Daily Check-in */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 pt-4 border-t border-border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-3">
               <PointsDisplay />
               <DailyCheckIn />
@@ -274,10 +251,12 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </div>
                   ))}
                   
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/dashboard/host/bookings">
-                      View All Bookings
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    View All Bookings
                   </Button>
                 </CardContent>
               </Card>
@@ -320,10 +299,12 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </div>
                   ))}
                   
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/dashboard/host/collaborations">
-                      View All Requests
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    View All Requests
                   </Button>
                 </CardContent>
               </Card>
@@ -336,14 +317,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 <CardDescription>Common tasks and shortcuts</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
-                    <Link href="/host/create-property">
-                      <Plus className="h-6 w-6" />
-                      <span className="text-sm">Add Property</span>
-                    </Link>
-                  </Button>
-                  
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
                     <Link href="/host/calendar">
                       <Calendar className="h-6 w-6" />
@@ -351,18 +325,22 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     </Link>
                   </Button>
                   
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
-                    <Link href="/host/pricing">
-                      <Euro className="h-6 w-6" />
-                      <span className="text-sm">Update Pricing</span>
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col items-center justify-center space-y-2" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <Euro className="h-6 w-6" />
+                    <span className="text-sm">Update Pricing</span>
                   </Button>
                   
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
-                    <Link href="/host/analytics">
-                      <TrendingUp className="h-6 w-6" />
-                      <span className="text-sm">View Analytics</span>
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col items-center justify-center space-y-2" 
+                    onClick={() => setComingSoonOpen(true)}
+                  >
+                    <TrendingUp className="h-6 w-6" />
+                    <span className="text-sm">View Analytics</span>
                   </Button>
                 </div>
               </CardContent>
@@ -447,17 +425,23 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       </div>
 
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="flex-1" asChild>
-                          <Link href={`/host/property/${property.id}`}>
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1" 
+                          onClick={() => setComingSoonOpen(true)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
                         </Button>
-                        <Button variant="outline" size="sm" className="flex-1" asChild>
-                          <Link href={`/host/property/${property.id}/edit`}>
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1" 
+                          onClick={() => setComingSoonOpen(true)}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
                         </Button>
                       </div>
                     </CardContent>
@@ -670,6 +654,11 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ComingSoonDialog 
+        open={comingSoonOpen} 
+        onOpenChange={setComingSoonOpen}
+      />
     </div>
   )
 }

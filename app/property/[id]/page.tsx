@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
+import { BackButton } from "@/components/back-button"
 
 interface PropertyPageProps {
   params: {
@@ -69,12 +70,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     <div className="min-h-screen bg-background">
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <Link href="/">
-          <Button variant="ghost" size="sm">
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Back to Feed
-          </Button>
-        </Link>
+        <BackButton label="Back" variant="ghost" size="sm" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">

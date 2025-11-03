@@ -368,6 +368,12 @@ export default function SignUpPage() {
             </Link>
           </div>
 
+          <div className="mt-2 text-center text-xs">
+            <Link href="/auth/forgot-password" className="text-primary hover:underline">
+              Forgot your password?
+            </Link>
+          </div>
+
           <div className="mt-4 text-center text-xs text-muted-foreground">
             By signing up, you agree to our{' '}
             <Link href="/terms" className="text-primary hover:underline">

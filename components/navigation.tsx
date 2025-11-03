@@ -13,18 +13,23 @@ import {
   Compass,
   Shield,
   Search,
-  Plus
+  Plus,
+  Moon,
+  Sun,
+  Briefcase,
+  Globe,
+  Sparkles
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import PointsDisplay from './points/PointsDisplay'
-import DailyCheckIn from './points/DailyCheckIn'
 
 export function Navigation() {
   const { data: session } = useSession()
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   // Hide navigation on auth pages (signin, signup, etc.)
   const isAuthPage = pathname?.startsWith('/auth/')
@@ -36,36 +41,54 @@ export function Navigation() {
     await signOut({ callbackUrl: '/' })
   }
 
+  // Get the appropriate home URL based on user role
+  const getHomeHref = () => {
+    if (!session) return '/'
+    switch (session.user.role) {
+      case 'HOST':
+        return '/dashboard/host'
+      case 'GUEST':
+        return '/dashboard/guest'
+      case 'INFLUENCER':
+        return '/dashboard/influencer'
+      case 'TRAVELER':
+      default:
+        return '/dashboard'
+    }
+  }
+
   // Desktop navigation items - filter based on authentication
   const navItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
-  // Mobile navigation items - filter based on authentication
+  // Mobile navigation items - order: Home, Explore, [+], Search, Profile
   const mobileNavItems = session ? [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ] : [
-    { href: '/', label: 'Discover', icon: Compass },
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/search', label: 'Explore', icon: Globe },
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
-    { href: '/search', label: 'Explore', icon: Search },
+    { href: '/ai-search', label: 'Search', icon: Search },
   ]
 
   return (
     <>
       {/* Desktop Header Navigation */}
-      <nav className="hidden md:block bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+      <nav className="hidden md:block bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -74,11 +97,11 @@ export function Navigation() {
               <img
                 src="/nomadiqe-logo-transparent.png"
                 alt="Nomadiqe Logo"
-                className="w-8 h-auto object-contain"
+                className="w-8 h-auto object-contain brightness-0 invert"
               />
-              <span className="text-xl font-bold text-primary">
+              <span className="text-xl font-bold text-white">
                 Nomadiqe
-                <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
+                <sup className="text-[0.5em] ml-1 font-semibold text-white/70">BETA</sup>
               </span>
             </Link>
 
@@ -94,8 +117,8 @@ export function Navigation() {
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
                       isActive
-                        ? "text-primary bg-primary/10"
-                        : "text-foreground hover:text-primary hover:bg-accent"
+                        ? "text-primary bg-primary/20"
+                        : "text-white hover:text-primary hover:bg-white/10"
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -106,7 +129,7 @@ export function Navigation() {
               {session && (
                 <Link
                   href="/create-post"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-white hover:bg-primary/90"
                 >
                   <Plus className="w-5 h-5" />
                   <span className="font-medium">Create Post</span>
@@ -118,9 +141,8 @@ export function Navigation() {
             <div className="flex items-center space-x-3">
               {session ? (
                 <>
-                  <PointsDisplay />
                   <div className="relative group">
-                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:bg-white/10">
                       <Menu className="w-4 h-4" />
                     </Button>
 
@@ -148,10 +170,10 @@ export function Navigation() {
                 </>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" asChild>
+                  <Button variant="ghost" asChild className="text-white hover:bg-white/10">
                     <Link href="/auth/signin">Sign In</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
                     <Link href="/auth/signup">Sign Up</Link>
                   </Button>
                 </div>
@@ -236,30 +258,34 @@ export function Navigation() {
       </nav>
 
       {/* Mobile Top Bar with Logo and Menu */}
-      <nav className="md:hidden bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-40" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
-        <div className="flex justify-between items-center h-16 px-4">
+      <nav className="md:hidden bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-40 w-full overflow-x-hidden" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="flex justify-between items-center h-16 px-3 w-full max-w-full">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-1.5 flex-shrink min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/nomadiqe-logo-transparent.png"
               alt="Nomadiqe Logo"
-              className="w-8 h-auto object-contain"
+              className="w-7 h-auto object-contain flex-shrink-0 brightness-0 invert"
             />
-            <span className="text-xl font-bold text-primary">Nomadiqe</span>
+            <span className="text-lg font-bold text-white truncate">
+              Nomadiqe
+              <sup className="text-[0.45em] ml-0.5 font-semibold text-white/70">BETA</sup>
+            </span>
           </Link>
 
           {/* Mobile Right Menu */}
-          <div className="flex items-center space-x-2">
-            {session && (
-              <div className="scale-90 origin-right">
-                <PointsDisplay />
+          <div className="flex items-center space-x-1.5 flex-shrink-0">
+            {session?.user?.role && (
+              <div className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase shadow-md whitespace-nowrap">
+                {session.user.role === 'INFLUENCER' ? 'Creator' : session.user.role}
               </div>
             )}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex-shrink-0 text-white hover:bg-white/10"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -272,44 +298,111 @@ export function Navigation() {
 
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="border-t border-border py-3">
+          <div className="border-t border-white/20 py-3 bg-secondary/95">
             <div className="flex flex-col space-y-1 px-2">
               {session ? (
                 <>
                   {session.user?.role === 'ADMIN' && (
                     <Link
                       href="/admin"
-                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent flex items-center"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Shield className="h-4 w-4 mr-3" />
                       Admin
                     </Link>
                   )}
+                  {session.user?.role === 'HOST' ? (
+                    <Link
+                      href="/host/find-influencers"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Sparkles className="h-4 w-4 mr-3" />
+                      KOL&BED Creators
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/host"
+                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Briefcase className="h-4 w-4 mr-3" />
+                      Host Mode
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setTheme(theme === 'light' ? 'dark' : 'light')
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
+                  >
+                    {theme === 'light' ? (
+                      <>
+                        <Moon className="h-4 w-4 mr-3" />
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="h-4 w-4 mr-3" />
+                        Light Mode
+                      </>
+                    )}
+                  </button>
                   <button
                     onClick={() => {
                       handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-accent w-full flex items-center"
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
                   >
                     <LogOut className="h-4 w-4 mr-3" />
                     Sign Out
                   </button>
                 </>
               ) : (
-                <div className="flex flex-col space-y-2 pt-2">
-                  <Button variant="outline" asChild className="w-full">
-                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button asChild className="w-full">
-                    <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign Up
-                    </Link>
-                  </Button>
-                </div>
+                <>
+                  <Link
+                    href="/host"
+                    className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Briefcase className="h-4 w-4 mr-3" />
+                    Host Mode
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setTheme(theme === 'light' ? 'dark' : 'light')
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
+                  >
+                    {theme === 'light' ? (
+                      <>
+                        <Moon className="h-4 w-4 mr-3" />
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="h-4 w-4 mr-3" />
+                        Light Mode
+                      </>
+                    )}
+                  </button>
+                  <div className="flex flex-col space-y-2 pt-2">
+                    <Button variant="outline" asChild className="w-full border-white/30 text-white hover:bg-white/10">
+                      <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button asChild className="w-full bg-primary hover:bg-primary/90">
+                      <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>

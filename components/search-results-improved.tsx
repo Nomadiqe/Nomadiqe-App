@@ -78,21 +78,21 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-card dark:bg-secondary/90 border border-primary/30 text-foreground hover:bg-muted/80"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
                 {activeFiltersCount > 0 && (
-                  <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                  <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary">
                     {activeFiltersCount}
                   </Badge>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full sm:w-[400px]">
+            <SheetContent side="left" className="w-full sm:w-[400px] bg-card dark:bg-secondary/95 border-primary/30 backdrop-blur-sm">
               <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
-                <SheetDescription>
+                <SheetTitle className="text-foreground">Filters</SheetTitle>
+                <SheetDescription className="text-muted-foreground">
                   Refine your search with these filters
                 </SheetDescription>
               </SheetHeader>
@@ -102,7 +102,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
             </SheetContent>
           </Sheet>
 
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-foreground">
             {properties.length === 0 ? 'No properties found' : `${properties.length} ${properties.length === 1 ? 'property' : 'properties'}`}
           </h2>
         </div>
@@ -112,7 +112,11 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
             variant={viewMode === 'grid' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('grid')}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              viewMode === 'grid' 
+                ? 'bg-primary hover:bg-primary/90 text-white' 
+                : 'bg-card dark:bg-secondary/90 border border-primary/30 text-foreground hover:bg-muted/80'
+            }`}
           >
             <Grid3x3 className="w-4 h-4" />
             List
@@ -121,7 +125,11 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
             variant={viewMode === 'split' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('split')}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              viewMode === 'split' 
+                ? 'bg-primary hover:bg-primary/90 text-white' 
+                : 'bg-card dark:bg-secondary/90 border border-primary/30 text-foreground hover:bg-muted/80'
+            }`}
             disabled={validMapProperties.length === 0}
           >
             <Map className="w-4 h-4" />
@@ -132,32 +140,32 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
 
       {/* Results - Takes remaining height */}
       {properties.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg">
+        <div className="flex-1 flex items-center justify-center bg-card/50 dark:bg-secondary/50 border border-primary/30 rounded-xl backdrop-blur-sm">
           <div className="text-center">
-            <p className="text-muted-foreground text-lg mb-2">No properties match your filters</p>
+            <p className="text-foreground text-lg mb-2">No properties match your filters</p>
             <p className="text-sm text-muted-foreground">Try adjusting your search criteria</p>
           </div>
         </div>
       ) : (
         <>
           {/* Mobile View - Map with controls or List */}
-          <div className="sm:hidden flex-1 relative">
+          <div className="sm:hidden flex-1 relative overflow-hidden">
             {!isMobileListView ? (
               <>
                 {/* Full-height Map */}
-                <div className="absolute inset-0 rounded-lg overflow-hidden border border-border">
+                <div className="absolute inset-0 rounded-lg overflow-hidden border border-primary/30 shadow-lg shadow-primary/20">
                   <PropertyMap properties={properties} />
                 </div>
 
                 {/* Floating Controls Overlay */}
                 <div className="absolute top-3 left-3 right-3 z-[1000] flex gap-2">
                   {/* Search Input */}
-                  <div className="flex-1 bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg">
+                  <div className="flex-1 bg-card/95 dark:bg-secondary/95 backdrop-blur-sm border border-primary/30 rounded-lg shadow-lg shadow-primary/20">
                     <input
                       type="text"
                       placeholder="Search location..."
                       defaultValue={searchParams.get('location') || ''}
-                      className="w-full px-4 py-2.5 bg-transparent border-none outline-none text-sm"
+                      className="w-full px-4 py-2.5 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           const params = new URLSearchParams(searchParams.toString())
@@ -173,21 +181,21 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                     <SheetTrigger asChild>
                       <Button
                         size="icon"
-                        className="h-11 w-11 shadow-lg bg-background/95 backdrop-blur-sm hover:bg-background"
+                        className="h-11 w-11 shadow-lg bg-card/95 dark:bg-secondary/95 backdrop-blur-sm border border-primary/30 hover:bg-muted/80 text-foreground"
                         variant="outline"
                       >
                         <SlidersHorizontal className="w-5 h-5" />
                         {activeFiltersCount > 0 && (
-                          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary">
                             {activeFiltersCount}
                           </Badge>
                         )}
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[85vh]">
+                    <SheetContent side="bottom" className="h-[85vh] bg-card dark:bg-secondary/95 border-primary/30 backdrop-blur-sm">
                       <SheetHeader>
-                        <SheetTitle>Filters</SheetTitle>
-                        <SheetDescription>
+                        <SheetTitle className="text-foreground">Filters</SheetTitle>
+                        <SheetDescription className="text-muted-foreground">
                           Refine your search with these filters
                         </SheetDescription>
                       </SheetHeader>
@@ -198,22 +206,28 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                   </Sheet>
                 </div>
 
+                {/* Gradient fade to indicate button */}
+                <div className="absolute bottom-16 left-0 right-0 h-24 bg-gradient-to-t from-background/30 to-transparent pointer-events-none z-[999]" />
+
                 {/* Toggle to List View Button */}
-                <div className="absolute bottom-[68px] left-1/2 -translate-x-1/2 z-[1000]">
+                <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                   <Button
                     onClick={() => setIsMobileListView(true)}
-                    className="shadow-lg"
+                    className="shadow-2xl bg-primary hover:bg-primary/90 text-white px-8 py-3 text-base font-bold rounded-full border-2 border-white/20"
                     variant="default"
                   >
-                    <Grid3x3 className="w-4 h-4 mr-2" />
-                    List ({properties.length})
+                    <Grid3x3 className="w-5 h-5 mr-2" />
+                    Show List ({properties.length})
                   </Button>
                 </div>
               </>
             ) : (
               <>
-                {/* List View */}
-                <div className="h-full overflow-y-auto">
+                {/* List View - Scrollable */}
+                <div 
+                  className="absolute inset-0 overflow-y-auto px-3 pt-3 scroll-smooth" 
+                  style={{ paddingBottom: '140px' }}
+                >
                   <div className="grid gap-4">
                     {properties.map((property) => (
                       <PropertyCard
@@ -233,15 +247,18 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                   </div>
                 </div>
 
-                {/* Toggle to Map View Button */}
-                <div className="absolute bottom-[68px] left-1/2 -translate-x-1/2 z-[1000]">
+                {/* Scroll indicator gradient at bottom */}
+                <div className="absolute bottom-16 left-0 right-0 h-24 bg-gradient-to-t from-background/50 to-transparent pointer-events-none z-[999]" />
+
+                {/* Toggle to Map View Button - Fixed at bottom */}
+                <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                   <Button
                     onClick={() => setIsMobileListView(false)}
-                    className="shadow-lg"
+                    className="shadow-2xl bg-primary hover:bg-primary/90 text-white px-8 py-3 text-base font-bold rounded-full border-2 border-white/20"
                     variant="default"
                   >
-                    <Map className="w-4 h-4 mr-2" />
-                    Map
+                    <Map className="w-5 h-5 mr-2" />
+                    Show Map
                   </Button>
                 </div>
               </>
@@ -249,9 +266,9 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
           </div>
 
           {/* Desktop View - Grid or Split */}
-          <div className="hidden sm:block flex-1">
+          <div className="hidden sm:block flex-1 overflow-hidden">
             {viewMode === 'grid' ? (
-              <div className="h-full overflow-y-auto">
+              <div className="h-full overflow-y-auto pb-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {properties.map((property) => (
                     <PropertyCard
@@ -270,14 +287,14 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 </div>
               </div>
             ) : (
-              <div className="flex gap-6 h-full overflow-hidden">
+              <div className="flex gap-6 h-full">
                 {/* Map - 50% */}
-                <div className="w-1/2 rounded-lg overflow-hidden border border-border">
+                <div className="w-1/2 rounded-lg overflow-hidden border border-primary/30 shadow-lg shadow-primary/20 h-full">
                   <PropertyMap properties={properties} />
                 </div>
 
-                {/* List - 50% */}
-                <div className="w-1/2 overflow-y-auto">
+                {/* List - 50% - Scrollable */}
+                <div className="w-1/2 h-full overflow-y-auto pb-6">
                   <div className="grid gap-4 pr-2">
                     {properties.map((property) => (
                       <PropertyCard

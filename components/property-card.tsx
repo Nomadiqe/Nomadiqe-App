@@ -34,7 +34,7 @@ export function PropertyCard({
   // List variant - horizontal layout with image on left
   if (variant === "list") {
     return (
-      <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 max-h-[180px]">
+      <Card className="group overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] max-h-[180px] text-gray-900">
         <Link href={`/property/${id}`}>
           <div className="flex h-[180px]">
             {/* Image - Left side */}
@@ -63,7 +63,7 @@ export function PropertyCard({
             <div className="flex-1 p-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">
+                  <h3 className="font-bold text-base group-hover:text-primary transition-colors line-clamp-1" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
                     {title}
                   </h3>
                   <Button
@@ -94,7 +94,7 @@ export function PropertyCard({
 
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-lg font-bold">{formatPrice(price, currency)}</span>
+                  <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{formatPrice(price, currency)}</span>
                   <span className="text-sm text-muted-foreground"> / night</span>
                 </div>
                 <Button size="sm" variant="default">
@@ -110,7 +110,7 @@ export function PropertyCard({
 
   // Grid variant - original vertical layout
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <Card className="group overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] text-gray-900">
       <Link href={`/property/${id}`}>
         <div className="relative aspect-[4/3] overflow-hidden">
           {image ? (
@@ -147,7 +147,7 @@ export function PropertyCard({
 
       <CardContent className="p-4">
         <Link href={`/property/${id}`}>
-          <h3 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors line-clamp-1">
+          <h3 className="font-bold text-base mb-2 group-hover:text-primary transition-colors line-clamp-1" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
             {title}
           </h3>
         </Link>
@@ -170,7 +170,7 @@ export function PropertyCard({
 
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-lg font-bold">{formatPrice(price, currency)}</span>
+            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>{formatPrice(price, currency)}</span>
             <span className="text-sm text-muted-foreground"> / night</span>
           </div>
           <Button size="sm" variant="default">

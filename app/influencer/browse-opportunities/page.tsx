@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { BackButton } from '@/components/back-button'
 import {
   MapPin,
   Calendar,
@@ -36,12 +37,7 @@ export default async function BrowseOpportunitiesPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard/influencer">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
-                </Link>
-              </Button>
+              <BackButton label="Back" variant="ghost" size="sm" icon="arrow" />
               <div>
                 <h1 className="text-2xl font-bold">Browse Collaboration Opportunities</h1>
                 <p className="text-muted-foreground">Discover properties looking for content creators</p>

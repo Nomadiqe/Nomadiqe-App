@@ -128,9 +128,14 @@ export default async function SearchPage({
 }) {
   const properties = await getProperties(searchParams)
   return (
-    <div className="h-[calc(100vh-8rem)] sm:min-h-screen flex flex-col bg-background">
+    <div className="h-[calc(100vh-8rem)] sm:min-h-screen flex flex-col relative overflow-hidden">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
+
       {/* Search Header - Desktop only */}
-      <section className="hidden sm:block bg-gradient-to-br from-nomadiqe-600/5 via-purple-500/5 to-pink-500/5 border-b border-border py-6 shrink-0">
+      <section className="hidden sm:block relative py-6 shrink-0">
         <div className="max-w-[1600px] mx-auto px-4">
           {/* Search Bar */}
           <SearchHeaderImproved />
@@ -138,7 +143,7 @@ export default async function SearchPage({
       </section>
 
       {/* Main Content - Takes remaining height, accounting for mobile nav */}
-      <section className="flex-1 overflow-hidden sm:px-4 sm:py-4">
+      <section className="flex-1 overflow-hidden sm:px-4 sm:py-4 relative">
         <div className="max-w-[1600px] mx-auto h-full">
           {/* Search Results with Integrated Filters */}
           <SearchResultsImproved properties={properties} />

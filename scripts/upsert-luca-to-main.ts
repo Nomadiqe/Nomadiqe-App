@@ -133,6 +133,8 @@ async function upsertData() {
               ...profile,
               id: undefined as any,
               userId: mappedUserId,
+              standardOffer: profile.standardOffer as any,
+              preferredNiches: profile.preferredNiches as any,
             }
           });
           hostStats.created++;
@@ -171,6 +173,7 @@ async function upsertData() {
               ...profile,
               id: undefined as any,
               userId: mappedUserId,
+              preferences: profile.preferences as any,
             }
           });
           travelerStats.created++;
@@ -217,6 +220,7 @@ async function upsertData() {
               ...profile,
               id: undefined as any,
               userId: mappedUserId,
+              deliverables: profile.deliverables as any,
             }
           });
           influencerStats.created++;

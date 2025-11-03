@@ -110,11 +110,13 @@ export default function MessagesPage() {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Messages</h1>
-            <Link href={`/profile/${session?.user?.id}`}>
-              <Button variant="ghost" size="sm">
-                Back
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => router.back()}
+            >
+              Back
+            </Button>
           </div>
           
           {/* Search Bar */}

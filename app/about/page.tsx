@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { FeatureCard } from '@/components/feature-card'
 import { PropertyCard } from '@/components/property-card'
 import { prisma } from '@/lib/db'
+import { BackButton } from '@/components/back-button'
 import {
   Globe,
   Shield,
@@ -360,11 +361,12 @@ export default async function AboutPage() {
                 Get Started
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-nomadiqe-900">
-              <Link href="/">
-                Back to Feed
-              </Link>
-            </Button>
+            <BackButton 
+              label="Back" 
+              variant="outline" 
+              size="lg"
+              className="border-white text-white hover:bg-white hover:text-nomadiqe-900"
+            />
           </div>
         </div>
       </section>

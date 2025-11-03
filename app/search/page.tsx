@@ -129,10 +129,10 @@ export default async function SearchPage({
   const properties = await getProperties(searchParams)
   return (
     <div className="h-[calc(100vh-8rem)] sm:min-h-screen flex flex-col relative overflow-hidden">
-      {/* Modern Gradient Background with Glow Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-300/30 via-purple-400/40 to-purple-600/50 -z-10" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -z-10" />
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
 
       {/* Search Header - Desktop only */}
       <section className="hidden sm:block relative py-6 shrink-0">

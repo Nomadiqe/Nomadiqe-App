@@ -240,3 +240,69 @@
 .dark .leaflet-popup-tip {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3) !important;
 }
+
+/* Background Gradient Animation */
+@keyframes first {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes second {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes third {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fourth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fifth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-first {
+  animation: first 30s linear infinite;
+}
+
+.animate-second {
+  animation: second 20s linear infinite;
+}
+
+.animate-third {
+  animation: third 40s linear infinite;
+}
+
+.animate-fourth {
+  animation: fourth 25s linear infinite;
+}
+
+.animate-fifth {
+  animation: fifth 35s linear infinite;
+}

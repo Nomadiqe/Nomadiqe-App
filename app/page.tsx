@@ -8,6 +8,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { SearchHeaderImproved } from '@/components/search-header-improved'
 import { NotificationsHeader } from '@/components/notifications-header'
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation'
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
@@ -68,11 +69,23 @@ export default async function HomePage() {
   }))
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      {/* Modern Gradient Background with Glow Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Gradient Background */}
+      <div className="fixed inset-0 -z-10">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="rgb(60, 20, 90)"
+          gradientBackgroundEnd="rgb(90, 30, 120)"
+          firstColor="232, 121, 249"
+          secondColor="160, 100, 255"
+          thirdColor="80, 47, 122"
+          fourthColor="232, 121, 249"
+          fifthColor="160, 100, 255"
+          pointerColor="232, 121, 249"
+          size="80%"
+          blendingValue="hard-light"
+          interactive={true}
+        />
+      </div>
 
       {/* Hero Search Section */}
       <section className="relative pt-6 pb-3 z-50">

@@ -118,7 +118,7 @@ export default function CreatePostPage() {
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
-              onClick={() => router.push('/')}
+              onClick={() => router.back()}
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="w-4 h-4" />

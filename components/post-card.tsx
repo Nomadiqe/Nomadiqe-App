@@ -232,7 +232,7 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-card via-card to-card/95 max-w-[600px] mx-auto w-full">
+    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] max-w-[600px] mx-auto w-full text-gray-900">
       <CardHeader className="pb-1.5 px-3 pt-3">
         <div className="flex items-center justify-between w-full min-w-0">
           <div className="flex items-center space-x-2 min-w-0 flex-1">

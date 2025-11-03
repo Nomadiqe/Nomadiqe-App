@@ -1,6 +1,6 @@
 "use client"
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertCircle } from 'lucide-react'
@@ -21,6 +21,7 @@ const errorMap = {
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const error = searchParams.get('error') as keyof typeof errorMap
 
   return (
@@ -29,13 +30,13 @@ export default function AuthErrorPage() {
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+            <button 
+              onClick={() => router.back()}
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home
-            </Link>
+              Back
+            </button>
             
             <div className="flex justify-center mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">

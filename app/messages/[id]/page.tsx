@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ArrowLeft, Send } from 'lucide-react'
-import Link from 'next/link'
 
 export default function ChatPage() {
   const { data: session } = useSession()
@@ -124,11 +123,13 @@ export default function ChatPage() {
       <div className="bg-card border-b border-border sticky top-0 z-10">
         <div className="px-4 py-4">
           <div className="flex items-center gap-3">
-            <Link href="/messages">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
             <Avatar className="h-10 w-10">
               <AvatarImage src={otherUser?.avatar} />
               <AvatarFallback className="bg-primary/10 text-primary">

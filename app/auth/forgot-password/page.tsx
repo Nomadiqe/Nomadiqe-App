@@ -50,7 +50,12 @@ export default function ForgotPasswordPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <Link href="/auth/signin" className="text-primary hover:underline">Back to sign in</Link>
+            <button 
+              onClick={() => router.back()} 
+              className="text-primary hover:underline cursor-pointer"
+            >
+              Back
+            </button>
           </div>
         </div>
       </div>

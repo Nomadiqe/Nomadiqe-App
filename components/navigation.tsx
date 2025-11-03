@@ -70,10 +70,7 @@ export function Navigation() {
   ]
 
   // Mobile navigation items - order: Home, Explore, [+], Search, Profile
-  const mobileNavItems = session ? [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Explore', icon: Globe },
-  ] : [
+  const mobileNavItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Explore', icon: Globe },
   ]
@@ -83,6 +80,7 @@ export function Navigation() {
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
     { href: '/ai-search', label: 'Search', icon: Search },
+    { href: '/auth/signin', label: 'Profile', icon: User },
   ]
 
   return (
@@ -210,27 +208,25 @@ export function Navigation() {
           </div>
 
           {/* Center Create Post Button */}
-          {session && (
-            <Link
-              href="/create-post"
-              className="flex items-center justify-center w-14 h-14 -mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+          <Link
+            href={session ? "/create-post" : "/auth/signin"}
+            className="flex items-center justify-center w-14 h-14 -mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </Link>
-          )}
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </Link>
 
           {/* Right Navigation Items */}
           <div className="flex items-center justify-around flex-1">

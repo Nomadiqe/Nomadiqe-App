@@ -147,7 +147,7 @@ export default function AISearchPage() {
                     AI Assistant
                     <Badge className="bg-cyan-500 text-white text-[10px] px-2">BETA</Badge>
                   </h3>
-                  <p className="text-xs text-gray-300 italic">"{currentAnswer.question}"</p>
+                  <p className="text-xs text-gray-300 italic">&ldquo;{currentAnswer.question}&rdquo;</p>
                 </div>
                 <button
                   onClick={() => setShowAnswer(false)}

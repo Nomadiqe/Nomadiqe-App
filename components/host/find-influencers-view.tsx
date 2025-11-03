@@ -343,7 +343,7 @@ export function FindInfluencersView() {
               )}
               <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-3">
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  ⚠️ <strong className="text-white">Importante:</strong> Il creatore dovrà promuovere la tua proprietà ESCLUSIVAMENTE tramite il link Nomadiqe. Ogni contenuto deve includere il link alla tua struttura sull'app.
+                  ⚠️ <strong className="text-white">Importante:</strong> Il creatore dovrà promuovere la tua proprietà ESCLUSIVAMENTE tramite il link Nomadiqe. Ogni contenuto deve includere il link alla tua struttura sull&apos;app.
                 </p>
               </div>
               <Textarea

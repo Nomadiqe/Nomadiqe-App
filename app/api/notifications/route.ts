@@ -98,7 +98,7 @@ export async function GET() {
     const notifications: any[] = []
 
     // Add unread messages
-    unreadMessages.forEach((msg) => {
+    unreadMessages.forEach((msg: any) => {
       const otherUser = msg.conversation.userAId === userId ? msg.conversation.userB : msg.conversation.userA
       notifications.push({
         id: `msg-${msg.id}`,
@@ -113,7 +113,7 @@ export async function GET() {
     })
 
     // Add likes
-    recentLikes.forEach((like) => {
+    recentLikes.forEach((like: any) => {
       notifications.push({
         id: `like-${like.id}`,
         type: 'like',
@@ -127,7 +127,7 @@ export async function GET() {
     })
 
     // Add comments
-    recentComments.forEach((comment) => {
+    recentComments.forEach((comment: any) => {
       notifications.push({
         id: `comment-${comment.id}`,
         type: 'comment',
@@ -141,7 +141,7 @@ export async function GET() {
     })
 
     // Add followers
-    recentFollowers.forEach((follow) => {
+    recentFollowers.forEach((follow: any) => {
       notifications.push({
         id: `follow-${follow.id}`,
         type: 'follow',
@@ -155,7 +155,7 @@ export async function GET() {
     })
 
     // Add point transactions
-    recentPoints.forEach((transaction) => {
+    recentPoints.forEach((transaction: any) => {
       notifications.push({
         id: `points-${transaction.id}`,
         type: 'points',
@@ -169,13 +169,13 @@ export async function GET() {
     })
 
     // Sort all notifications by createdAt (most recent first)
-    notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    notifications.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     // Limit to 20 most recent notifications
     const limitedNotifications = notifications.slice(0, 20)
 
     // Count unread notifications
-    const unreadCount = notifications.filter((n) => !n.isRead).length
+    const unreadCount = notifications.filter((n: any) => !n.isRead).length
 
     return NextResponse.json({
       notifications: limitedNotifications,

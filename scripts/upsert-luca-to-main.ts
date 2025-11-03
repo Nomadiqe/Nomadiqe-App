@@ -120,9 +120,9 @@ async function upsertData() {
               identityVerified: profile.identityVerified,
               verificationStatus: profile.verificationStatus,
               verificationDate: profile.verificationDate,
-              standardOffer: profile.standardOffer,
+              standardOffer: profile.standardOffer as any,
               minFollowerCount: profile.minFollowerCount,
-              preferredNiches: profile.preferredNiches,
+              preferredNiches: profile.preferredNiches as any,
               referralCode: profile.referralCode,
             }
           });
@@ -162,7 +162,7 @@ async function upsertData() {
         if (existing) {
           await mainDb.travelerProfile.update({
             where: { id: existing.id },
-            data: { preferences: profile.preferences }
+            data: { preferences: profile.preferences as any }
           });
           travelerStats.updated++;
         } else {
@@ -205,7 +205,7 @@ async function upsertData() {
               verificationStatus: profile.verificationStatus,
               verificationDate: profile.verificationDate,
               contentNiches: profile.contentNiches,
-              deliverables: profile.deliverables,
+              deliverables: profile.deliverables as any,
               portfolioUrl: profile.portfolioUrl,
               profileLink: profile.profileLink,
             }

@@ -231,7 +231,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               {/* Hashtags */}
               {hashtags.length > 0 && (
                 <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-gray-500 dark:text-gray-400">
-                  {hashtags.map((tag, idx) => (
+                  {hashtags.map((tag: string, idx: number) => (
                     <span key={idx}>{tag}</span>
                   ))}
                 </div>

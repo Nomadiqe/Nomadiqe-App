@@ -8,7 +8,6 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { SearchHeaderImproved } from '@/components/search-header-improved'
 import { NotificationsHeader } from '@/components/notifications-header'
-import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation'
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
@@ -69,23 +68,7 @@ export default async function HomePage() {
   }))
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Gradient Background */}
-      <div className="fixed inset-0 -z-10">
-        <BackgroundGradientAnimation
-          gradientBackgroundStart="rgb(60, 20, 90)"
-          gradientBackgroundEnd="rgb(90, 30, 120)"
-          firstColor="232, 121, 249"
-          secondColor="160, 100, 255"
-          thirdColor="80, 47, 122"
-          fourthColor="232, 121, 249"
-          fifthColor="160, 100, 255"
-          pointerColor="232, 121, 249"
-          size="80%"
-          blendingValue="hard-light"
-          interactive={true}
-        />
-      </div>
+    <div className="min-h-screen bg-background">
 
       {/* Hero Search Section */}
       <section className="relative pt-6 pb-3 z-50">
@@ -104,11 +87,11 @@ export default async function HomePage() {
         <div className="max-w-[600px] mx-auto space-y-6">
           {/* Sign up banner for unauthenticated users */}
           {!session && (
-            <Card className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm rounded-xl">
+            <Card className="bg-card border-0 shadow-md rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-center sm:text-left">
-                    <h3 className="text-lg font-semibold mb-1 text-foreground">Join the Nomadiqe Community</h3>
+                    <h3 className="text-lg font-bold mb-1 text-foreground">Join the Nomadiqe Community</h3>
                     <p className="text-sm text-muted-foreground">
                       Sign up to share your adventures, connect with travelers, and discover unique stays
                     </p>
@@ -116,13 +99,14 @@ export default async function HomePage() {
                   <div className="flex gap-3 flex-shrink-0">
                     <Button 
                       asChild 
-                      className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-4 py-2 font-medium transition-all shadow-md hover:shadow-lg"
+                      variant="outline"
+                      className="border-primary text-primary hover:bg-primary/10 rounded-lg px-4 py-2 font-semibold transition-all"
                     >
                       <Link href="/auth/signin">Sign In</Link>
                     </Button>
                     <Button 
                       asChild 
-                      className="bg-primary hover:bg-primary/90 text-white rounded-lg px-4 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
+                      className="bg-accent hover:bg-accent/90 text-white rounded-lg px-4 py-2 font-bold transition-all shadow-sm hover:shadow-md"
                     >
                       <Link href="/auth/signup">Sign Up</Link>
                     </Button>
@@ -141,10 +125,10 @@ export default async function HomePage() {
             </>
           ) : (
             // No posts yet - show empty state
-            <Card className="bg-card dark:bg-secondary/40 border border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm rounded-xl border-dashed">
+            <Card className="bg-card border-0 shadow-md rounded-xl">
               <CardContent className="p-12 text-center">
                 <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-foreground">No Posts Yet</h3>
+                <h3 className="text-xl font-bold mb-2 text-foreground">No Posts Yet</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   {session
                     ? 'Be the first to share your travel story! Create your first post to get started.'
@@ -153,7 +137,7 @@ export default async function HomePage() {
                 {session && (
                   <Button 
                     asChild
-                    className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 py-2 font-medium transition-all shadow-lg hover:shadow-xl"
+                    className="bg-accent hover:bg-accent/90 text-white rounded-lg px-6 py-2 font-bold transition-all shadow-sm hover:shadow-md"
                   >
                     <Link href="/create-post">
                       <Plus className="w-4 h-4 mr-2" />

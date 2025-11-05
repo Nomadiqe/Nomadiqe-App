@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { formatDistanceToNow } from 'date-fns'
-import { X, Send, Loader2 } from 'lucide-react'
+import { X, Send, Loader2, MoreHorizontal, Trash2 } from 'lucide-react'
 
 interface Comment {
   id: string
@@ -38,6 +39,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [swipeStartY, setSwipeStartY] = useState(0)
   const [currentY, setCurrentY] = useState(0)
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
 
   // Debug log
   console.log('PostComments rendered - isOpen:', isOpen, 'session:', !!session, 'comments:', comments.length)
@@ -90,6 +92,35 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
       console.error('Error posting comment:', error)
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!session?.user?.id) return
+
+    setDeletingCommentId(commentId)
+    try {
+      const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        // Remove comment from state
+        setComments(comments.filter(c => c.id !== commentId))
+        
+        // Update comment count if callback exists
+        if (onCommentAdded) {
+          onCommentAdded()
+        }
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Failed to delete comment')
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      alert('Failed to delete comment')
+    } finally {
+      setDeletingCommentId(null)
     }
   }
 
@@ -157,7 +188,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
               <div className="space-y-4">
                 {comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarImage src={comment.user.image} alt={comment.user.name} />
                       <AvatarFallback className="p-1">
                         <Image 
@@ -169,14 +200,54 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                         />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-sm">{comment.user.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-                        </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-sm truncate">{comment.user.name}</span>
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm break-words">{comment.content}</p>
+                        </div>
+                        
+                        {/* Show menu only for own comments */}
+                        {session?.user?.id === comment.user.id && (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 flex-shrink-0 -mt-1"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-48 p-1" align="end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteComment(comment.id)}
+                                disabled={deletingCommentId === comment.id}
+                                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                {deletingCommentId === comment.id ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Deleting...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete Comment
+                                  </>
+                                )}
+                              </Button>
+                            </PopoverContent>
+                          </Popover>
+                        )}
                       </div>
-                      <p className="mt-1 text-sm">{comment.content}</p>
                     </div>
                   </div>
                 ))}

@@ -3,58 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 98%; /* Light neutral white */
-  --foreground: 240 8% 25%; /* Dark gray text */
-  --card: 0 0% 100%; /* Pure white cards */
-  --card-foreground: 240 8% 25%; /* Dark gray card text */
-  --popover: 0 0% 100%; /* Pure white popovers */
-  --popover-foreground: 240 8% 25%; /* Dark gray popover text */
-  --primary: 328 85% 55%; /* Vibrant fuchsia pink */
-  --primary-foreground: 0 0% 100%; /* White text on pink */
-  --secondary: 260 35% 35%; /* Deep purple/eggplant */
-  --secondary-foreground: 0 0% 100%; /* White text on purple */
-  --muted: 240 5% 90%; /* Light neutral gray */
-  --muted-foreground: 240 8% 45%; /* Medium gray */
-  --accent: 328 85% 55%; /* Fuchsia pink accent */
-  --accent-foreground: 0 0% 100%; /* White text on accent */
-  --destructive: 0 70% 50%; /* Red */
-  --destructive-foreground: 0 0% 100%; /* White text on destructive */
-  --border: 240 5% 88%; /* Soft neutral border */
-  --input: 0 0% 100%; /* White input backgrounds */
-  --ring: 328 85% 55%; /* Fuchsia pink ring */
-  --chart-1: 328 80% 70%; /* Light pink */
-  --chart-2: 328 85% 60%; /* Medium pink */
-  --chart-3: 328 85% 50%; /* Deep pink */
-  --chart-4: 260 30% 40%; /* Medium purple */
-  --chart-5: 260 35% 30%; /* Deep purple */
-  --radius: 0.5rem;
+  --background: 0 0% 98%; /* Grigio Chiarissimo #F9F9F9 */
+  --foreground: 210 11% 15%; /* Grigio Scuro #212529 */
+  --card: 0 0% 100%; /* Bianco Puro #FFFFFF */
+  --card-foreground: 210 11% 15%; /* Grigio Scuro */
+  --popover: 0 0% 100%; /* Bianco Puro */
+  --popover-foreground: 210 11% 15%; /* Grigio Scuro */
+  --primary: 188 100% 28%; /* Teal Intenso #00838F */
+  --primary-foreground: 0 0% 100%; /* Bianco su Teal */
+  --secondary: 210 8% 46%; /* Grigio Medio #6C757D */
+  --secondary-foreground: 0 0% 100%; /* Bianco su Grigio */
+  --muted: 0 0% 96%; /* Grigio Molto Chiaro */
+  --muted-foreground: 210 8% 46%; /* Grigio Medio #6C757D */
+  --accent: 14 100% 68%; /* Corallo Vibrante #FF7A59 */
+  --accent-foreground: 0 0% 100%; /* Bianco su Corallo */
+  --destructive: 0 70% 50%; /* Rosso */
+  --destructive-foreground: 0 0% 100%; /* Bianco su Rosso */
+  --border: 0 0% 88%; /* Grigio Chiaro #E0E0E0 */
+  --input: 0 0% 100%; /* Bianco */
+  --ring: 188 100% 28%; /* Teal Intenso */
+  --chart-1: 188 100% 40%; /* Teal Chiaro */
+  --chart-2: 188 100% 28%; /* Teal Intenso */
+  --chart-3: 188 100% 20%; /* Teal Scuro */
+  --chart-4: 14 100% 68%; /* Corallo */
+  --chart-5: 14 100% 55%; /* Corallo Scuro */
+  --radius: 0.75rem;
 }
 
 .dark {
-  --background: 260 40% 15%; /* Deep purple/eggplant background */
-  --foreground: 0 0% 98%; /* White text */
-  --card: 260 35% 20%; /* Slightly lighter purple card */
-  --card-foreground: 0 0% 98%; /* White card text */
-  --popover: 260 35% 20%; /* Card-like popover */
-  --popover-foreground: 0 0% 98%; /* White popover text */
-  --primary: 328 85% 60%; /* Bright fuchsia pink */
-  --primary-foreground: 0 0% 100%; /* White text on pink */
-  --secondary: 260 30% 30%; /* Medium purple */
-  --secondary-foreground: 0 0% 98%; /* White text on purple */
-  --muted: 260 30% 25%; /* Dark purple muted */
-  --muted-foreground: 240 5% 70%; /* Light gray muted text */
-  --accent: 328 85% 60%; /* Bright fuchsia pink accent */
-  --accent-foreground: 0 0% 100%; /* White text on accent */
-  --destructive: 0 60% 50%; /* Red */
-  --destructive-foreground: 0 0% 98%; /* White text on destructive */
-  --border: 260 25% 30%; /* Purple border */
-  --input: 260 35% 18%; /* Dark purple input */
-  --ring: 328 85% 60%; /* Bright fuchsia pink ring */
-  --chart-1: 328 80% 70%; /* Light pink */
-  --chart-2: 328 85% 60%; /* Medium pink */
-  --chart-3: 328 85% 50%; /* Deep pink */
-  --chart-4: 260 30% 40%; /* Medium purple */
-  --chart-5: 260 35% 30%; /* Deep purple */
+  --background: 210 11% 8%; /* Grigio Molto Scuro */
+  --foreground: 0 0% 98%; /* Bianco Chiaro */
+  --card: 210 11% 12%; /* Grigio Scuro per card */
+  --card-foreground: 0 0% 98%; /* Bianco Chiaro */
+  --popover: 210 11% 12%; /* Grigio Scuro */
+  --popover-foreground: 0 0% 98%; /* Bianco Chiaro */
+  --primary: 188 100% 35%; /* Teal più Chiaro */
+  --primary-foreground: 0 0% 100%; /* Bianco */
+  --secondary: 210 8% 46%; /* Grigio Medio */
+  --secondary-foreground: 0 0% 100%; /* Bianco */
+  --muted: 210 11% 15%; /* Grigio Scuro */
+  --muted-foreground: 210 8% 65%; /* Grigio Chiaro */
+  --accent: 14 100% 68%; /* Corallo Vibrante */
+  --accent-foreground: 0 0% 100%; /* Bianco */
+  --destructive: 0 60% 50%; /* Rosso */
+  --destructive-foreground: 0 0% 98%; /* Bianco */
+  --border: 210 11% 20%; /* Grigio Medio Scuro */
+  --input: 210 11% 12%; /* Grigio Scuro */
+  --ring: 188 100% 35%; /* Teal Chiaro */
+  --chart-1: 188 100% 40%; /* Teal Chiaro */
+  --chart-2: 188 100% 35%; /* Teal */
+  --chart-3: 188 100% 25%; /* Teal Scuro */
+  --chart-4: 14 100% 68%; /* Corallo */
+  --chart-5: 14 100% 55%; /* Corallo Scuro */
 }
 
 
@@ -62,17 +62,25 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground overflow-x-hidden;
-    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
-  }
+  
   html {
     @apply overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+  
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: var(--font-heading), 'Poppins', system-ui, -apple-system, sans-serif;
+    font-weight: 700; /* Bold for impact */
+    letter-spacing: -0.015em;
+    line-height: 1.2;
   }
 }
 

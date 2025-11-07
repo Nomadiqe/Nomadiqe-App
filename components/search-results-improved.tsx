@@ -213,7 +213,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                   <Button
                     onClick={() => setIsMobileListView(true)}
-                    className="shadow-2xl bg-primary hover:bg-primary/90 text-white px-8 py-3 text-base font-bold rounded-full border-2 border-white/20"
+                    className="shadow-lg bg-accent hover:bg-accent/90 text-white px-8 py-3 text-base font-bold rounded-full"
                     variant="default"
                   >
                     <Grid3x3 className="w-5 h-5 mr-2" />
@@ -254,7 +254,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                 <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                   <Button
                     onClick={() => setIsMobileListView(false)}
-                    className="shadow-2xl bg-primary hover:bg-primary/90 text-white px-8 py-3 text-base font-bold rounded-full border-2 border-white/20"
+                    className="shadow-lg bg-accent hover:bg-accent/90 text-white px-8 py-3 text-base font-bold rounded-full"
                     variant="default"
                   >
                     <Map className="w-5 h-5 mr-2" />

@@ -43,23 +43,23 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         nomadiqe: {
-          50: '#f0f9ff',
-          100: '#e0f2fe', 
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#06b6d4', // Mediterranean turquoise primary
-          600: '#0891b2', // Deeper turquoise
-          700: '#0e7490', // Dark turquoise
-          800: '#155e75',
-          900: '#164e63',
-          950: '#083344',
+          50: '#e0f7fa',
+          100: '#b2ebf2', 
+          200: '#80deea',
+          300: '#4dd0e1',
+          400: '#26c6da',
+          500: '#00838F', // Teal Intenso primary
+          600: '#00796B', // Teal Scuro
+          700: '#00695C', // Teal Molto Scuro
+          800: '#004D40',
+          900: '#00363A',
+          950: '#001F23',
           // Brand semantic colors
-          primary: '#06b6d4',
-          secondary: '#d4bf9a', // Sandy beige
-          success: '#10b981', // Success green with turquoise undertones
+          primary: '#00838F', // Teal Intenso
+          accent: '#FF7A59', // Corallo Vibrante
+          success: '#10b981', // Success green
           warning: '#f59e0b', // Warm amber  
-          error: '#ef4444', // Coral-orange
+          error: '#ef4444', // Red
         }
       },
       borderRadius: {

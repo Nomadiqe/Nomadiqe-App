@@ -34,7 +34,7 @@ export function PropertyCard({
   // List variant - horizontal layout with image on left
   if (variant === "list") {
     return (
-      <Card className="group overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] max-h-[180px] text-gray-900">
+      <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 bg-card max-h-[180px]">
         <Link href={`/property/${id}`}>
           <div className="flex h-[180px]">
             {/* Image - Left side */}
@@ -110,7 +110,7 @@ export function PropertyCard({
 
   // Grid variant - original vertical layout
   return (
-    <Card className="group overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] text-gray-900">
+    <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 bg-card">
       <Link href={`/property/${id}`}>
         <div className="relative aspect-[4/3] overflow-hidden">
           {image ? (

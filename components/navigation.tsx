@@ -70,10 +70,7 @@ export function Navigation() {
   ]
 
   // Mobile navigation items - order: Home, Explore, [+], Search, Profile
-  const mobileNavItems = session ? [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Explore', icon: Globe },
-  ] : [
+  const mobileNavItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Explore', icon: Globe },
   ]
@@ -83,12 +80,13 @@ export function Navigation() {
     { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
   ] : [
     { href: '/ai-search', label: 'Search', icon: Search },
+    { href: '/auth/signin', label: 'Profile', icon: User },
   ]
 
   return (
     <>
       {/* Desktop Header Navigation */}
-      <nav className="hidden md:block bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-50" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+      <nav className="hidden md:block bg-card border-b border-border sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -97,11 +95,11 @@ export function Navigation() {
               <img
                 src="/nomadiqe-logo-transparent.png"
                 alt="Nomadiqe Logo"
-                className="w-8 h-auto object-contain brightness-0 invert"
+                className="w-8 h-auto object-contain"
               />
-              <span className="text-xl font-bold text-white">
+              <span className="text-xl font-bold text-primary">
                 Nomadiqe
-                <sup className="text-[0.5em] ml-1 font-semibold text-white/70">BETA</sup>
+                <sup className="text-[0.5em] ml-1 font-semibold text-muted-foreground">BETA</sup>
               </span>
             </Link>
 
@@ -117,8 +115,8 @@ export function Navigation() {
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
                       isActive
-                        ? "text-primary bg-primary/20"
-                        : "text-white hover:text-primary hover:bg-white/10"
+                        ? "text-primary bg-primary/10 font-semibold"
+                        : "text-foreground hover:text-primary hover:bg-muted"
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -184,7 +182,7 @@ export function Navigation() {
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[1100] bg-background border-t border-border">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[1100] bg-card border-t border-border shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-between h-16 px-2">
           {/* Left Navigation Items */}
           <div className="flex items-center justify-around flex-1">
@@ -210,9 +208,8 @@ export function Navigation() {
           </div>
 
           {/* Center Create Post Button */}
-          {session && (
             <Link
-              href="/create-post"
+            href={session ? "/create-post" : "/auth/signin"}
               className="flex items-center justify-center w-14 h-14 -mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <svg
@@ -230,7 +227,6 @@ export function Navigation() {
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
             </Link>
-          )}
 
           {/* Right Navigation Items */}
           <div className="flex items-center justify-around flex-1">
@@ -258,7 +254,7 @@ export function Navigation() {
       </nav>
 
       {/* Mobile Top Bar with Logo and Menu */}
-      <nav className="md:hidden bg-secondary/95 backdrop-blur-md border-b border-secondary sticky top-0 z-40 w-full overflow-x-hidden" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+      <nav className="md:hidden bg-card border-b border-border sticky top-0 z-40 w-full overflow-x-hidden shadow-sm">
         <div className="flex justify-between items-center h-16 px-3 w-full max-w-full">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-1.5 flex-shrink min-w-0">
@@ -266,11 +262,11 @@ export function Navigation() {
             <img
               src="/nomadiqe-logo-transparent.png"
               alt="Nomadiqe Logo"
-              className="w-7 h-auto object-contain flex-shrink-0 brightness-0 invert"
+              className="w-7 h-auto object-contain flex-shrink-0"
             />
-            <span className="text-lg font-bold text-white truncate">
+            <span className="text-lg font-bold text-primary truncate">
               Nomadiqe
-              <sup className="text-[0.45em] ml-0.5 font-semibold text-white/70">BETA</sup>
+              <sup className="text-[0.45em] ml-0.5 font-semibold text-muted-foreground">BETA</sup>
             </span>
           </Link>
 
@@ -285,7 +281,7 @@ export function Navigation() {
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex-shrink-0 text-white hover:bg-white/10"
+              className="flex-shrink-0 text-foreground hover:bg-muted"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -298,14 +294,14 @@ export function Navigation() {
 
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="border-t border-white/20 py-3 bg-secondary/95">
+          <div className="border-t border-border py-3 bg-card">
             <div className="flex flex-col space-y-1 px-2">
               {session ? (
                 <>
                   {session.user?.role === 'ADMIN' && (
                     <Link
                       href="/admin"
-                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Shield className="h-4 w-4 mr-3" />
@@ -315,7 +311,7 @@ export function Navigation() {
                   {session.user?.role === 'HOST' ? (
                     <Link
                       href="/host/find-influencers"
-                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Sparkles className="h-4 w-4 mr-3" />
@@ -324,7 +320,7 @@ export function Navigation() {
                   ) : (
                     <Link
                       href="/host"
-                      className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                      className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Briefcase className="h-4 w-4 mr-3" />
@@ -336,7 +332,7 @@ export function Navigation() {
                       setTheme(theme === 'light' ? 'dark' : 'light')
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted w-full flex items-center"
                   >
                     {theme === 'light' ? (
                       <>
@@ -355,7 +351,7 @@ export function Navigation() {
                       handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted w-full flex items-center"
                   >
                     <LogOut className="h-4 w-4 mr-3" />
                     Sign Out
@@ -365,7 +361,7 @@ export function Navigation() {
                 <>
                   <Link
                     href="/host"
-                    className="text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 flex items-center"
+                    className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Briefcase className="h-4 w-4 mr-3" />
@@ -376,7 +372,7 @@ export function Navigation() {
                       setTheme(theme === 'light' ? 'dark' : 'light')
                       setIsMobileMenuOpen(false)
                     }}
-                    className="text-left text-white hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-white/10 w-full flex items-center"
+                    className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted w-full flex items-center"
                   >
                     {theme === 'light' ? (
                       <>

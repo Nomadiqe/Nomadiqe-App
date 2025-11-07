@@ -232,24 +232,24 @@ export function PostCard({
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-500 hover:-translate-y-1 bg-[#FFF8DC] dark:bg-[#F5F5DC] max-w-[600px] mx-auto w-full text-gray-900">
-      <CardHeader className="pb-1.5 px-3 pt-3">
+    <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 bg-card max-w-[600px] mx-auto w-full">
+      <CardHeader className="pb-1 px-2.5 pt-2">
         <div className="flex items-center justify-between w-full min-w-0">
-          <div className="flex items-center space-x-2 min-w-0 flex-1">
+          <div className="flex items-center space-x-1.5 min-w-0 flex-1">
             <Link href={`/profile/${author.id}`} className="flex-shrink-0">
-              <div className="h-10 w-10 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
+              <div className="h-7 w-7 cursor-pointer hover:ring-2 hover:ring-primary/40 hover:ring-offset-1 hover:ring-offset-background transition-all duration-300 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10 hover:scale-105 shadow-md">
                 {author.image && !imageError ? (
                   <Image 
                     src={author.image} 
                     alt={author.name}
-                    width={44}
-                    height={44}
+                    width={28}
+                    height={28}
                     className="w-full h-full object-cover"
                     onError={() => setImageError(true)}
                     unoptimized
                   />
                 ) : (
-                  <span className="text-primary font-semibold text-lg">
+                  <span className="text-primary font-semibold text-xs">
                     {author.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -257,25 +257,25 @@ export function PostCard({
             </Link>
             <div className="min-w-0 flex-1">
               <Link href={`/profile/${author.id}`}>
-                <h3 className="font-bold text-sm hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2 truncate" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
+                <h3 className="font-bold text-xs hover:text-primary transition-colors hover:underline decoration-2 decoration-primary/50 underline-offset-2 truncate" style={{ fontFamily: 'var(--font-jakarta), system-ui, sans-serif' }}>
                   {author.name}
                 </h3>
               </Link>
-              <p className="text-xs text-muted-foreground/70 font-medium mt-0.5 truncate">{formatDate(createdAt)}</p>
+              <p className="text-[10px] text-muted-foreground/70 font-medium mt-0 truncate">{formatDate(createdAt)}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {/* Role Icon */}
             {author.role && (
-              <div className="h-7 w-7 rounded-full bg-muted/50 flex items-center justify-center border border-border/50 flex-shrink-0">
+              <div className="h-5 w-5 rounded-full bg-muted/50 flex items-center justify-center border border-border/50 flex-shrink-0">
                 {getRoleIcon()}
               </div>
             )}
             {/* Menu Button */}
             <Popover open={menuOpen} onOpenChange={setMenuOpen}>
               <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted/80 flex-shrink-0">
-            <MoreHorizontal className="h-4 w-4" />
+          <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-muted/80 flex-shrink-0">
+            <MoreHorizontal className="h-3 w-3" />
           </Button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-0" align="end">
@@ -287,10 +287,10 @@ export function PostCard({
                           e.stopPropagation()
                           handleEdit()
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
+                        className="w-full px-3 py-2 text-left hover:bg-accent flex items-center gap-2 transition-colors"
                       >
-                        <Edit className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">Modifica</span>
+                        <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-xs font-medium">Modifica</span>
                       </button>
                       <button
                         onClick={(e) => {
@@ -298,10 +298,10 @@ export function PostCard({
                           handleDelete()
                         }}
                         disabled={isDeleting}
-                        className="w-full px-4 py-3 text-left hover:bg-destructive/10 hover:text-destructive flex items-center gap-3 transition-colors disabled:opacity-50"
+                        className="w-full px-3 py-2 text-left hover:bg-destructive/10 hover:text-destructive flex items-center gap-2 transition-colors disabled:opacity-50"
                       >
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-xs font-medium">
                           {isDeleting ? 'Eliminazione...' : 'Elimina'}
                         </span>
                       </button>
@@ -324,10 +324,10 @@ export function PostCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-2 px-4 pb-3">
+      <CardContent className="space-y-0 px-0 pb-1.5">
         {/* Property Link (if exists) - shown before images */}
           {property && (
-          <div className="pb-2">
+          <div className="px-2 pb-1.5">
             <Link href={`/property/${property.id}`}>
               <Card className="bg-gradient-to-br from-muted/40 via-muted/30 to-muted/20 hover:from-muted/60 hover:via-muted/50 hover:to-muted/40 transition-all duration-300 cursor-pointer border-0 shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-xl overflow-hidden">
                 <CardContent className="p-0">
@@ -372,10 +372,10 @@ export function PostCard({
 
       {/* Images */}
       {images.length > 0 && (
-        <div className="space-y-0 -mx-4">
+        <div className="w-full">
           {images.length === 1 ? (
             <div
-              className={`relative group overflow-hidden cursor-pointer aspect-square`}
+              className={`relative group overflow-hidden cursor-pointer aspect-video max-h-60 w-full`}
               onClick={() => {
                 setLightboxIndex(0)
                 setLightboxOpen(true)
@@ -389,8 +389,8 @@ export function PostCard({
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-1">
-              {images.slice(0, 4).map((image, index) => (
+            <div className="grid grid-cols-2 gap-px bg-background/30">
+              {images.slice(0, 2).map((image, index) => (
                 <div
                   key={index}
                   className={`relative group overflow-hidden cursor-pointer aspect-square`}
@@ -404,10 +404,10 @@ export function PostCard({
                     alt={`Post image ${index + 1}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  {index === 3 && images.length > 4 && (
+                  {index === 1 && images.length > 2 && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center group-hover:bg-black/70 transition-colors">
-                      <span className="text-white font-semibold text-lg">
-                        +{images.length - 4}
+                      <span className="text-white font-semibold text-2xl">
+                        +{images.length - 2}
                       </span>
                     </div>
                   )}
@@ -421,10 +421,10 @@ export function PostCard({
 
       {/* Caption - shown after images */}
       {content && (
-        <div className="px-2 pt-2 pb-0">
+        <div className="px-2 pt-1 pb-0">
           {!captionExpanded ? (
             <>
-              <p className="text-sm leading-relaxed text-foreground/90 font-medium line-clamp-2">
+              <p className="text-xs leading-snug text-foreground/90 font-medium line-clamp-2">
                 {content}
               </p>
               {content.length > 150 && (
@@ -433,7 +433,7 @@ export function PostCard({
                     e.stopPropagation()
                     setCaptionExpanded(true)
                   }}
-                  className="text-xs text-muted-foreground hover:text-primary mt-1 transition-colors"
+                  className="text-[10px] text-muted-foreground hover:text-primary mt-0 transition-colors"
                 >
                   Mostra di più
                 </button>
@@ -442,7 +442,7 @@ export function PostCard({
           ) : (
             <div className="relative">
               <div
-                className="text-sm leading-relaxed text-foreground/90 font-medium overflow-y-auto max-h-[200px] pr-2"
+                className="text-xs leading-snug text-foreground/90 font-medium overflow-y-auto max-h-[120px] pr-1"
                 style={{
                   scrollbarWidth: 'thin',
                   scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
@@ -455,7 +455,7 @@ export function PostCard({
                   e.stopPropagation()
                   setCaptionExpanded(false)
                 }}
-                className="text-xs text-muted-foreground hover:text-primary mt-1 transition-colors"
+                className="text-[10px] text-muted-foreground hover:text-primary mt-0 transition-colors"
               >
                 Mostra meno
               </button>
@@ -466,40 +466,40 @@ export function PostCard({
 
       {/* Location - shown after caption */}
       {location && (
-        <div className="px-2 pt-1 pb-0">
+        <div className="px-2 pt-0.5 pb-0">
           <Link
             href={`/search?location=${encodeURIComponent(location)}`}
-            className="flex items-center gap-1.5 hover:text-primary transition-colors group w-fit"
+            className="flex items-center gap-1 hover:text-primary transition-colors group w-fit"
             onClick={(e) => e.stopPropagation()}
           >
-            <MapPin className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="text-sm text-muted-foreground group-hover:text-primary group-hover:underline transition-colors">{location}</span>
+            <MapPin className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="text-xs text-muted-foreground group-hover:text-primary group-hover:underline transition-colors">{location}</span>
           </Link>
         </div>
       )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between px-4 pt-2 pb-2 border-t border-border/50">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-2.5 pt-1 pb-1 border-t border-border/50 mt-1">
+          <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLike}
-            className={`gap-2 transition-all duration-200 hover:scale-105 ${
+            className={`gap-1.5 h-7 px-2 transition-all duration-200 hover:scale-105 ${
               liked ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'hover:bg-muted/80'
             }`}
           >
-            <Heart className={`h-4 w-4 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
-            <span className="text-sm font-medium">{likeCount}</span>
+            <Heart className={`h-3.5 w-3.5 transition-all ${liked ? 'fill-current scale-110' : ''}`} />
+            <span className="text-xs font-medium">{likeCount}</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleCommentClick}
-            className="gap-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
+            className="gap-1.5 h-7 px-2 transition-all duration-200 hover:scale-105 hover:bg-primary/10 hover:text-primary"
           >
-            <MessageCircle className="h-4 w-4" />
-            <span className="text-sm font-medium">{commentCount}</span>
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">{commentCount}</span>
           </Button>
           </div>
           
@@ -510,7 +510,7 @@ export function PostCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2 hover:bg-muted/80"
+                  className="h-7 px-2 hover:bg-muted/80"
                 >
                   <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>

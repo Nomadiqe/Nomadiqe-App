@@ -37,10 +37,10 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-0 shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-foreground">
-            Welcome back, {userName}!
+            Bentornato, {userName}!
           </DialogTitle>
           <p className="text-muted-foreground text-sm mt-2">
-            {isHost ? 'Manage your properties and bookings' : 'Discover your next adventure'}
+            {isHost ? 'Gestisci le tue proprietà e prenotazioni' : 'Scopri la tua prossima avventura'}
           </p>
         </DialogHeader>
 
@@ -60,7 +60,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                 <Calendar className="h-6 w-6 text-primary" />
                 <div className="ml-3">
                   <p className="text-xs font-medium text-foreground/70">
-                    {isHost ? 'Active Bookings' : 'Upcoming Trips'}
+                    {isHost ? 'Prenotazioni Attive' : 'Viaggi in Programma'}
                   </p>
                   <p className="text-xl font-bold text-foreground">0</p>
                 </div>
@@ -72,7 +72,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                 <Heart className="h-6 w-6 text-primary" />
                 <div className="ml-3">
                   <p className="text-xs font-medium text-foreground/70">
-                    {isHost ? 'Property Views' : 'Saved Properties'}
+                    {isHost ? 'Visualizzazioni Proprietà' : 'Proprietà Salvate'}
                   </p>
                   <p className="text-xl font-bold text-foreground">0</p>
                 </div>
@@ -84,7 +84,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                 <MapPin className="h-6 w-6 text-primary" />
                 <div className="ml-3">
                   <p className="text-xs font-medium text-foreground/70">
-                    {isHost ? 'Properties Listed' : 'Places Visited'}
+                    {isHost ? 'Proprietà Pubblicate' : 'Luoghi Visitati'}
                   </p>
                   <p className="text-xl font-bold text-foreground">0</p>
                 </div>
@@ -96,7 +96,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                 <TrendingUp className="h-6 w-6 text-primary" />
                 <div className="ml-3">
                   <p className="text-xs font-medium text-foreground/70">
-                    {isHost ? 'Total Earnings' : 'Total Saved'}
+                    {isHost ? 'Guadagni Totali' : 'Totale Risparmiato'}
                   </p>
                   <p className="text-xl font-bold text-foreground">0</p>
                 </div>
@@ -106,7 +106,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
 
           {/* Quick Actions */}
           <div className="bg-muted border border-border rounded-lg p-5">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">Azioni Rapide</h2>
             <div className="space-y-3">
               {isTraveler && (
                 <>
@@ -117,7 +117,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                   >
                     <Link href="/search">
                       <MapPin className="w-4 h-4 mr-2" />
-                      Search Properties
+                      Cerca Proprietà
                     </Link>
                   </Button>
                   <Button 
@@ -128,7 +128,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                   >
                     <Link href="/host">
                       <Plus className="w-4 h-4 mr-2" />
-                      Become a Host
+                      Diventa Host
                     </Link>
                   </Button>
                 </>
@@ -143,7 +143,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                   >
                     <Link href="/host/create-property">
                       <Plus className="w-4 h-4 mr-2" />
-                      Add New Property
+                      Aggiungi Nuova Proprietà
                     </Link>
                   </Button>
                   <Button 
@@ -154,7 +154,7 @@ export function WalletDialog({ userRole, userName }: WalletDialogProps) {
                   >
                     <Link href="/search">
                       <Search className="w-4 h-4 mr-2" />
-                      Browse Properties
+                      Esplora Proprietà
                     </Link>
                   </Button>
                   <Button 

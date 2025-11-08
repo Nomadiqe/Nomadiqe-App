@@ -85,6 +85,9 @@ export function PostCard({
   const [captionExpanded, setCaptionExpanded] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   const handleLike = async () => {
     // Check if user is authenticated
@@ -231,6 +234,56 @@ export function PostCard({
     router.push(`/create-post?edit=${id}`)
   }
 
+  // Swipe handlers for card
+  const minSwipeDistance = 50
+
+  const onTouchStartCard = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMoveCard = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEndCard = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    
+    if (isLeftSwipe) {
+      setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    }
+    if (isRightSwipe) {
+      setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    }
+  }
+
+  // Swipe handlers for lightbox
+  const onTouchStartLightbox = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMoveLightbox = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEndLightbox = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    
+    if (isLeftSwipe) {
+      setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    }
+    if (isRightSwipe) {
+      setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    }
+  }
+
   return (
     <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 bg-card max-w-[600px] mx-auto w-full">
       <CardHeader className="pb-1 px-2.5 pt-2">
@@ -370,52 +423,55 @@ export function PostCard({
           </div>
           )}
 
-      {/* Images */}
+      {/* Images Carousel */}
       {images.length > 0 && (
-        <div className="w-full">
-          {images.length === 1 ? (
-            <div
-              className={`relative group overflow-hidden cursor-pointer aspect-video max-h-60 w-full`}
-              onClick={() => {
-                setLightboxIndex(0)
-                setLightboxOpen(true)
-              }}
-            >
-              <img
-                src={images[0]}
-                alt="Post image"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-px bg-background/30">
-              {images.slice(0, 2).map((image, index) => (
-                <div
-                  key={index}
-                  className={`relative group overflow-hidden cursor-pointer aspect-square`}
-                  onClick={() => {
-                    setLightboxIndex(index)
-                    setLightboxOpen(true)
-                  }}
-                >
-                  <img
-                    src={image}
-                    alt={`Post image ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        <div 
+          className="w-full relative"
+          onTouchStart={images.length > 1 ? onTouchStartCard : undefined}
+          onTouchMove={images.length > 1 ? onTouchMoveCard : undefined}
+          onTouchEnd={images.length > 1 ? onTouchEndCard : undefined}
+        >
+          <div
+            className={`relative group overflow-hidden cursor-pointer aspect-video max-h-60 w-full`}
+            onClick={() => {
+              setLightboxIndex(currentImageIndex)
+              setLightboxOpen(true)
+            }}
+          >
+            <img
+              src={images[currentImageIndex]}
+              alt={`Post image ${currentImageIndex + 1}`}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            {/* Image Counter Badge */}
+            {images.length > 1 && (
+              <div className="absolute top-2 right-2 px-2 py-1 rounded-full bg-black/60 text-white text-xs font-medium backdrop-blur-sm">
+                {currentImageIndex + 1} / {images.length}
+              </div>
+            )}
+            
+            {/* Navigation Dots */}
+            {images.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1.5">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCurrentImageIndex(index)
+                    }}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex 
+                        ? 'bg-white w-4' 
+                        : 'bg-white/50 hover:bg-white/80'
+                    }`}
                   />
-                  {index === 1 && images.length > 2 && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center group-hover:bg-black/70 transition-colors">
-                      <span className="text-white font-semibold text-2xl">
-                        +{images.length - 2}
-                      </span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -596,44 +652,41 @@ export function PostCard({
           {/* Main Content Area */}
           <div 
             className="flex-1 flex items-center justify-center relative"
-            onTouchStart={(e) => {
-              if (images.length <= 1) return
-              const touch = e.touches[0]
-              const startX = touch.clientX
-              
-              const handleTouchEnd = (e: TouchEvent) => {
-                const touch = e.changedTouches[0]
-                const endX = touch.clientX
-                const diffX = startX - endX
-                
-                // Swipe threshold (50px)
-                if (Math.abs(diffX) > 50) {
-                  if (diffX > 0) {
-                    // Swipe left - next image
-                  setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-                  } else {
-                    // Swipe right - previous image
-                    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-                  }
-                }
-                
-                document.removeEventListener('touchend', handleTouchEnd)
-              }
-              
-              document.addEventListener('touchend', handleTouchEnd)
-            }}
+            onTouchStart={images.length > 1 ? onTouchStartLightbox : undefined}
+            onTouchMove={images.length > 1 ? onTouchMoveLightbox : undefined}
+            onTouchEnd={images.length > 1 ? onTouchEndLightbox : undefined}
           >
             {/* Image with 4:5 aspect ratio */}
-          <div
+            <div
               className="relative w-full aspect-[4/5] flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={images[lightboxIndex]}
-              alt={`Image ${lightboxIndex + 1}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={images[lightboxIndex]}
+                alt={`Image ${lightboxIndex + 1}`}
                 className="w-full h-full object-cover select-none"
                 draggable={false}
               />
+              
+              {/* Navigation Dots */}
+              {images.length > 1 && (
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setLightboxIndex(index)
+                      }}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        index === lightboxIndex 
+                          ? 'bg-white w-6' 
+                          : 'bg-white/50 hover:bg-white/80 w-2'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

@@ -522,14 +522,14 @@ export function PostCard({
                     className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
                   >
                     <Send className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">send by message</span>
+                    <span className="text-sm font-medium">Invia con messaggio</span>
                   </button>
                   <button
                     onClick={handleRepost}
                     className="w-full px-4 py-3 text-left hover:bg-accent flex items-center gap-3 transition-colors"
                   >
                     <Repeat className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Share</span>
+                    <span className="text-sm font-medium">Condividi</span>
                   </button>
                 </div>
               </PopoverContent>

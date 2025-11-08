@@ -78,23 +78,23 @@ export default async function AboutPage() {
             <span className="gradient-text">Nomadiqe</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in">
-            Fairer Stays, Deeper Connections
+            Soggiorni Più Equi, Connessioni Più Profonde
           </p>
           <p className="text-lg md:text-xl mb-12 text-gray-300 max-w-2xl mx-auto animate-fade-in">
-            Revolutionize your travel experience with blockchain-powered bookings, 
-            lower fees, and authentic local connections.
+            Rivoluziona la tua esperienza di viaggio con prenotazioni blockchain, 
+            commissioni più basse e connessioni locali autentiche.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
             <Button asChild size="lg" className="bg-nomadiqe-600 hover:bg-nomadiqe-700">
               <Link href="/search">
-                Start Exploring
+                Inizia ad Esplorare
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-nomadiqe-900">
               <Link href="/host">
-                Become a Host
+                Diventa Host
               </Link>
             </Button>
           </div>
@@ -112,9 +112,9 @@ export default async function AboutPage() {
       <section className="py-20 px-4 bg-card">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose Nomadiqe?</h2>
+            <h2 className="text-4xl font-bold mb-4">Perché Scegliere Nomadiqe?</h2>
             <p className="text-xl text-muted-foreground">
-              Experience the future of travel booking
+              Vivi il futuro delle prenotazioni di viaggio
             </p>
           </div>
 
@@ -157,9 +157,9 @@ export default async function AboutPage() {
       <section className="py-20 px-4 bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">How We Compare</h2>
+            <h2 className="text-4xl font-bold mb-4">Come Ci Confrontiamo</h2>
             <p className="text-xl text-muted-foreground">
-              See why travelers and hosts choose Nomadiqe over traditional platforms
+              Scopri perché viaggiatori e host scelgono Nomadiqe rispetto alle piattaforme tradizionali
             </p>
           </div>
 
@@ -304,18 +304,18 @@ export default async function AboutPage() {
       <section className="py-20 px-4 bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Featured Properties</h2>
+            <h2 className="text-4xl font-bold mb-4">Proprietà in Evidenza</h2>
             <p className="text-xl text-muted-foreground">
-              Discover unique stays from our verified hosts
+              Scopri soggiorni unici dai nostri host verificati
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredProperties.length === 0 ? (
               <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground text-lg">No featured properties available at the moment</p>
+                <p className="text-muted-foreground text-lg">Nessuna proprietà in evidenza al momento</p>
                 <Button asChild className="mt-4">
-                  <Link href="/search">Browse All Properties</Link>
+                  <Link href="/search">Esplora Tutte le Proprietà</Link>
                 </Button>
               </div>
             ) : (
@@ -339,7 +339,7 @@ export default async function AboutPage() {
           <div className="text-center mt-12">
             <Button asChild size="lg">
               <Link href="/search">
-                View All Properties
+                Visualizza Tutte le Proprietà
               </Link>
             </Button>
           </div>
@@ -350,19 +350,19 @@ export default async function AboutPage() {
       <section className="py-20 px-4 gradient-bg">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl font-bold mb-6">
-            Ready to Start Your Journey?
+            Pronto per Iniziare il Tuo Viaggio?
           </h2>
           <p className="text-xl mb-8 text-gray-200">
-            Join thousands of travelers and hosts already using Nomadiqe
+            Unisciti a migliaia di viaggiatori e host che già usano Nomadiqe
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" variant="secondary">
               <Link href="/auth/signup">
-                Get Started
+                Inizia Ora
               </Link>
             </Button>
             <BackButton 
-              label="Back" 
+              label="Indietro" 
               variant="outline" 
               size="lg"
               className="border-white text-white hover:bg-white hover:text-nomadiqe-900"

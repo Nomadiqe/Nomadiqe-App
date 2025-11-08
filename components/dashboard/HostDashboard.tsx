@@ -113,28 +113,28 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold mb-2">🎉 Welcome to Nomadiqe Host Community!</h2>
+                  <h2 className="text-xl font-bold mb-2">🎉 Benvenuto nella Community Host di Nomadiqe!</h2>
                   <p className="text-blue-100 mb-4">
-                    Your account is set up and ready. Your first property listing is under review and will be published soon.
+                    Il tuo account è configurato e pronto. Il tuo primo annuncio è in revisione e sarà pubblicato presto.
                   </p>
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center text-blue-100">
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Onboarding Complete
+                      Onboarding Completato
                     </div>
                     <div className="flex items-center text-blue-100">
                       <Clock className="h-4 w-4 mr-2" />
-                      Listing Under Review
+                      Annuncio in Revisione
                     </div>
                     <div className="flex items-center text-blue-100">
                       <Gift className="h-4 w-4 mr-2" />
-                      Referral Code Ready
+                      Codice Referral Pronto
                     </div>
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="bg-white/20 rounded-lg p-4">
-                    <p className="text-xs text-blue-100 mb-1">Your Referral Code</p>
+                    <p className="text-xs text-blue-100 mb-1">Il Tuo Codice Referral</p>
                     <p className="font-bold text-lg">{hostProfile?.referralCode}</p>
                     <Button
                       size="sm"
@@ -142,7 +142,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       onClick={copyReferralCode}
                       className="mt-2"
                     >
-                      {copiedReferral ? 'Copied!' : 'Copy Link'}
+                      {copiedReferral ? 'Copiato!' : 'Copia Link'}
                     </Button>
                   </div>
                 </div>
@@ -155,52 +155,52 @@ export default function HostDashboard({ user }: HostDashboardProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Properties</CardTitle>
+              <CardTitle className="text-sm font-medium">Proprietà Attive</CardTitle>
               <Home className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalProperties}</div>
               <p className="text-xs text-muted-foreground">
-                Listed on platform
+                Pubblicate sulla piattaforma
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+              <CardTitle className="text-sm font-medium">Prenotazioni Totali</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalBookings}</div>
               <p className="text-xs text-muted-foreground">
-                All time
+                Di tutti i tempi
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium">Entrate</CardTitle>
               <Euro className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">€{stats.totalRevenue.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                From completed bookings
+                Da prenotazioni completate
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Reviews</CardTitle>
+              <CardTitle className="text-sm font-medium">Recensioni</CardTitle>
               <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalReviews}</div>
               <p className="text-xs text-muted-foreground">
-                Guest feedback
+                Feedback degli ospiti
               </p>
             </CardContent>
           </Card>
@@ -209,10 +209,10 @@ export default function HostDashboard({ user }: HostDashboardProps) {
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="properties">Properties</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+            <TabsTrigger value="overview">Panoramica</TabsTrigger>
+            <TabsTrigger value="properties">Proprietà</TabsTrigger>
+            <TabsTrigger value="bookings">Prenotazioni</TabsTrigger>
+            <TabsTrigger value="collaborations">Collaborazioni</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -223,9 +223,9 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Calendar className="h-5 w-5 mr-2" />
-                    Upcoming Bookings
+                    Prossime Prenotazioni
                   </CardTitle>
-                  <CardDescription>Your next few reservations</CardDescription>
+                  <CardDescription>Le tue prossime prenotazioni</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {upcomingBookings.map((booking: any) => (
@@ -239,7 +239,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                           <p className="text-sm text-muted-foreground">
                             {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
                           </p>
-                          <p className="text-xs text-muted-foreground">{booking.guests} guest{booking.guests > 1 ? 's' : ''}</p>
+                          <p className="text-xs text-muted-foreground">{booking.guests} ospit{booking.guests > 1 ? 'i' : 'e'}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -256,7 +256,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     className="w-full" 
                     onClick={() => setComingSoonOpen(true)}
                   >
-                    View All Bookings
+                    Visualizza Tutte le Prenotazioni
                   </Button>
                 </CardContent>
               </Card>
@@ -266,9 +266,9 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Users className="h-5 w-5 mr-2" />
-                    Collaboration Requests
+                    Richieste di Collaborazione
                   </CardTitle>
-                  <CardDescription>Influencers interested in your property</CardDescription>
+                  <CardDescription>Influencer interessati alla tua proprietà</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {collaborationRequests.map((request) => (
@@ -290,10 +290,10 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       </div>
                       <div className="flex space-x-2">
                         <Button size="sm" variant="outline">
-                          View Profile
+                          Visualizza Profilo
                         </Button>
                         <Button size="sm">
-                          Respond
+                          Rispondi
                         </Button>
                       </div>
                     </div>
@@ -304,7 +304,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     className="w-full" 
                     onClick={() => setComingSoonOpen(true)}
                   >
-                    View All Requests
+                    Visualizza Tutte le Richieste
                   </Button>
                 </CardContent>
               </Card>
@@ -313,15 +313,15 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Common tasks and shortcuts</CardDescription>
+                <CardTitle>Azioni Rapide</CardTitle>
+                <CardDescription>Attività comuni e scorciatoie</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" asChild>
                     <Link href="/host/calendar">
                       <Calendar className="h-6 w-6" />
-                      <span className="text-sm">Manage Calendar</span>
+                      <span className="text-sm">Gestisci Calendario</span>
                     </Link>
                   </Button>
                   
@@ -331,7 +331,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     onClick={() => setComingSoonOpen(true)}
                   >
                     <Euro className="h-6 w-6" />
-                    <span className="text-sm">Update Pricing</span>
+                    <span className="text-sm">Aggiorna Prezzi</span>
                   </Button>
                   
                   <Button 
@@ -340,7 +340,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                     onClick={() => setComingSoonOpen(true)}
                   >
                     <TrendingUp className="h-6 w-6" />
-                    <span className="text-sm">View Analytics</span>
+                    <span className="text-sm">Visualizza Statistiche</span>
                   </Button>
                 </div>
               </CardContent>
@@ -351,13 +351,13 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           <TabsContent value="properties" className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Your Properties</h2>
-                <p className="text-muted-foreground">Manage your listings and availability</p>
+                <h2 className="text-2xl font-bold">Le Tue Proprietà</h2>
+                <p className="text-muted-foreground">Gestisci i tuoi annunci e la disponibilità</p>
               </div>
               <Button asChild>
                 <Link href="/host/create-property">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add New Property
+                  Aggiungi Nuova Proprietà
                 </Link>
               </Button>
             </div>
@@ -380,7 +380,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       )}
                       <div className="absolute top-3 right-3">
                         <Badge variant={property.isActive ? 'default' : 'secondary'}>
-                          {property.isActive ? 'Published' : 'Under Review'}
+                          {property.isActive ? 'Pubblicato' : 'In Revisione'}
                         </Badge>
                       </div>
                       <div className="absolute bottom-3 left-3">
@@ -432,7 +432,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                           onClick={() => setComingSoonOpen(true)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
-                          View
+                          Visualizza
                         </Button>
                         <Button 
                           variant="outline" 
@@ -441,7 +441,7 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                           onClick={() => setComingSoonOpen(true)}
                         >
                           <Edit className="h-4 w-4 mr-1" />
-                          Edit
+                          Modifica
                         </Button>
                       </div>
                     </CardContent>
@@ -451,14 +451,14 @@ export default function HostDashboard({ user }: HostDashboardProps) {
             ) : (
               <Card className="text-center p-12">
                 <Home className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Properties Yet</h3>
+                <h3 className="text-xl font-semibold mb-2">Nessuna Proprietà</h3>
                 <p className="text-gray-600 mb-6">
-                  You haven't added any properties yet. Create your first listing to start welcoming guests!
+                  Non hai ancora aggiunto proprietà. Crea il tuo primo annuncio per iniziare ad accogliere ospiti!
                 </p>
                 <Button asChild>
                   <Link href="/host/create-property">
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Property
+                    Crea la Tua Prima Proprietà
                   </Link>
                 </Button>
               </Card>
@@ -469,13 +469,13 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           <TabsContent value="bookings" className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Booking Management</h2>
-                <p className="text-gray-600">View and manage your reservations</p>
+                <h2 className="text-2xl font-bold">Gestione Prenotazioni</h2>
+                <p className="text-gray-600">Visualizza e gestisci le tue prenotazioni</p>
               </div>
               <Button variant="outline" asChild>
                 <Link href="/host/calendar">
                   <Calendar className="h-4 w-4 mr-2" />
-                  View Calendar
+                  Visualizza Calendario
                 </Link>
               </Button>
             </div>
@@ -498,8 +498,8 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                               {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
                             </div>
                             <div className="flex items-center text-sm text-gray-600">
-                              <Users className="h-4 w-4 mr-1" />
-                              {booking.guests} guest{booking.guests > 1 ? 's' : ''}
+                                <Users className="h-4 w-4 mr-1" />
+                              {booking.guests} ospit{booking.guests > 1 ? 'i' : 'e'}
                             </div>
                           </div>
                         </div>
@@ -512,11 +512,11 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                         <div className="flex space-x-2 mt-3">
                           <Button size="sm" variant="outline">
                             <MessageSquare className="h-4 w-4 mr-1" />
-                            Message
+                            Messaggio
                           </Button>
                           {booking.status === 'pending' && (
                             <Button size="sm">
-                              Accept
+                              Accetta
                             </Button>
                           )}
                         </div>
@@ -532,13 +532,13 @@ export default function HostDashboard({ user }: HostDashboardProps) {
           <TabsContent value="collaborations" className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Influencer Collaborations</h2>
-                <p className="text-gray-600">Manage partnerships with content creators</p>
+                <h2 className="text-2xl font-bold">Collaborazioni con Influencer</h2>
+                <p className="text-gray-600">Gestisci le partnership con i content creator</p>
               </div>
               <Button asChild>
                 <Link href="/host/find-influencers">
                   <Users className="h-4 w-4 mr-2" />
-                  Find Influencers
+                  Trova Influencer
                 </Link>
               </Button>
             </div>
@@ -548,26 +548,26 @@ export default function HostDashboard({ user }: HostDashboardProps) {
               <CardHeader>
                 <CardTitle className="flex items-center text-purple-800">
                   <Gift className="h-5 w-5 mr-2" />
-                  Your Standard Offer
+                  La Tua Offerta Standard
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-purple-800">Offer Type</p>
-                    <p className="text-purple-700">Free Stay</p>
+                    <p className="text-sm font-medium text-purple-800">Tipo Offerta</p>
+                    <p className="text-purple-700">Soggiorno Gratuito</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-purple-800">Duration</p>
-                    <p className="text-purple-700">2-7 nights</p>
+                    <p className="text-sm font-medium text-purple-800">Durata</p>
+                    <p className="text-purple-700">2-7 notti</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-purple-800">Min. Followers</p>
-                    <p className="text-purple-700">10,000+</p>
+                    <p className="text-sm font-medium text-purple-800">Min. Follower</p>
+                    <p className="text-purple-700">10.000+</p>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <p className="text-sm font-medium text-purple-800 mb-2">Expected Deliverables</p>
+                  <p className="text-sm font-medium text-purple-800 mb-2">Contenuti Richiesti</p>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">Instagram posts (1-3)</Badge>
                     <Badge variant="outline">Instagram stories (5-10)</Badge>
@@ -604,13 +604,13 @@ export default function HostDashboard({ user }: HostDashboardProps) {
                       </div>
                       <div className="flex space-x-2">
                         <Button variant="outline">
-                          View Portfolio
+                          Visualizza Portfolio
                         </Button>
                         <Button variant="outline">
-                          Decline
+                          Rifiuta
                         </Button>
                         <Button>
-                          Accept Collaboration
+                          Accetta Collaborazione
                         </Button>
                       </div>
                     </div>
@@ -624,29 +624,29 @@ export default function HostDashboard({ user }: HostDashboardProps) {
               <CardHeader>
                 <CardTitle className="flex items-center text-green-800">
                   <Share2 className="h-5 w-5 mr-2" />
-                  Referral Program
+                  Programma Referral
                 </CardTitle>
                 <CardDescription className="text-green-700">
-                  Invite other hosts and earn rewards
+                  Invita altri host e guadagna ricompense
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-green-800 mb-1">Your Referral Code</p>
+                    <p className="font-medium text-green-800 mb-1">Il Tuo Codice Referral</p>
                     <code className="bg-white px-3 py-2 rounded border text-green-800 font-mono">
                       {hostProfile?.referralCode}
                     </code>
                     <p className="text-sm text-green-700 mt-2">
-                      Earn €50 for each host that joins and gets their first booking!
+                      Guadagna €50 per ogni host che si iscrive e ottiene la prima prenotazione!
                     </p>
                   </div>
                   <div className="text-center">
                     <Button onClick={copyReferralCode} className="mb-2">
                       <Copy className="h-4 w-4 mr-2" />
-                      {copiedReferral ? 'Copied!' : 'Copy Link'}
+                      {copiedReferral ? 'Copiato!' : 'Copia Link'}
                     </Button>
-                    <p className="text-xs text-green-600">0 referrals so far</p>
+                    <p className="text-xs text-green-600">0 referral finora</p>
                   </div>
                 </div>
               </CardContent>

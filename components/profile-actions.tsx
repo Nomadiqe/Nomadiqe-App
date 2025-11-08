@@ -86,10 +86,10 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
       setIsFollowing(data.isFollowing)
 
       toast({
-        title: data.isFollowing ? 'Following' : 'Unfollowed',
+        title: data.isFollowing ? 'Stai seguendo' : 'Non segui più',
         description: data.isFollowing
-          ? `You are now following ${userName}`
-          : `You unfollowed ${userName}`,
+          ? `Ora stai seguendo ${userName}`
+          : `Non segui più ${userName}`,
       })
 
       // Refresh the page to update follower/following counts
@@ -147,7 +147,7 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
         >
           <Link href="/profile/edit" className="flex items-center gap-1">
             <Settings className="w-3.5 h-3.5" />
-            <span className="whitespace-nowrap">Edit Profile</span>
+            <span className="whitespace-nowrap">Modifica Profilo</span>
           </Link>
         </Button>
         <div className="relative flex-shrink-0">
@@ -157,7 +157,7 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
           >
             <Link href="/messages" className="flex items-center gap-1">
               <MessageCircle className="w-3.5 h-3.5" />
-              <span className="whitespace-nowrap">Messages</span>
+              <span className="whitespace-nowrap">Messaggi</span>
             </Link>
           </Button>
           {unreadMessagesCount > 0 && (
@@ -175,7 +175,7 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
           ) : (
             <Copy className="w-3.5 h-3.5" />
           )}
-          <span className="whitespace-nowrap">{copied ? 'Copied!' : 'Copy Link'}</span>
+          <span className="whitespace-nowrap">{copied ? 'Copiato!' : 'Copia Link'}</span>
         </Button>
       </div>
     )
@@ -189,7 +189,7 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
         className="bg-muted hover:bg-muted/80 text-foreground rounded-md px-2.5 py-1.5 text-xs font-medium transition-all shadow-sm hover:shadow-md flex items-center gap-1 flex-shrink-0"
       >
         <UserPlus className="w-3.5 h-3.5" />
-        <span className="whitespace-nowrap">{isLoading ? '...' : isFollowing ? 'Unfollow' : 'Follow'}</span>
+        <span className="whitespace-nowrap">{isLoading ? '...' : isFollowing ? 'Smetti di seguire' : 'Segui'}</span>
       </Button>
       <Button
         onClick={handleMessage}
@@ -207,7 +207,7 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
         ) : (
           <Share className="w-3.5 h-3.5" />
         )}
-        <span className="whitespace-nowrap">{copied ? 'Copied!' : 'Share'}</span>
+        <span className="whitespace-nowrap">{copied ? 'Copiato!' : 'Condividi'}</span>
       </Button>
     </div>
   )

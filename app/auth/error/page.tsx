@@ -6,17 +6,17 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertCircle } from 'lucide-react'
 
 const errorMap = {
-  Signin: 'Try signing in with a different account.',
-  OAuthSignin: 'Try signing in with a different account.',
-  OAuthCallback: 'Try signing in with a different account.',
-  OAuthCreateAccount: 'Try signing in with a different account.',
-  EmailCreateAccount: 'Try signing in with a different account.',
-  Callback: 'Try signing in with a different account.',
-  OAuthAccountNotLinked: 'To confirm your identity, sign in with the same account you used originally.',
-  EmailSignin: 'The e-mail could not be sent.',
-  CredentialsSignin: 'Sign in failed. Check the details you provided are correct.',
-  SessionRequired: 'Please sign in to access this page.',
-  default: 'Unable to sign in.',
+  Signin: 'Prova ad accedere con un account diverso.',
+  OAuthSignin: 'Prova ad accedere con un account diverso.',
+  OAuthCallback: 'Prova ad accedere con un account diverso.',
+  OAuthCreateAccount: 'Prova ad accedere con un account diverso.',
+  EmailCreateAccount: 'Prova ad accedere con un account diverso.',
+  Callback: 'Prova ad accedere con un account diverso.',
+  OAuthAccountNotLinked: 'Per confermare la tua identità, accedi con lo stesso account usato originariamente.',
+  EmailSignin: "L'email non può essere inviata.",
+  CredentialsSignin: 'Accesso fallito. Verifica che i dettagli forniti siano corretti.',
+  SessionRequired: 'Accedi per visualizzare questa pagina.',
+  default: 'Impossibile accedere.',
 }
 
 export default function AuthErrorPage() {
@@ -35,7 +35,7 @@ export default function AuthErrorPage() {
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+              Indietro
             </button>
             
             <div className="flex justify-center mb-4">
@@ -44,7 +44,7 @@ export default function AuthErrorPage() {
               </div>
             </div>
             
-            <h1 className="text-2xl font-bold text-foreground">Authentication Error</h1>
+            <h1 className="text-2xl font-bold text-foreground">Errore di Autenticazione</h1>
             <p className="text-muted-foreground mt-2">
               {error ? errorMap[error] : errorMap.default}
             </p>
@@ -54,7 +54,7 @@ export default function AuthErrorPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-red-800">
-                <strong>Error Code:</strong> {error}
+                <strong>Codice Errore:</strong> {error}
               </p>
             </div>
           )}
@@ -63,19 +63,19 @@ export default function AuthErrorPage() {
           <div className="space-y-4">
             <Button asChild className="w-full">
               <Link href="/auth/signin">
-                Try Again
+                Riprova
               </Link>
             </Button>
             
             <Button asChild variant="outline" className="w-full">
               <Link href="/auth/signup">
-                Create New Account
+                Crea Nuovo Account
               </Link>
             </Button>
             
             <Button asChild variant="ghost" className="w-full">
               <Link href="/">
-                Go to Homepage
+                Vai alla Home
               </Link>
             </Button>
           </div>
@@ -83,7 +83,7 @@ export default function AuthErrorPage() {
           {/* Help Text */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>
-              If you continue to have problems, please contact our support team.
+              Se continui ad avere problemi, contatta il nostro team di supporto.
             </p>
           </div>
         </div>

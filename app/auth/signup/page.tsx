@@ -39,8 +39,8 @@ export default function SignUpPage() {
   const validateForm = () => {
     if (!formData.email || !formData.password || !formData.confirmPassword) {
       toast({
-        title: "Validation Error",
-        description: "Please fill in all fields.",
+        title: "Errore di validazione",
+        description: "Compila tutti i campi.",
         variant: "destructive",
       })
       return false
@@ -48,8 +48,8 @@ export default function SignUpPage() {
 
     if (formData.password.length < 6) {
       toast({
-        title: "Validation Error",
-        description: "Password must be at least 6 characters long.",
+        title: "Errore di validazione",
+        description: "La password deve essere lunga almeno 6 caratteri.",
         variant: "destructive",
       })
       return false
@@ -57,8 +57,8 @@ export default function SignUpPage() {
 
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Validation Error",
-        description: "Passwords do not match.",
+        title: "Errore di validazione",
+        description: "Le password non corrispondono.",
         variant: "destructive",
       })
       return false
@@ -67,8 +67,8 @@ export default function SignUpPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
       toast({
-        title: "Validation Error",
-        description: "Please enter a valid email address.",
+        title: "Errore di validazione",
+        description: "Inserisci un indirizzo email valido.",
         variant: "destructive",
       })
       return false
@@ -101,8 +101,8 @@ export default function SignUpPage() {
 
       if (!response.ok) {
         toast({
-          title: "Registration failed",
-          description: data.message || "Something went wrong. Please try again.",
+          title: "Registrazione fallita",
+          description: data.message || "Qualcosa è andato storto. Riprova.",
           variant: "destructive",
         })
         return
@@ -117,8 +117,8 @@ export default function SignUpPage() {
 
       if (result?.ok) {
         toast({
-          title: "Welcome to Nomadiqe!",
-          description: "Your account has been created successfully.",
+          title: "Benvenuto su Nomadiqe!",
+          description: "Il tuo account è stato creato con successo.",
         })
 
         // Use NextAuth's built-in redirect after successful signin
@@ -126,15 +126,15 @@ export default function SignUpPage() {
         window.location.href = '/onboarding'
       } else {
         toast({
-          title: "Account created",
-          description: "Please sign in with your new account.",
+          title: "Account creato",
+          description: "Accedi con il tuo nuovo account.",
         })
         router.push('/auth/signin')
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Errore",
+        description: "Qualcosa è andato storto. Riprova.",
         variant: "destructive",
       })
     } finally {
@@ -149,8 +149,8 @@ export default function SignUpPage() {
       await signIn(provider, { callbackUrl: '/onboarding' })
     } catch (error) {
       toast({
-        title: "Error",
-        description: `Failed to sign up with ${provider}. Please try again.`,
+        title: "Errore",
+        description: `Registrazione con ${provider} fallita. Riprova.`,
         variant: "destructive",
       })
       setIsLoading(false)
@@ -192,8 +192,8 @@ export default function SignUpPage() {
                 className="w-16 h-auto object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold gradient-text">Join Nomadiqe</h1>
-            <p className="text-muted-foreground">Create your account and start exploring</p>
+            <h1 className="text-2xl font-bold gradient-text">Unisciti a Nomadiqe</h1>
+            <p className="text-muted-foreground">Crea il tuo account e inizia ad esplorare</p>
           </div>
 
           {/* Social Sign Up Buttons */}
@@ -227,7 +227,7 @@ export default function SignUpPage() {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    Continue with Google
+                    Continua con Google
                   </Button>
                 )}
 
@@ -243,7 +243,7 @@ export default function SignUpPage() {
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#1877F2">
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
-                    Continue with Facebook
+                    Continua con Facebook
                   </Button>
                 )}
 
@@ -259,7 +259,7 @@ export default function SignUpPage() {
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                     </svg>
-                    Continue with Apple
+                    Continua con Apple
                   </Button>
                 )}
               </div>
@@ -269,7 +269,7 @@ export default function SignUpPage() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or sign up with email</span>
+                  <span className="bg-card px-2 text-muted-foreground">Oppure registrati con email</span>
                 </div>
               </div>
             </>
@@ -288,7 +288,7 @@ export default function SignUpPage() {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Inserisci la tua email"
                   required
                   disabled={isLoading}
                 />
@@ -307,7 +307,7 @@ export default function SignUpPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create a password (min. 6 characters)"
+                  placeholder="Crea una password (min. 6 caratteri)"
                   required
                   disabled={isLoading}
                   minLength={6}
@@ -328,7 +328,7 @@ export default function SignUpPage() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
-                Confirm Password
+                Conferma Password
               </label>
               <div className="relative">
                 <Input
@@ -337,7 +337,7 @@ export default function SignUpPage() {
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirm your password"
+                  placeholder="Conferma la tua password"
                   required
                   disabled={isLoading}
                 />
@@ -356,30 +356,30 @@ export default function SignUpPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading ? 'Creazione account...' : 'Crea account'}
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
+            <span className="text-muted-foreground">Hai già un account? </span>
             <Link href="/auth/signin" className="text-primary hover:underline font-medium">
-              Sign in
+              Accedi
             </Link>
           </div>
 
           <div className="mt-2 text-center text-xs">
             <Link href="/auth/forgot-password" className="text-primary hover:underline">
-              Forgot your password?
+              Hai dimenticato la password?
             </Link>
           </div>
 
           <div className="mt-4 text-center text-xs text-muted-foreground">
-            By signing up, you agree to our{' '}
+            Registrandoti, accetti i nostri{' '}
             <Link href="/terms" className="text-primary hover:underline">
-              Terms of Service
+              Termini di Servizio
             </Link>{' '}
-            and{' '}
+            e la{' '}
             <Link href="/privacy" className="text-primary hover:underline">
               Privacy Policy
             </Link>

@@ -61,8 +61,8 @@ export default function CreatePostPage() {
 
     if (!session?.user?.id) {
       toast({
-        title: 'Error',
-        description: 'You must be signed in to create a post',
+        title: 'Errore',
+        description: 'Devi effettuare l\'accesso per creare un post',
         variant: 'destructive',
       })
       router.push('/auth/signin')
@@ -88,12 +88,12 @@ export default function CreatePostPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create post')
+        throw new Error(data.error || 'Impossibile creare il post')
       }
 
       toast({
-        title: 'Success',
-        description: 'Your post has been shared!',
+        title: 'Successo',
+        description: 'Il tuo post è stato condiviso!',
       })
 
       // Redirect to user's profile page
@@ -101,8 +101,8 @@ export default function CreatePostPage() {
     } catch (error) {
       console.error('Error creating post:', error)
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to create post',
+        title: 'Errore',
+        description: error instanceof Error ? error.message : 'Impossibile creare il post',
         variant: 'destructive',
       })
     } finally {
@@ -122,9 +122,9 @@ export default function CreatePostPage() {
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <span>Indietro</span>
             </Button>
-            <h1 className="text-xl font-semibold">Create Post</h1>
+            <h1 className="text-xl font-semibold">Crea Post</h1>
             <div className="w-16"></div> {/* Spacer for centering */}
           </div>
         </div>
@@ -137,12 +137,12 @@ export default function CreatePostPage() {
             {/* Content */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
-                What&#39;s on your mind?
+                A cosa stai pensando?
               </label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Share your travel experience, thoughts, or discoveries..."
+                placeholder="Condividi la tua esperienza di viaggio, pensieri o scoperte..."
                 className="w-full h-32 p-4 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-nomadiqe-500"
                 required
               />
@@ -152,13 +152,13 @@ export default function CreatePostPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground flex items-center space-x-2">
                 <MapPin className="w-4 h-4" />
-                <span>Location (optional)</span>
+                <span>Posizione (opzionale)</span>
               </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Where are you?"
+                placeholder="Dove ti trovi?"
                 className="w-full p-3 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-nomadiqe-500"
               />
             </div>
@@ -167,14 +167,14 @@ export default function CreatePostPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground flex items-center space-x-2">
                 <Home className="w-4 h-4" />
-                <span>Link a property (optional)</span>
+                <span>Collega una proprietà (opzionale)</span>
               </label>
               <PropertySearch
                 properties={properties}
                 value={selectedProperty}
                 onChange={setSelectedProperty}
                 disabled={isLoadingProperties}
-                placeholder={isLoadingProperties ? 'Loading properties...' : 'Search properties...'}
+                placeholder={isLoadingProperties ? 'Caricamento proprietà...' : 'Cerca proprietà...'}
               />
             </div>
 
@@ -182,14 +182,14 @@ export default function CreatePostPage() {
             <div className="space-y-4">
               <label className="text-sm font-medium text-foreground flex items-center space-x-2">
                 <ImageIcon className="w-4 h-4" />
-                <span>Add photos</span>
+                <span>Aggiungi foto</span>
               </label>
               
               <ImageUpload
                 multiple={true}
                 maxFiles={5}
                 maxSizeInMB={10}
-                placeholder="Click to upload photos or drag and drop"
+                placeholder="Clicca per caricare foto o trascina qui"
                 onUploadComplete={(images) => {
                   const urls = images.map(img => img.url)
                   setUploadedImages(prev => [...prev, ...urls])
@@ -205,14 +205,14 @@ export default function CreatePostPage() {
                 variant="outline"
                 onClick={() => router.push('/')}
               >
-                Cancel
+                Annulla
               </Button>
               <Button
                 type="submit"
                 disabled={!content.trim() || isSubmitting}
                 className="bg-nomadiqe-600 hover:bg-nomadiqe-700 disabled:opacity-50"
               >
-                {isSubmitting ? 'Posting...' : 'Share Post'}
+                {isSubmitting ? 'Pubblicazione...' : 'Condividi Post'}
               </Button>
             </div>
           </form>
@@ -222,13 +222,13 @@ export default function CreatePostPage() {
       {/* Tips Section */}
       <section className="py-8 px-4 border-t border-border bg-card/50">
         <div className="max-w-2xl mx-auto">
-          <h3 className="text-lg font-semibold mb-4">Tips for great posts</h3>
+          <h3 className="text-lg font-semibold mb-4">Consigli per post fantastici</h3>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p>• Share your genuine experiences and feelings</p>
-            <p>• Add high-quality photos to make your post stand out</p>
-            <p>• Use location tags to help others discover places</p>
-            <p>• Link properties to give context to your experience</p>
-            <p>• Be respectful and follow community guidelines</p>
+            <p>• Condividi le tue esperienze e sensazioni autentiche</p>
+            <p>• Aggiungi foto di alta qualità per far risaltare il tuo post</p>
+            <p>• Usa i tag di posizione per aiutare gli altri a scoprire luoghi</p>
+            <p>• Collega le proprietà per dare contesto alla tua esperienza</p>
+            <p>• Sii rispettoso e segui le linee guida della community</p>
           </div>
         </div>
       </section>

@@ -30,24 +30,24 @@ export default function SignInPage() {
 
       if (result?.error) {
         toast({
-          title: "Authentication failed",
-          description: "Invalid email or password. Please try again.",
+          title: "Autenticazione fallita",
+          description: "Email o password non validi. Riprova.",
           variant: "destructive",
         })
       } else if (result?.ok) {
         // Get updated session
         const session = await getSession()
         toast({
-          title: "Welcome back!",
-          description: `You're now signed in as ${session?.user?.name || email}`,
+          title: "Bentornato!",
+          description: `Hai effettuato l'accesso come ${session?.user?.name || email}`,
         })
         router.push('/dashboard')
         router.refresh()
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Errore",
+        description: "Qualcosa è andato storto. Riprova.",
         variant: "destructive",
       })
     } finally {
@@ -61,8 +61,8 @@ export default function SignInPage() {
       await signIn(provider, { callbackUrl: '/dashboard' })
     } catch (error) {
       toast({
-        title: "Error",
-        description: `Failed to sign in with ${provider}. Please try again.`,
+        title: "Errore",
+        description: `Accesso con ${provider} fallito. Riprova.`,
         variant: "destructive",
       })
       setIsLoading(false)
@@ -86,15 +86,15 @@ export default function SignInPage() {
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+              Indietro
             </button>
             <div className="flex justify-center mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-nomadiqe-500 to-nomadiqe-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">N</span>
               </div>
             </div>
-            <h1 className="text-2xl font-bold gradient-text">Welcome back</h1>
-            <p className="text-muted-foreground">Sign in to your Nomadiqe account</p>
+            <h1 className="text-2xl font-bold gradient-text">Bentornato</h1>
+            <p className="text-muted-foreground">Accedi al tuo account Nomadiqe</p>
           </div>
 
           {/* Social Sign In Buttons */}
@@ -128,7 +128,7 @@ export default function SignInPage() {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    Continue with Google
+                    Continua con Google
                   </Button>
                 )}
 
@@ -144,7 +144,7 @@ export default function SignInPage() {
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#1877F2">
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
-                    Continue with Facebook
+                    Continua con Facebook
                   </Button>
                 )}
 
@@ -160,7 +160,7 @@ export default function SignInPage() {
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                     </svg>
-                    Continue with Apple
+                    Continua con Apple
                   </Button>
                 )}
               </div>
@@ -170,7 +170,7 @@ export default function SignInPage() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+                  <span className="bg-card px-2 text-muted-foreground">Oppure continua con email</span>
                 </div>
               </div>
             </>
@@ -187,7 +187,7 @@ export default function SignInPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="Inserisci la tua email"
                 required
                 disabled={isLoading}
               />
@@ -203,7 +203,7 @@ export default function SignInPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Inserisci la tua password"
                   required
                   disabled={isLoading}
                 />
@@ -221,21 +221,21 @@ export default function SignInPage() {
               </div>
               <div className="mt-2 text-right">
                 <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
-                  Forgot your password?
+                  Hai dimenticato la password?
                 </Link>
               </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Accesso in corso...' : 'Accedi'}
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Don&apos;t have an account? </span>
+            <span className="text-muted-foreground">Non hai un account? </span>
             <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-              Sign up
+              Registrati
             </Link>
           </div>
         </div>

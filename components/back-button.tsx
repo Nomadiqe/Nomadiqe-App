@@ -13,7 +13,7 @@ interface BackButtonProps {
 }
 
 export function BackButton({ 
-  label = 'Back', 
+  label = 'Indietro', 
   variant = 'ghost', 
   size = 'sm',
   className = '',

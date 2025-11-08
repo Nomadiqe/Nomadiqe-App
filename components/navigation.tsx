@@ -60,27 +60,27 @@ export function Navigation() {
   // Desktop navigation items - filter based on authentication
   const navItems = session ? [
     { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Explore', icon: Globe },
-    { href: '/ai-search', label: 'Search', icon: Search },
-    { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
+    { href: '/search', label: 'Esplora', icon: Globe },
+    { href: '/ai-search', label: 'Cerca', icon: Search },
+    { href: `/profile/${session.user.id}`, label: 'Profilo', icon: User },
   ] : [
     { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Explore', icon: Globe },
-    { href: '/ai-search', label: 'Search', icon: Search },
+    { href: '/search', label: 'Esplora', icon: Globe },
+    { href: '/ai-search', label: 'Cerca', icon: Search },
   ]
 
   // Mobile navigation items - order: Home, Explore, [+], Search, Profile
   const mobileNavItems = [
     { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Explore', icon: Globe },
+    { href: '/search', label: 'Esplora', icon: Globe },
   ]
 
   const mobileNavItemsRight = session ? [
-    { href: '/ai-search', label: 'Search', icon: Search },
-    { href: `/profile/${session.user.id}`, label: 'Profile', icon: User },
+    { href: '/ai-search', label: 'Cerca', icon: Search },
+    { href: `/profile/${session.user.id}`, label: 'Profilo', icon: User },
   ] : [
-    { href: '/ai-search', label: 'Search', icon: Search },
-    { href: '/auth/signin', label: 'Profile', icon: User },
+    { href: '/ai-search', label: 'Cerca', icon: Search },
+    { href: '/auth/signin', label: 'Profilo', icon: User },
   ]
 
   return (
@@ -130,7 +130,7 @@ export function Navigation() {
                   className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-white hover:bg-primary/90"
                 >
                   <Plus className="w-5 h-5" />
-                  <span className="font-medium">Create Post</span>
+                  <span className="font-medium">Crea Post</span>
                 </Link>
               )}
             </div>
@@ -160,7 +160,7 @@ export function Navigation() {
                           className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center"
                         >
                           <LogOut className="h-4 w-4 mr-3" />
-                          Sign Out
+                          Esci
                         </button>
                       </div>
                     </div>
@@ -169,10 +169,10 @@ export function Navigation() {
               ) : (
                 <div className="flex items-center space-x-2">
                   <Button variant="ghost" asChild className="text-white hover:bg-white/10">
-                    <Link href="/auth/signin">Sign In</Link>
+                    <Link href="/auth/signin">Accedi</Link>
                   </Button>
                   <Button asChild className="bg-primary hover:bg-primary/90">
-                    <Link href="/auth/signup">Sign Up</Link>
+                    <Link href="/auth/signup">Registrati</Link>
                   </Button>
                 </div>
               )}
@@ -274,7 +274,7 @@ export function Navigation() {
           <div className="flex items-center space-x-1.5 flex-shrink-0">
             {session?.user?.role && (
               <div className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase shadow-md whitespace-nowrap">
-                {session.user.role === 'INFLUENCER' ? 'Creator' : session.user.role}
+                {session.user.role === 'INFLUENCER' ? 'Creatore' : session.user.role}
               </div>
             )}
             <Button
@@ -315,7 +315,7 @@ export function Navigation() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Sparkles className="h-4 w-4 mr-3" />
-                      KOL&BED Creators
+                      KOL&BED Creatori
                     </Link>
                   ) : (
                     <Link
@@ -324,7 +324,7 @@ export function Navigation() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Briefcase className="h-4 w-4 mr-3" />
-                      Host Mode
+                      Modalità Host
                     </Link>
                   )}
                   <button
@@ -337,12 +337,12 @@ export function Navigation() {
                     {theme === 'light' ? (
                       <>
                         <Moon className="h-4 w-4 mr-3" />
-                        Dark Mode
+                        Modalità Scura
                       </>
                     ) : (
                       <>
                         <Sun className="h-4 w-4 mr-3" />
-                        Light Mode
+                        Modalità Chiara
                       </>
                     )}
                   </button>
@@ -354,7 +354,7 @@ export function Navigation() {
                     className="text-left text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted w-full flex items-center"
                   >
                     <LogOut className="h-4 w-4 mr-3" />
-                    Sign Out
+                    Esci
                   </button>
                 </>
               ) : (
@@ -365,7 +365,7 @@ export function Navigation() {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Briefcase className="h-4 w-4 mr-3" />
-                    Host Mode
+                    Modalità Host
                   </Link>
                   <button
                     onClick={() => {
@@ -377,24 +377,24 @@ export function Navigation() {
                     {theme === 'light' ? (
                       <>
                         <Moon className="h-4 w-4 mr-3" />
-                        Dark Mode
+                        Modalità Scura
                       </>
                     ) : (
                       <>
                         <Sun className="h-4 w-4 mr-3" />
-                        Light Mode
+                        Modalità Chiara
                       </>
                     )}
                   </button>
                   <div className="flex flex-col space-y-2 pt-2">
                     <Button variant="outline" asChild className="w-full border-white/30 text-white hover:bg-white/10">
                       <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                        Sign In
+                        Accedi
                       </Link>
                     </Button>
                     <Button asChild className="w-full bg-primary hover:bg-primary/90">
                       <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                        Sign Up
+                        Registrati
                       </Link>
                     </Button>
                   </div>

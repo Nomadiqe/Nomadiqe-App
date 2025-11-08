@@ -23,10 +23,10 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email }),
       })
       if (!res.ok) throw new Error('Request failed')
-      toast({ title: 'Check your email', description: "If an account exists, you'll receive a reset link." })
+      toast({ title: 'Controlla la tua email', description: "Se un account esiste, riceverai un link di reset." })
       router.push('/auth/signin')
     } catch (err) {
-      toast({ title: 'Error', description: 'Unable to process request. Try again later.', variant: 'destructive' })
+      toast({ title: 'Errore', description: 'Impossibile elaborare la richiesta. Riprova più tardi.', variant: 'destructive' })
     } finally {
       setIsSubmitting(false)
     }
@@ -36,8 +36,8 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold mb-2">Forgot password</h1>
-          <p className="text-sm text-muted-foreground mb-6">Enter your email and we&apos;ll send you a link to reset your password.</p>
+          <h1 className="text-2xl font-bold mb-2">Password dimenticata</h1>
+          <p className="text-sm text-muted-foreground mb-6">Inserisci la tua email e ti invieremo un link per reimpostare la password.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Sending...' : 'Send reset link'}
+              {isSubmitting ? 'Invio in corso...' : 'Invia link di reset'}
             </Button>
           </form>
 
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
               onClick={() => router.back()} 
               className="text-primary hover:underline cursor-pointer"
             >
-              Back
+              Indietro
             </button>
           </div>
         </div>

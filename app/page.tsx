@@ -91,9 +91,9 @@ export default async function HomePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-center sm:text-left">
-                    <h3 className="text-lg font-bold mb-1 text-foreground">Join the Nomadiqe Community</h3>
+                    <h3 className="text-lg font-bold mb-1 text-foreground">Unisciti alla Community Nomadiqe</h3>
                     <p className="text-sm text-muted-foreground">
-                      Sign up to share your adventures, connect with travelers, and discover unique stays
+                      Registrati per condividere le tue avventure, connetterti con viaggiatori e scoprire soggiorni unici
                     </p>
                   </div>
                   <div className="flex gap-3 flex-shrink-0">
@@ -102,13 +102,13 @@ export default async function HomePage() {
                       variant="outline"
                       className="border-primary text-primary hover:bg-primary/10 rounded-lg px-4 py-2 font-semibold transition-all"
                     >
-                      <Link href="/auth/signin">Sign In</Link>
+                      <Link href="/auth/signin">Accedi</Link>
                     </Button>
                     <Button 
                       asChild 
                       className="bg-accent hover:bg-accent/90 text-white rounded-lg px-4 py-2 font-bold transition-all shadow-sm hover:shadow-md"
                     >
-                      <Link href="/auth/signup">Sign Up</Link>
+                      <Link href="/auth/signup">Registrati</Link>
                     </Button>
                   </div>
                 </div>
@@ -128,11 +128,11 @@ export default async function HomePage() {
             <Card className="bg-card border-0 shadow-md rounded-xl">
               <CardContent className="p-12 text-center">
                 <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2 text-foreground">No Posts Yet</h3>
+                <h3 className="text-xl font-bold mb-2 text-foreground">Nessun Post</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   {session
-                    ? 'Be the first to share your travel story! Create your first post to get started.'
-                    : 'The community feed is empty right now. Check back soon for travel stories and experiences!'}
+                    ? 'Sii il primo a condividere la tua storia di viaggio! Crea il tuo primo post per iniziare.'
+                    : 'Il feed della community è vuoto al momento. Torna presto per storie ed esperienze di viaggio!'}
                 </p>
                 {session && (
                   <Button 
@@ -141,7 +141,7 @@ export default async function HomePage() {
                   >
                     <Link href="/create-post">
                       <Plus className="w-4 h-4 mr-2" />
-                      Create Your First Post
+                      Crea il Tuo Primo Post
                     </Link>
                   </Button>
                 )}

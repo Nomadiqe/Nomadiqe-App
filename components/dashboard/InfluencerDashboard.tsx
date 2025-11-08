@@ -194,20 +194,20 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Connected Platforms</CardTitle>
+              <CardTitle className="text-sm font-medium">Piattaforme Collegate</CardTitle>
               <Share2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.socialAccounts}</div>
               <p className="text-xs text-muted-foreground">
-                Social accounts linked
+                Account social collegati
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Followers</CardTitle>
+              <CardTitle className="text-sm font-medium">Follower Totali</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -219,33 +219,33 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
                   : '0'}
               </div>
               <p className="text-xs text-muted-foreground">
-                Across all platforms
+                Su tutte le piattaforme
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
+              <CardTitle className="text-sm font-medium">Visualizzazioni Profilo</CardTitle>
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.profileViews}</div>
               <p className="text-xs text-muted-foreground">
-                This month
+                Questo mese
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Content Created</CardTitle>
+              <CardTitle className="text-sm font-medium">Contenuti Creati</CardTitle>
               <Camera className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.contentPieces}</div>
               <p className="text-xs text-muted-foreground">
-                Posts shared
+                Post condivisi
               </p>
             </CardContent>
           </Card>
@@ -254,10 +254,10 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
         {/* Main Content Tabs */}
         <Tabs defaultValue="opportunities" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
-            <TabsTrigger value="collaborations">My Collaborations</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="opportunities">Opportunità</TabsTrigger>
+            <TabsTrigger value="collaborations">Le Mie Collaborazioni</TabsTrigger>
+            <TabsTrigger value="profile">Profilo</TabsTrigger>
+            <TabsTrigger value="analytics">Statistiche</TabsTrigger>
           </TabsList>
 
           {/* Opportunities Tab */}
@@ -433,13 +433,13 @@ export default function InfluencerDashboard({ user }: InfluencerDashboardProps) 
             ) : (
               <Card className="text-center p-12">
                 <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Active Collaborations</h3>
+                <h3 className="text-xl font-semibold mb-2">Nessuna Collaborazione Attiva</h3>
                 <p className="text-gray-600 mb-6">
-                  Ready to start your first collaboration? Browse available opportunities and connect with hosts!
+                  Pronto per la tua prima collaborazione? Esplora le opportunità disponibili e connettiti con gli host!
                 </p>
                 <Button onClick={() => setComingSoonOpen(true)}>
                   <Eye className="h-4 w-4 mr-2" />
-                  Browse Opportunities
+                  Esplora Opportunità
                 </Button>
               </Card>
             )}

@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -11,6 +12,12 @@ export async function GET() {
     }
 
     const userId = session.user.id
+    
+    // Get pagination params
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const skip = (page - 1) * limit
 
     // Fetch unread messages
     const unreadMessages = await prisma.message.findMany({
@@ -171,15 +178,17 @@ export async function GET() {
     // Sort all notifications by createdAt (most recent first)
     notifications.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
-    // Limit to 20 most recent notifications
-    const limitedNotifications = notifications.slice(0, 20)
+    // Apply pagination
+    const paginatedNotifications = notifications.slice(skip, skip + limit)
 
-    // Count unread notifications
-    const unreadCount = notifications.filter((n: any) => !n.isRead).length
+    // Count unread notifications (only for first page)
+    const unreadCount = page === 1 ? notifications.filter((n: any) => !n.isRead).length : 0
 
     return NextResponse.json({
-      notifications: limitedNotifications,
+      notifications: paginatedNotifications,
       unreadCount,
+      hasMore: skip + limit < notifications.length,
+      total: notifications.length,
     })
   } catch (error) {
     console.error('Error fetching notifications:', error)

@@ -168,7 +168,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
           
           {/* Header */}
           <div className="flex items-center justify-between border-b px-4 pb-3">
-            <h2 className="text-lg font-semibold">Comments</h2>
+            <h2 className="text-lg font-semibold">Commenti</h2>
             <Button
               variant="ghost"
               size="icon"
@@ -235,12 +235,12 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                                 {deletingCommentId === comment.id ? (
                                   <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Deleting...
+                                    Eliminazione...
                                   </>
                                 ) : (
                                   <>
                                     <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete Comment
+                                    Elimina Commento
                                   </>
                                 )}
                               </Button>
@@ -254,8 +254,8 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
               </div>
             ) : (
               <div className="py-8 text-center">
-                <p className="text-muted-foreground">No comments yet</p>
-                <p className="text-sm text-muted-foreground">Be the first to comment!</p>
+                <p className="text-muted-foreground">Nessun commento</p>
+                <p className="text-sm text-muted-foreground">Sii il primo a commentare!</p>
               </div>
             )}
           </div>
@@ -291,14 +291,14 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
           ) : (
             <div className="border-t p-4 space-y-3 bg-background flex-shrink-0">
               <p className="text-center text-sm text-muted-foreground">
-                Sign in to join the conversation
+                Accedi per unirti alla conversazione
               </p>
               <div className="flex gap-2 justify-center">
                 <Button asChild variant="outline" size="sm">
-                  <Link href="/auth/signin">Sign In</Link>
+                  <Link href="/auth/signin">Accedi</Link>
                 </Button>
                 <Button asChild size="sm">
-                  <Link href="/auth/signup">Sign Up</Link>
+                  <Link href="/auth/signup">Registrati</Link>
                 </Button>
               </div>
             </div>

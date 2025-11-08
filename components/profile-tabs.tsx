@@ -75,28 +75,28 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
             value="posts"
             className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
           >
-            Posts
+            Post
           </TabsTrigger>
           {userRole === 'HOST' && (
             <TabsTrigger 
               value="properties"
               className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
             >
-              Properties
+              Proprietà
             </TabsTrigger>
           )}
           <TabsTrigger 
             value="comments"
             className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
           >
-            Comments
+            Commenti
           </TabsTrigger>
           {isOwnProfile && (
             <TabsTrigger 
               value="messages"
               className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
             >
-              Messages
+              Messaggi
             </TabsTrigger>
           )}
         </TabsList>
@@ -109,13 +109,13 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
         ) : (
           <EmptyState
             icon={Camera}
-            title="No posts yet"
+            title="Nessun post"
             description={
               isOwnProfile
-                ? 'Share your first travel experience!'
-                : `${userName} hasn't shared any posts yet.`
+                ? 'Condividi la tua prima esperienza di viaggio!'
+                : `${userName} non ha ancora condiviso post.`
             }
-            actionLabel={isOwnProfile ? 'Create Your First Post' : undefined}
+            actionLabel={isOwnProfile ? 'Crea il Tuo Primo Post' : undefined}
             actionHref="/create-post"
           />
         )}
@@ -155,13 +155,13 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
           ) : (
           <EmptyState
             icon={Home}
-            title="No properties listed"
+            title="Nessuna proprietà"
             description={
               isOwnProfile
-                ? 'List your first property to start hosting!'
-                : `${userName} hasn't listed any properties yet.`
+                ? 'Pubblica la tua prima proprietà per iniziare ad ospitare!'
+                : `${userName} non ha ancora pubblicato proprietà.`
             }
-            actionLabel={isOwnProfile ? 'List Your Property' : undefined}
+            actionLabel={isOwnProfile ? 'Pubblica Proprietà' : undefined}
             actionHref="/host/create-property"
           />
           )}
@@ -225,11 +225,11 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
         ) : (
           <EmptyState
             icon={MessageSquare}
-            title="No comments yet"
+            title="Nessun commento"
             description={
               isOwnProfile
-                ? 'Your comments on other posts will appear here.'
-                : `${userName} hasn't commented on any posts yet.`
+                ? 'I tuoi commenti su altri post appariranno qui.'
+                : `${userName} non ha ancora commentato.`
             }
           />
         )}

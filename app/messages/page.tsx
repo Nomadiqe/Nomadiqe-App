@@ -109,13 +109,13 @@ export default function MessagesPage() {
       <div className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Messages</h1>
+            <h1 className="text-2xl font-bold">Messaggi</h1>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => router.back()}
             >
-              Back
+              Indietro
             </Button>
           </div>
           
@@ -141,11 +141,11 @@ export default function MessagesPage() {
           <Card className="border-dashed">
             <CardContent className="p-12 text-center">
               <MessageCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Messages</h3>
+              <h3 className="text-xl font-semibold mb-2">Nessun Messaggio</h3>
               <p className="text-muted-foreground">
                 {searchQuery 
-                  ? `No results found for "${searchQuery}"`
-                  : 'Start a conversation or search for users or groups'}
+                  ? `Nessun risultato per "${searchQuery}"`
+                  : 'Inizia una conversazione o cerca utenti o gruppi'}
               </p>
             </CardContent>
           </Card>

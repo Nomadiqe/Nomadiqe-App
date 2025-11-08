@@ -106,10 +106,8 @@ export function ProfileActions({ isOwnProfile, userId, userName }: ProfileAction
   }
 
   const handleMessage = () => {
-    toast({
-      title: 'Coming Soon',
-      description: 'Messaging feature will be available soon!',
-    })
+    // Navigate to messages page with the user
+    router.push(`/messages/${userId}`)
   }
 
   const handleAddPhoto = () => {

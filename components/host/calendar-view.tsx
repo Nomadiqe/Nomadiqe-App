@@ -17,6 +17,7 @@ import {
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isBefore, addMonths, subMonths } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
+import { BackButton } from '@/components/back-button'
 
 interface Booking {
   id: string
@@ -166,6 +167,9 @@ export function HostCalendarView({ properties }: HostCalendarViewProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Calendario Proprietà</h1>
           <p className="text-muted-foreground">

@@ -20,6 +20,7 @@ import { ProfileActions } from '@/components/profile-actions'
 import { ProfileTabs } from '@/components/profile-tabs'
 import { ProfileImageViewer } from '@/components/profile-image-viewer'
 import { WalletDialog } from '@/components/wallet-dialog'
+import { BackButton } from '@/components/back-button'
 
 interface ProfilePageProps {
   params: {
@@ -183,6 +184,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-secondary/30 to-primary/30 -z-10" />
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10" />
+      
+      {/* Back Button */}
+      <div className="max-w-4xl mx-auto px-4 pt-4">
+        <BackButton />
+      </div>
       
       {/* Profile Header */}
       <section className="relative w-full overflow-x-hidden">

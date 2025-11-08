@@ -1,7 +1,12 @@
+import { BackButton } from '@/components/back-button'
+
 export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-4xl mx-auto px-4">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
 
         <div className="prose prose-lg max-w-none dark:prose-invert">

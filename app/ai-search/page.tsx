@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Search, User, MapPin, Hash, Building, Sparkles, Send, ChevronDown, Trophy, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import { BackButton } from '@/components/back-button'
 
 export default function AISearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -94,6 +95,11 @@ export default function AISearchPage() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -z-10" />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <div className="mb-4">
+          <BackButton />
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">

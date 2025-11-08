@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { SearchHeaderImproved } from '@/components/search-header-improved'
 import { SearchFiltersImproved } from '@/components/search-filters-improved'
 import { SearchResultsImproved } from '@/components/search-results-improved'
+import { BackButton } from '@/components/back-button'
 
 // Disable caching for this page to always show latest properties
 export const dynamic = 'force-dynamic'
@@ -133,6 +134,9 @@ export default async function SearchPage({
       {/* Search Header - Desktop only */}
       <section className="hidden sm:block relative py-6 shrink-0">
         <div className="max-w-[1600px] mx-auto px-4">
+          <div className="mb-4">
+            <BackButton />
+          </div>
           {/* Search Bar */}
           <SearchHeaderImproved />
         </div>

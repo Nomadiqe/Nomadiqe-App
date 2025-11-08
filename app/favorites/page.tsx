@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PropertyCard } from '@/components/property-card'
 import { Heart, Filter } from 'lucide-react'
+import { BackButton } from '@/components/back-button'
 
 export default async function FavoritesPage() {
   const session = await getServerSession(authOptions)
@@ -41,6 +42,9 @@ export default async function FavoritesPage() {
       {/* Header */}
       <section className="bg-card border-b border-border py-8">
         <div className="max-w-6xl mx-auto px-4">
+          <div className="mb-4">
+            <BackButton />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold flex items-center space-x-3">

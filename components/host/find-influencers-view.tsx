@@ -20,6 +20,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BackButton } from '@/components/back-button'
 
 interface Influencer {
   id: string
@@ -170,6 +171,9 @@ export function FindInfluencersView() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -z-10" />
 
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
             <Sparkles className="w-8 h-8 text-pink-500" />

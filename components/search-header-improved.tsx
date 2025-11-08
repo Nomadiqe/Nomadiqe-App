@@ -135,7 +135,7 @@ export function SearchHeaderImproved() {
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
             )}
             <Input
-              placeholder={showUserSearch ? "Search users..." : "Where are you going?"}
+              placeholder={showUserSearch ? "Cerca utenti..." : "Dove vai?"}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="pl-10 h-12 border-0 bg-muted/30 dark:bg-muted/20 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
@@ -298,14 +298,14 @@ export function SearchHeaderImproved() {
                   >
                     <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                     <span className="text-foreground">
-                      {guests} {guests === 1 ? 'guest' : 'guests'}
+                      {guests} {guests === 1 ? 'ospite' : 'ospiti'}
                     </span>
                     <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-4" align="start">
                   <div className="space-y-3">
-                    <label className="text-sm font-medium">Guests</label>
+                    <label className="text-sm font-medium">Ospiti</label>
                     <div className="flex items-center gap-3">
                       <Button
                         variant="outline"

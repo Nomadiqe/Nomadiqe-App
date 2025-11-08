@@ -103,7 +103,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
           </Sheet>
 
           <h2 className="text-lg font-semibold text-foreground">
-            {properties.length === 0 ? 'No properties found' : `${properties.length} ${properties.length === 1 ? 'property' : 'properties'}`}
+            {properties.length === 0 ? 'Nessuna proprietà trovata' : `${properties.length} ${properties.length === 1 ? 'proprietà' : 'proprietà'}`}
           </h2>
         </div>
 
@@ -142,7 +142,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
       {properties.length === 0 ? (
         <div className="flex-1 flex items-center justify-center bg-card/50 dark:bg-secondary/50 border border-primary/30 rounded-xl backdrop-blur-sm">
           <div className="text-center">
-            <p className="text-foreground text-lg mb-2">No properties match your filters</p>
+            <p className="text-foreground text-lg mb-2">Nessuna proprietà corrisponde ai tuoi filtri</p>
             <p className="text-sm text-muted-foreground">Try adjusting your search criteria</p>
           </div>
         </div>
@@ -217,7 +217,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                     variant="default"
                   >
                     <Grid3x3 className="w-5 h-5 mr-2" />
-                    Show List ({properties.length})
+                    Mostra Lista ({properties.length})
                   </Button>
                 </div>
               </>
@@ -258,7 +258,7 @@ export function SearchResultsImproved({ properties }: SearchResultsProps) {
                     variant="default"
                   >
                     <Map className="w-5 h-5 mr-2" />
-                    Show Map
+                    Mostra Mappa
                   </Button>
                 </div>
               </>

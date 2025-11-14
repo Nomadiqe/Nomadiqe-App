@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -15,38 +14,45 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user with onboarding progress
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        onboardingProgress: true
-      }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select(`
+        *,
+        onboarding_progress:onboarding_progress(*)
+      `)
+      .eq('id', user.id)
+      .single()
 
-    if (!user) {
+    if (userError || !userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       )
     }
 
-    const progress = user.onboardingProgress
-    const completedSteps = progress?.completedSteps 
-      ? JSON.parse(progress.completedSteps as string)
+    const progress = Array.isArray(userData.onboarding_progress) 
+      ? userData.onboarding_progress[0] 
+      : userData.onboarding_progress
+    
+    const completedSteps = progress?.completed_steps 
+      ? (typeof progress.completed_steps === 'string' 
+          ? JSON.parse(progress.completed_steps) 
+          : progress.completed_steps)
       : []
 
     return NextResponse.json({
-      currentStep: user.onboardingStep || 'profile-setup',
+      currentStep: userData.onboardingStep || 'profile-setup',
       completedSteps,
-      role: user.role,
-      onboardingStatus: user.onboardingStatus,
+      role: userData.role,
+      onboardingStatus: userData.onboardingStatus,
       metadata: progress?.metadata || {},
-      startedAt: progress?.startedAt,
-      completedAt: progress?.completedAt,
+      startedAt: progress?.started_at || progress?.startedAt,
+      completedAt: progress?.completed_at || progress?.completedAt,
       userData: {
-        fullName: user.fullName,
-        username: user.username,
-        profilePictureUrl: user.profilePictureUrl,
-        email: user.email
+        fullName: userData.fullName,
+        username: userData.username,
+        profilePictureUrl: userData.profilePictureUrl,
+        email: userData.email
       }
     })
 

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const profileSchema = z.object({
@@ -15,9 +13,10 @@ const profileSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -28,11 +27,13 @@ export async function POST(req: NextRequest) {
     const validatedData = profileSchema.parse(body)
 
     // Check if username is already taken
-    const existingUser = await prisma.user.findUnique({
-      where: { username: validatedData.username }
-    })
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('username', validatedData.username)
+      .single()
 
-    if (existingUser && existingUser.id !== session.user.id) {
+    if (existingUser && existingUser.id !== user.id) {
       return NextResponse.json(
         { error: 'Username already taken', code: 'ONBOARDING_001' },
         { status: 400 }
@@ -40,30 +41,50 @@ export async function POST(req: NextRequest) {
     }
 
     // Update user profile
-    const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({
         fullName: validatedData.fullName,
         username: validatedData.username,
         profilePictureUrl: validatedData.profilePicture,
         onboardingStatus: 'IN_PROGRESS',
-        onboardingStep: 'role-selection'
-      }
-    })
+        onboardingStep: 'role-selection',
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+      .select()
+      .single()
+
+    if (updateError) {
+      throw updateError
+    }
 
     // Update or create onboarding progress
-    await prisma.onboardingProgress.upsert({
-      where: { userId: session.user.id },
-      create: {
-        userId: session.user.id,
-        currentStep: 'role-selection',
-        completedSteps: JSON.stringify(['profile-setup'])
-      },
-      update: {
-        currentStep: 'role-selection',
-        completedSteps: JSON.stringify(['profile-setup'])
-      }
-    })
+    const { data: existingProgress } = await supabase
+      .from('onboarding_progress')
+      .select('id')
+      .eq('userId', user.id)
+      .single()
+
+    const completedSteps = ['profile-setup']
+
+    if (existingProgress) {
+      await supabase
+        .from('onboarding_progress')
+        .update({
+          currentStep: 'role-selection',
+          completedSteps: JSON.stringify(completedSteps),
+        })
+        .eq('userId', user.id)
+    } else {
+      await supabase
+        .from('onboarding_progress')
+        .insert({
+          userId: user.id,
+          currentStep: 'role-selection',
+          completedSteps: JSON.stringify(completedSteps),
+        })
+    }
 
     return NextResponse.json({
       success: true,

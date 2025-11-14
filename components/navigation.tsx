@@ -1,7 +1,8 @@
 "use client"
 
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
+import { signOut } from '@/lib/supabase/auth-client'
 import { Button } from '@/components/ui/button'
 import {
   User,
@@ -20,16 +21,33 @@ import {
   Globe,
   Sparkles
 } from 'lucide-react'
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 
 export function Navigation() {
-  const { data: session } = useSession()
+  const { user, isLoading } = useSupabase()
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const { supabase } = useSupabase()
   const pathname = usePathname()
+  const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+
+  // Fetch user profile data when user is available
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('users')
+        .select('id, role, fullName, name, profilePictureUrl')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => setUserProfile(data))
+    } else {
+      setUserProfile(null)
+    }
+  }, [user, supabase])
 
   // Hide navigation on auth pages (signin, signup, etc.)
   const isAuthPage = pathname?.startsWith('/auth/')
@@ -38,13 +56,14 @@ export function Navigation() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' })
+    await signOut()
+    router.push('/')
   }
 
   // Get the appropriate home URL based on user role
   const getHomeHref = () => {
-    if (!session) return '/'
-    switch (session.user.role) {
+    if (!userProfile) return '/'
+    switch (userProfile.role) {
       case 'HOST':
         return '/dashboard/host'
       case 'GUEST':
@@ -58,11 +77,11 @@ export function Navigation() {
   }
 
   // Desktop navigation items - filter based on authentication
-  const navItems = session ? [
+  const navItems = user ? [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Esplora', icon: Globe },
     { href: '/ai-search', label: 'Cerca', icon: Search },
-    { href: `/profile/${session.user.id}`, label: 'Profilo', icon: User },
+    { href: `/profile/${user.id}`, label: 'Profilo', icon: User },
   ] : [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Esplora', icon: Globe },
@@ -75,9 +94,9 @@ export function Navigation() {
     { href: '/search', label: 'Esplora', icon: Globe },
   ]
 
-  const mobileNavItemsRight = session ? [
+  const mobileNavItemsRight = user ? [
     { href: '/ai-search', label: 'Cerca', icon: Search },
-    { href: `/profile/${session.user.id}`, label: 'Profilo', icon: User },
+    { href: `/profile/${user.id}`, label: 'Profilo', icon: User },
   ] : [
     { href: '/ai-search', label: 'Cerca', icon: Search },
     { href: '/auth/signin', label: 'Profilo', icon: User },
@@ -124,7 +143,7 @@ export function Navigation() {
                   </Link>
                 )
               })}
-              {session && (
+              {user && (
                 <Link
                   href="/create-post"
                   className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors bg-primary text-white hover:bg-primary/90"
@@ -137,7 +156,7 @@ export function Navigation() {
 
             {/* Desktop Right Menu */}
             <div className="flex items-center space-x-3">
-              {session ? (
+              {user ? (
                 <>
                   <div className="relative group">
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:bg-white/10">
@@ -147,7 +166,7 @@ export function Navigation() {
                     {/* Dropdown Menu */}
                     <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                       <div className="py-1">
-                        {session.user?.role === 'ADMIN' && (
+                        {userProfile?.role === 'ADMIN' && (
                           <Link href="/admin">
                             <div className="block px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center">
                               <Shield className="h-4 w-4 mr-3" />
@@ -209,7 +228,7 @@ export function Navigation() {
 
           {/* Center Create Post Button */}
             <Link
-            href={session ? "/create-post" : "/auth/signin"}
+            href={user ? "/create-post" : "/auth/signin"}
               className="flex items-center justify-center w-14 h-14 -mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <svg
@@ -272,9 +291,9 @@ export function Navigation() {
 
           {/* Mobile Right Menu */}
           <div className="flex items-center space-x-1.5 flex-shrink-0">
-            {session?.user?.role && (
+            {userProfile?.role && (
               <div className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase shadow-md whitespace-nowrap">
-                {session.user.role === 'INFLUENCER' ? 'Creatore' : session.user.role}
+                {userProfile.role === 'INFLUENCER' ? 'Creatore' : userProfile.role}
               </div>
             )}
             <Button
@@ -296,9 +315,9 @@ export function Navigation() {
         {isMobileMenuOpen && (
           <div className="border-t border-border py-3 bg-card">
             <div className="flex flex-col space-y-1 px-2">
-              {session ? (
+              {user ? (
                 <>
-                  {session.user?.role === 'ADMIN' && (
+                  {userProfile?.role === 'ADMIN' && (
                     <Link
                       href="/admin"
                       className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"
@@ -308,7 +327,7 @@ export function Navigation() {
                       Admin
                     </Link>
                   )}
-                  {session.user?.role === 'HOST' ? (
+                  {userProfile?.role === 'HOST' ? (
                     <Link
                       href="/host/find-influencers"
                       className="text-foreground hover:text-primary transition-colors py-2.5 px-3 rounded-md hover:bg-muted flex items-center"

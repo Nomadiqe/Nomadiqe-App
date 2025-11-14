@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { getPointsHistory } from '@/lib/services/points-service'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -20,15 +19,37 @@ export async function GET(request: Request) {
     const offset = parseInt(searchParams.get('offset') || '0', 10)
     const action = searchParams.get('action') || undefined
 
-    const result = await getPointsHistory(session.user.id, {
-      limit,
-      offset,
-      action,
-    })
+    // Build query
+    let query = supabase
+      .from('point_transactions')
+      .select('*')
+      .eq('userId', user.id)
+      .order('createdAt', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    // Filter by action if provided
+    if (action) {
+      query = query.eq('action', action)
+    }
+
+    const { data: transactions, error: transactionsError, count } = await query
+
+    if (transactionsError) {
+      console.error('Points history error:', transactionsError)
+      return NextResponse.json(
+        { error: 'Failed to fetch points history' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      data: result,
+      data: {
+        transactions: transactions || [],
+        total: count || 0,
+        limit,
+        offset,
+      },
     })
   } catch (error) {
     console.error('Error fetching points history:', error)

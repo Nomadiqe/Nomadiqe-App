@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
-import { awardPoints } from '@/lib/services/points-service'
 
 const profileSetupSchema = z.object({
   contentNiches: z.array(z.string()).min(1, 'At least one content niche is required').max(5, 'Maximum 5 niches allowed'),
@@ -49,9 +46,11 @@ const generateProfileLink = (username: string, userId: string): string => {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -59,15 +58,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is an influencer
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { 
-        influencerProfile: true,
-        socialConnections: true
-      }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, influencer_profiles(*), social_connections(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'INFLUENCER' || !user.influencerProfile) {
+    if (userError || !userData || userData.role !== 'INFLUENCER' || !userData.influencer_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for influencers' },
         { status: 403 }
@@ -75,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify at least one social connection exists
-    if (user.socialConnections.length === 0) {
+    if (!userData.social_connections || userData.social_connections.length === 0) {
       return NextResponse.json(
         { error: 'At least one social media account must be connected first' },
         { status: 400 }
@@ -89,10 +86,10 @@ export async function POST(req: NextRequest) {
     const invalidNiches = validatedData.contentNiches.filter(
       niche => !AVAILABLE_NICHES.includes(niche.toLowerCase())
     )
-    
+
     if (invalidNiches.length > 0) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid niches selected',
           details: { invalidNiches, availableNiches: AVAILABLE_NICHES }
         },
@@ -101,12 +98,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate unique profile link
-    const profileLink = generateProfileLink(user.username || user.name || 'influencer', user.id)
+    const profileLink = generateProfileLink(userData.username || userData.name || 'influencer', user.id)
 
     // Check if profile link already exists and make it unique if needed
     let uniqueProfileLink = profileLink
     let counter = 1
-    while (await prisma.influencerProfile.findFirst({ where: { profileLink: uniqueProfileLink } })) {
+    while (true) {
+      const { data: existing } = await supabase
+        .from('influencer_profiles')
+        .select('id')
+        .eq('profileLink', uniqueProfileLink)
+        .single()
+
+      if (!existing) break
       uniqueProfileLink = `${profileLink}-${counter}`
       counter++
     }
@@ -118,49 +122,60 @@ export async function POST(req: NextRequest) {
     } : null
 
     // Update influencer profile
-    await prisma.influencerProfile.update({
-      where: { userId: session.user.id },
-      data: {
+    const { error: updateError } = await supabase
+      .from('influencer_profiles')
+      .update({
         contentNiches: validatedData.contentNiches.map(n => n.toLowerCase()),
         deliverables,
         portfolioUrl: validatedData.portfolioUrl,
         profileLink: uniqueProfileLink
-      }
-    })
+      })
+      .eq('userId', user.id)
+
+    if (updateError) {
+      console.error('Failed to update influencer profile:', updateError)
+      return NextResponse.json(
+        { error: 'Failed to setup influencer profile' },
+        { status: 500 }
+      )
+    }
 
     // Complete onboarding for influencer
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    await supabase
+      .from('users')
+      .update({
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
-      }
-    })
+      })
+      .eq('id', user.id)
 
-    // Award onboarding completion points
-    await awardPoints({
-      userId: session.user.id,
-      action: 'onboarding_complete',
-      description: 'Influencer onboarding completed successfully!',
+    // Award onboarding completion points via RPC
+    await supabase.rpc('award_points', {
+      p_user_id: user.id,
+      p_action: 'onboarding_complete',
+      p_points: 50,
+      p_description: 'Influencer onboarding completed successfully!'
     })
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
       completedSteps.push('media-kit-setup')
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'completed',
           completedSteps: JSON.stringify(completedSteps),
-          completedAt: new Date()
-        }
-      })
+          completedAt: new Date().toISOString()
+        })
+        .eq('userId', user.id)
     }
 
     return NextResponse.json({
@@ -172,7 +187,7 @@ export async function POST(req: NextRequest) {
       profile: {
         contentNiches: validatedData.contentNiches,
         profileLink: uniqueProfileLink,
-        connectedPlatforms: user.socialConnections.map((conn: any) => ({
+        connectedPlatforms: userData.social_connections.map((conn: any) => ({
           platform: conn.platform,
           username: conn.username,
           followerCount: conn.followerCount

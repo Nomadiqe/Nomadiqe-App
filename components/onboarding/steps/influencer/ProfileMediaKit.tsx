@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -44,7 +44,6 @@ interface ProfileMediaKitProps {
 export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
   const { completeStep, setStep } = useOnboarding()
   const router = useRouter()
-  const { update: updateSession } = useSession()
 
   const [formData, setFormData] = useState<FormData>({
     contentNiches: [],
@@ -159,17 +158,11 @@ export default function ProfileMediaKit({ onComplete }: ProfileMediaKitProps) {
         completeStep('media-kit-setup')
         setStep('complete')
 
-        // Refresh the session to update the onboarding status in the token
-        await updateSession()
-        
-        // Small delay to ensure session is updated before redirect
-        await new Promise(resolve => setTimeout(resolve, 300))
-
         if (onComplete) {
           onComplete()
         } else {
-          // For final redirect, use window.location to ensure session is fully refreshed
-          window.location.href = '/dashboard/influencer'
+          // Navigate to influencer dashboard
+          router.push('/dashboard/influencer')
         }
       } else {
         setErrors({ general: result.error || 'Failed to setup profile' })

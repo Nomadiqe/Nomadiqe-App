@@ -1,39 +1,75 @@
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function OnboardingIndexPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
   
-  if (!session) {
+  const { data: { user }, error } = await supabase.auth.getUser()
+  
+  if (error || !user) {
+    console.error('Auth error:', error)
     redirect('/auth/signin')
   }
 
   // Get user's current onboarding progress from database (fresh data)
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      onboardingProgress: true
-    }
-  })
+  let { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
 
-  if (!user) {
-    redirect('/auth/signin')
+  // If user doesn't exist in public.users, create them (fallback if trigger didn't fire)
+  if (userError || !userData) {
+    console.log('User not found in public.users, creating...', { userId: user.id, error: userError })
+    
+    // Try to create the user record
+    const { data: newUser, error: createError } = await supabase
+      .from('users')
+      .insert({
+        id: user.id,
+        email: user.email || '',
+        name: user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        full_name: user.user_metadata?.full_name || user.user_metadata?.name,
+        email_verified: user.email_confirmed_at ? true : false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    if (createError || !newUser) {
+      console.error('Failed to create user:', createError)
+      // Wait a bit and retry fetching (trigger might be delayed)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { data: retryUser } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      
+      if (!retryUser) {
+        console.error('User still not found after retry')
+        redirect('/auth/signin')
+      }
+      userData = retryUser
+    } else {
+      userData = newUser
+    }
   }
 
   // If onboarding is complete, redirect to role-specific dashboard
-  if (user.onboardingStatus === 'COMPLETED') {
-    const dashboardUrl = user.role === 'HOST' ? '/dashboard/host'
-      : user.role === 'INFLUENCER' ? '/dashboard/influencer'
-      : user.role === 'GUEST' ? '/dashboard/guest'
+  const onboardingStatus = userData.onboardingStatus
+  if (onboardingStatus === 'COMPLETED') {
+    const dashboardUrl = userData.role === 'HOST' ? '/dashboard/host'
+      : userData.role === 'INFLUENCER' ? '/dashboard/influencer'
+      : userData.role === 'GUEST' ? '/dashboard/guest'
       : '/dashboard'
     redirect(dashboardUrl)
   }
 
   // Route to the current step based on database state
   // This ensures users continue from where they left off
-  const currentStep = user.onboardingStep || 'profile-setup'
+  const currentStep = userData.onboardingStep || 'profile-setup'
   
   // Map database step names to route paths
   const stepRoutes: Record<string, string> = {

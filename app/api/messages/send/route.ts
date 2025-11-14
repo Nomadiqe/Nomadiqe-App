@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -15,24 +15,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'recipientId required' }, { status: 400 })
     }
 
-    const currentUserId = session.user.id
+    const currentUserId = user.id
     const userAId = currentUserId < recipientId ? currentUserId : recipientId
     const userBId = currentUserId < recipientId ? recipientId : currentUserId
 
-    const conversation = await prisma.conversation.upsert({
-      where: { userAId_userBId: { userAId, userBId } },
-      update: {},
-      create: { userAId, userBId },
-    })
+    // Check if conversation exists
+    let { data: conversation } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('userAId', userAId)
+      .eq('userBId', userBId)
+      .single()
 
-    const message = await prisma.message.create({
-      data: {
+    // Create conversation if it doesn't exist
+    if (!conversation) {
+      const { data: newConversation, error: convError } = await supabase
+        .from('conversations')
+        .insert({ userAId, userBId })
+        .select()
+        .single()
+      
+      if (convError) {
+        console.error('Conversation creation error:', convError)
+        return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
+      }
+      conversation = newConversation
+    }
+
+    // Create message
+    const { data: message, error: msgError } = await supabase
+      .from('messages')
+      .insert({
         conversationId: conversation.id,
         senderId: currentUserId,
         content: content || null,
         postId: postId || null,
-      },
-    })
+      })
+      .select()
+      .single()
+
+    if (msgError) {
+      console.error('Message creation error:', msgError)
+      return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+    }
 
     return NextResponse.json({ conversationId: conversation.id, message })
   } catch (error) {

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
-import { awardPoints } from '@/lib/services/points-service'
 
 const interestsSchema = z.object({
   interests: z.array(z.string().min(1)).max(20, 'Too many interests selected').default([])
@@ -11,9 +8,11 @@ const interestsSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -21,11 +20,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is a guest
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'GUEST') {
+    if (userError || !userData || userData.role !== 'GUEST') {
       return NextResponse.json(
         { error: 'This endpoint is only for guests' },
         { status: 403 }
@@ -35,51 +36,60 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const validatedData = interestsSchema.parse(body)
 
-    // Update or create guest preferences
-    await prisma.guestPreferences.upsert({
-      where: { userId: session.user.id },
-      create: {
-        userId: session.user.id,
+    // Update or create guest preferences (upsert)
+    const { error: upsertError } = await supabase
+      .from('guest_preferences')
+      .upsert({
+        userId: user.id,
         travelInterests: validatedData.interests
-      },
-      update: {
-        travelInterests: validatedData.interests
-      }
-    })
+      }, {
+        onConflict: 'userId'
+      })
+
+    if (upsertError) {
+      console.error('Failed to update guest preferences:', upsertError)
+      return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+      )
+    }
 
     // Complete onboarding for guest
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    await supabase
+      .from('users')
+      .update({
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
-      }
-    })
+      })
+      .eq('id', user.id)
 
-    // Award onboarding completion points
-    await awardPoints({
-      userId: session.user.id,
-      action: 'onboarding_complete',
-      description: 'Onboarding completed successfully!',
+    // Award onboarding completion points via RPC
+    await supabase.rpc('award_points', {
+      p_user_id: user.id,
+      p_action: 'onboarding_complete',
+      p_points: 50,
+      p_description: 'Onboarding completed successfully!'
     })
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
       completedSteps.push('interest-selection')
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'completed',
           completedSteps: JSON.stringify(completedSteps),
-          completedAt: new Date()
-        }
-      })
+          completedAt: new Date().toISOString()
+        })
+        .eq('userId', user.id)
     }
 
     return NextResponse.json({

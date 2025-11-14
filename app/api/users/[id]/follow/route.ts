@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,7 +17,7 @@ export async function POST(
     }
 
     const targetUserId = params.id
-    const followerId = session.user.id
+    const followerId = user.id
 
     if (targetUserId === followerId) {
       return NextResponse.json(
@@ -28,11 +27,13 @@ export async function POST(
     }
 
     // Check if user exists
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserId },
-    })
+    const { data: targetUser, error: userError } = await supabase
+      .from('users')
+      .select('id, name, username')
+      .eq('id', targetUserId)
+      .single()
 
-    if (!targetUser) {
+    if (userError || !targetUser) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -40,14 +41,12 @@ export async function POST(
     }
 
     // Check if already following
-    const existingFollow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId,
-          followingId: targetUserId,
-        },
-      },
-    })
+    const { data: existingFollow } = await supabase
+      .from('follows')
+      .select('id')
+      .eq('followerId', followerId)
+      .eq('followingId', targetUserId)
+      .single()
 
     if (existingFollow) {
       return NextResponse.json(
@@ -57,12 +56,13 @@ export async function POST(
     }
 
     // Create follow relationship
-    await prisma.follow.create({
-      data: {
+    await supabase
+      .from('follows')
+      .insert({
         followerId,
         followingId: targetUserId,
-      },
-    })
+        createdAt: new Date().toISOString(),
+      })
 
     // Award points for following (if not following yourself)
     if (followerId !== targetUserId) {
@@ -84,12 +84,18 @@ export async function POST(
     // Award points to the user being followed
     try {
       const { awardPoints } = await import('@/lib/services/points-service')
+      const { data: currentUser } = await supabase
+        .from('users')
+        .select('name')
+        .eq('id', followerId)
+        .single()
+        
       await awardPoints({
         userId: targetUserId,
         action: 'follower_gained',
         referenceId: followerId,
         referenceType: 'user',
-        description: `${session.user.name || 'Someone'} started following you`,
+        description: `${currentUser?.name || 'Someone'} started following you`,
       })
     } catch (pointsError) {
       // Points award failed, but follow should still succeed
@@ -97,16 +103,16 @@ export async function POST(
     }
 
     // Get updated follower/following counts
-    const [followersCount, followingCount] = await Promise.all([
-      prisma.follow.count({ where: { followingId: targetUserId } }),
-      prisma.follow.count({ where: { followerId: targetUserId } }),
+    const [{ count: followersCount }, { count: followingCount }] = await Promise.all([
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followingId', targetUserId),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followerId', targetUserId),
     ])
 
     return NextResponse.json({
       success: true,
       isFollowing: true,
-      followersCount,
-      followingCount,
+      followersCount: followersCount || 0,
+      followingCount: followingCount || 0,
     })
   } catch (error) {
     console.error('Error following user:', error)
@@ -122,9 +128,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -132,17 +139,15 @@ export async function DELETE(
     }
 
     const targetUserId = params.id
-    const followerId = session.user.id
+    const followerId = user.id
 
     // Check if follow relationship exists
-    const existingFollow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId,
-          followingId: targetUserId,
-        },
-      },
-    })
+    const { data: existingFollow } = await supabase
+      .from('follows')
+      .select('id')
+      .eq('followerId', followerId)
+      .eq('followingId', targetUserId)
+      .single()
 
     if (!existingFollow) {
       return NextResponse.json(
@@ -152,23 +157,22 @@ export async function DELETE(
     }
 
     // Delete follow relationship
-    await prisma.follow.delete({
-      where: {
-        id: existingFollow.id,
-      },
-    })
+    await supabase
+      .from('follows')
+      .delete()
+      .eq('id', existingFollow.id)
 
     // Get updated follower/following counts
-    const [followersCount, followingCount] = await Promise.all([
-      prisma.follow.count({ where: { followingId: targetUserId } }),
-      prisma.follow.count({ where: { followerId: targetUserId } }),
+    const [{ count: followersCount }, { count: followingCount }] = await Promise.all([
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followingId', targetUserId),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followerId', targetUserId),
     ])
 
     return NextResponse.json({
       success: true,
       isFollowing: false,
-      followersCount,
-      followingCount,
+      followersCount: followersCount || 0,
+      followingCount: followingCount || 0,
     })
   } catch (error) {
     console.error('Error unfollowing user:', error)
@@ -185,9 +189,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -195,16 +200,14 @@ export async function GET(
     }
 
     const targetUserId = params.id
-    const followerId = session.user.id
+    const followerId = user.id
 
-    const existingFollow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId,
-          followingId: targetUserId,
-        },
-      },
-    })
+    const { data: existingFollow } = await supabase
+      .from('follows')
+      .select('id')
+      .eq('followerId', followerId)
+      .eq('followingId', targetUserId)
+      .single()
 
     return NextResponse.json({
       isFollowing: !!existingFollow,

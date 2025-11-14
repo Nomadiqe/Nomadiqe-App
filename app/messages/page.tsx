@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { Search, MessageCircle, User, Hash } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MessagesPage() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredChats, setFilteredChats] = useState<any[]>([])
@@ -20,15 +20,15 @@ export default function MessagesPage() {
   const [searchMode, setSearchMode] = useState<'users' | 'groups'>('users')
 
   useEffect(() => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       router.push('/auth/signin')
       return
     }
-    
+
     // TODO: Fetch actual messages and chat history from API
     // For now, using mock data
     fetchChatHistory()
-  }, [session, router])
+  }, [user, router])
 
   const fetchChatHistory = async () => {
     try {

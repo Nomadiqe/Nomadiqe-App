@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { startOfDay } from 'date-fns'
 
 // POST: Block a date (set isAvailable to false)
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -27,19 +26,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify user owns the property
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
-      select: { id: true, hostId: true },
-    })
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .select('id, hostId')
+      .eq('id', propertyId)
+      .single()
 
-    if (!property) {
+    if (propertyError || !property) {
       return NextResponse.json(
         { error: 'Property not found' },
         { status: 404 }
       )
     }
 
-    if (property.hostId !== session.user.id) {
+    if (property.hostId !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden: You can only manage your own properties' },
         { status: 403 }
@@ -48,20 +48,14 @@ export async function POST(request: NextRequest) {
 
     // Check if there's an existing booking for this date
     const dateObj = new Date(date)
-    const existingBooking = await prisma.booking.findFirst({
-      where: {
-        propertyId,
-        status: {
-          in: ['PENDING', 'CONFIRMED']
-        },
-        OR: [
-          {
-            checkIn: { lte: dateObj },
-            checkOut: { gt: dateObj },
-          },
-        ],
-      },
-    })
+    const { data: existingBooking } = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('propertyId', propertyId)
+      .in('status', ['PENDING', 'CONFIRMED'])
+      .lte('checkIn', dateObj.toISOString())
+      .gt('checkOut', dateObj.toISOString())
+      .maybeSingle()
 
     if (existingBooking) {
       return NextResponse.json(
@@ -71,22 +65,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Create or update availability record to block the date
-    const availability = await prisma.availability.upsert({
-      where: {
-        propertyId_date: {
+    const startDate = startOfDay(dateObj).toISOString()
+
+    const { data: availability, error: availError } = await supabase
+      .from('availability')
+      .upsert(
+        {
           propertyId,
-          date: startOfDay(dateObj),
+          date: startDate,
+          isAvailable: false,
         },
-      },
-      update: {
-        isAvailable: false,
-      },
-      create: {
-        propertyId,
-        date: startOfDay(dateObj),
-        isAvailable: false,
-      },
-    })
+        {
+          onConflict: 'propertyId,date'
+        }
+      )
+      .select()
+      .single()
+
+    if (availError) {
+      console.error('Availability upsert error:', availError)
+      return NextResponse.json(
+        { error: 'Failed to block date' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -104,9 +106,10 @@ export async function POST(request: NextRequest) {
 // DELETE: Unblock a date (remove availability record or set isAvailable to true)
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -124,19 +127,20 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Verify user owns the property
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
-      select: { id: true, hostId: true },
-    })
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .select('id, hostId')
+      .eq('id', propertyId)
+      .single()
 
-    if (!property) {
+    if (propertyError || !property) {
       return NextResponse.json(
         { error: 'Property not found' },
         { status: 404 }
       )
     }
 
-    if (property.hostId !== session.user.id) {
+    if (property.hostId !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden: You can only manage your own properties' },
         { status: 403 }
@@ -144,14 +148,22 @@ export async function DELETE(request: NextRequest) {
     }
 
     const dateObj = new Date(date)
+    const startDate = startOfDay(dateObj).toISOString()
 
     // Delete the availability record (unblocking the date)
-    await prisma.availability.deleteMany({
-      where: {
-        propertyId,
-        date: startOfDay(dateObj),
-      },
-    })
+    const { error: deleteError } = await supabase
+      .from('availability')
+      .delete()
+      .eq('propertyId', propertyId)
+      .eq('date', startDate)
+
+    if (deleteError) {
+      console.error('Availability delete error:', deleteError)
+      return NextResponse.json(
+        { error: 'Failed to unblock date' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -169,9 +181,10 @@ export async function DELETE(request: NextRequest) {
 // GET: Get availability for a property
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -189,33 +202,39 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user owns the property
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
-      select: { id: true, hostId: true },
-    })
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .select('id, hostId')
+      .eq('id', propertyId)
+      .single()
 
-    if (!property) {
+    if (propertyError || !property) {
       return NextResponse.json(
         { error: 'Property not found' },
         { status: 404 }
       )
     }
 
-    if (property.hostId !== session.user.id) {
+    if (property.hostId !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden: You can only view your own properties' },
         { status: 403 }
       )
     }
 
-    const availability = await prisma.availability.findMany({
-      where: {
-        propertyId,
-      },
-      orderBy: {
-        date: 'asc',
-      },
-    })
+    const { data: availability, error: availError } = await supabase
+      .from('availability')
+      .select('*')
+      .eq('propertyId', propertyId)
+      .order('date', { ascending: true })
+
+    if (availError) {
+      console.error('Availability fetch error:', availError)
+      return NextResponse.json(
+        { error: 'Failed to fetch availability' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

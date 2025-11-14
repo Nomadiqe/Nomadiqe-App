@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -31,7 +31,7 @@ interface PostCommentsProps {
 }
 
 export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCommentsProps) {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const router = useRouter()
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
@@ -42,7 +42,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
 
   // Debug log
-  console.log('PostComments rendered - isOpen:', isOpen, 'session:', !!session, 'comments:', comments.length)
+  console.log('PostComments rendered - isOpen:', isOpen, 'user:', !!user, 'comments:', comments.length)
 
   const fetchComments = useCallback(async () => {
     setIsLoading(true)
@@ -68,7 +68,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!newComment.trim() || !session?.user?.id) return
+    if (!newComment.trim() || !user?.id) return
 
     setIsSubmitting(true)
     try {
@@ -96,7 +96,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
   }
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!session?.user?.id) return
+    if (!user?.id) return
 
     setDeletingCommentId(commentId)
     try {
@@ -213,7 +213,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
                         </div>
                         
                         {/* Show menu only for own comments */}
-                        {session?.user?.id === comment.user.id && (
+                        {user?.id === comment.user.id && (
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
@@ -261,7 +261,7 @@ export function PostComments({ postId, isOpen, onClose, onCommentAdded }: PostCo
           </div>
 
           {/* Comment Input - Fixed at bottom */}
-          {session ? (
+          {user ? (
             <div className="border-t bg-background flex-shrink-0">
               <form onSubmit={handleSubmit} className="p-4">
                 <div className="flex items-end gap-2">

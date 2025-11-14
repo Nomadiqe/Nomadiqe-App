@@ -1,19 +1,29 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
     const { email } = await request.json()
+
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
 
-    // Silent user lookup (avoid revealing if email exists)
-    await prisma.user.findUnique({ where: { email } })
+    const supabase = await createClient()
 
-    // TODO: generate token, store, send email
+    // Supabase handles password reset emails automatically
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+    })
+
+    // Always return success to avoid revealing if email exists (security best practice)
+    if (error) {
+      console.error('Password reset error:', error.message)
+    }
+
     return NextResponse.json({ ok: true })
   } catch (error) {
+    console.error('Password reset error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

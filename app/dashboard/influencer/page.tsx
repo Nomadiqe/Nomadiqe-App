@@ -1,28 +1,30 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import InfluencerDashboard from '@/components/dashboard/InfluencerDashboard'
 
 async function InfluencerDashboardPageContent() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session) {
+  const supabase = await createClient()
+
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !authUser) {
     redirect('/auth/signin')
   }
 
   // Get user with influencer profile and social connections
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      influencerProfile: true,
-      socialConnections: true
-    }
-  })
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select(`
+      *,
+      influencerProfile:influencer_profiles(*),
+      socialConnections:social_connections(*)
+    `)
+    .eq('id', authUser.id)
+    .single()
 
   // If user doesn't exist in DB, redirect to sign in
-  if (!user) {
+  if (userError || !user) {
     redirect('/auth/signin')
   }
 

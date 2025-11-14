@@ -1,39 +1,58 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const otherUserId = params.id
-    const currentUserId = session.user.id
+    const currentUserId = user.id
 
     const userAId = currentUserId < otherUserId ? currentUserId : otherUserId
     const userBId = currentUserId < otherUserId ? otherUserId : currentUserId
 
-    const conversation = await prisma.conversation.upsert({
-      where: { userAId_userBId: { userAId, userBId } },
-      update: {},
-      create: { userAId, userBId },
-    })
+    // Upsert conversation
+    const { data: conversation, error: convError } = await supabase
+      .from('conversations')
+      .upsert(
+        { userAId, userBId },
+        { onConflict: 'userAId,userBId' }
+      )
+      .select()
+      .single()
 
-    const messages = await prisma.message.findMany({
-      where: { conversationId: conversation.id },
-      orderBy: { createdAt: 'asc' },
-    })
+    if (convError) {
+      console.error('Error upserting conversation:', convError)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+
+    // Fetch messages
+    const { data: messages, error: messagesError } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversationId', conversation.id)
+      .order('createdAt', { ascending: true })
+
+    if (messagesError) {
+      console.error('Error fetching messages:', messagesError)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
 
     // Mark others' messages as read
-    await prisma.message.updateMany({
-      where: { conversationId: conversation.id, senderId: { not: currentUserId }, isRead: false },
-      data: { isRead: true },
-    })
+    await supabase
+      .from('messages')
+      .update({ isRead: true })
+      .eq('conversationId', conversation.id)
+      .neq('senderId', currentUserId)
+      .eq('isRead', false)
 
-    return NextResponse.json({ conversationId: conversation.id, messages })
+    return NextResponse.json({ conversationId: conversation.id, messages: messages || [] })
   } catch (error) {
     console.error('Fetch messages error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

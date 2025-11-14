@@ -1,105 +1,89 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json({ notifications: [], unreadCount: 0 })
     }
 
-    const userId = session.user.id
+    const userId = user.id
 
     // Fetch unread messages
-    const unreadMessages = await prisma.message.findMany({
-      where: {
-        conversation: {
-          OR: [{ userAId: userId }, { userBId: userId }],
-        },
-        senderId: { not: userId },
-        isRead: false,
-      },
-      include: {
-        sender: {
-          select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true },
-        },
-        conversation: {
-          include: {
-            userA: { select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true } },
-            userB: { select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true } },
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
+    const { data: unreadMessages } = await supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:users!senderId (id, name, fullName, username, image, profilePictureUrl),
+        conversation:conversations (
+          *,
+          userA:users!userAId (id, name, fullName, username, image, profilePictureUrl),
+          userB:users!userBId (id, name, fullName, username, image, profilePictureUrl)
+        )
+      `)
+      .neq('senderId', userId)
+      .eq('isRead', false)
+      .order('createdAt', { ascending: false })
+      .limit(10)
 
     // Fetch recent post likes (only for posts owned by this user)
-    const recentLikes = await prisma.postLike.findMany({
-      where: {
-        post: { authorId: userId },
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true },
-        },
-        post: {
-          select: { id: true, content: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
+    const { data: recentLikes } = await supabase
+      .from('post_likes')
+      .select(`
+        *,
+        user:users!userId (id, name, fullName, username, image, profilePictureUrl),
+        post:posts!postId (id, content, authorId)
+      `)
+      .order('createdAt', { ascending: false })
+      .limit(100) // Get more to filter
+
+    const userLikes = (recentLikes || []).filter((like: any) => like.post?.authorId === userId).slice(0, 10)
 
     // Fetch recent comments (only for posts owned by this user)
-    const recentComments = await prisma.postComment.findMany({
-      where: {
-        post: { authorId: userId },
-      },
-      include: {
-        author: {
-          select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true },
-        },
-        post: {
-          select: { id: true, content: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
+    const { data: recentComments } = await supabase
+      .from('post_comments')
+      .select(`
+        *,
+        author:users!authorId (id, name, fullName, username, image, profilePictureUrl),
+        post:posts!postId (id, content, authorId)
+      `)
+      .order('createdAt', { ascending: false })
+      .limit(100) // Get more to filter
+
+    const userComments = (recentComments || []).filter((comment: any) => comment.post?.authorId === userId).slice(0, 10)
 
     // Fetch recent followers
-    const recentFollowers = await prisma.follow.findMany({
-      where: {
-        followingId: userId, // People who followed this user
-      },
-      include: {
-        follower: {
-          select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
+    const { data: recentFollowers } = await supabase
+      .from('follows')
+      .select(`
+        *,
+        follower:users!followerId (id, name, fullName, username, image, profilePictureUrl)
+      `)
+      .eq('followingId', userId)
+      .order('createdAt', { ascending: false })
+      .limit(10)
 
     // Fetch recent point transactions
-    const recentPoints = await prisma.pointTransaction.findMany({
-      where: {
-        userId,
-        points: { gt: 0 }, // Only positive points (earned)
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
+    const { data: recentPoints } = await supabase
+      .from('point_transactions')
+      .select('*')
+      .eq('userId', userId)
+      .gt('points', 0)
+      .order('createdAt', { ascending: false })
+      .limit(10)
 
     // Transform notifications
     const notifications: any[] = []
 
     // Add unread messages
-    unreadMessages.forEach((msg: any) => {
+    ;(unreadMessages || []).forEach((msg: any) => {
+      if (!msg.conversation) return
       const otherUser = msg.conversation.userAId === userId ? msg.conversation.userB : msg.conversation.userA
+      if (!otherUser) return
       notifications.push({
         id: `msg-${msg.id}`,
         type: 'message',
@@ -107,13 +91,13 @@ export async function GET() {
         message: msg.content || 'Shared a post with you',
         avatar: otherUser.profilePictureUrl || otherUser.image,
         href: `/messages/${otherUser.id}`,
-        createdAt: msg.createdAt.toISOString(),
+        createdAt: msg.createdAt,
         isRead: msg.isRead,
       })
     })
 
     // Add likes
-    recentLikes.forEach((like: any) => {
+    userLikes.forEach((like: any) => {
       notifications.push({
         id: `like-${like.id}`,
         type: 'like',
@@ -121,13 +105,13 @@ export async function GET() {
         message: like.post.content ? like.post.content.substring(0, 50) + '...' : 'Your post',
         avatar: like.user.profilePictureUrl || like.user.image,
         href: `/post/${like.post.id}`,
-        createdAt: like.createdAt.toISOString(),
+        createdAt: like.createdAt,
         isRead: false,
       })
     })
 
     // Add comments
-    recentComments.forEach((comment: any) => {
+    userComments.forEach((comment: any) => {
       notifications.push({
         id: `comment-${comment.id}`,
         type: 'comment',
@@ -135,13 +119,13 @@ export async function GET() {
         message: comment.content || '',
         avatar: comment.author.profilePictureUrl || comment.author.image,
         href: `/post/${comment.post.id}`,
-        createdAt: comment.createdAt.toISOString(),
+        createdAt: comment.createdAt,
         isRead: false,
       })
     })
 
     // Add followers
-    recentFollowers.forEach((follow: any) => {
+    ;(recentFollowers || []).forEach((follow: any) => {
       notifications.push({
         id: `follow-${follow.id}`,
         type: 'follow',
@@ -149,13 +133,13 @@ export async function GET() {
         message: 'Check out their profile!',
         avatar: follow.follower.profilePictureUrl || follow.follower.image,
         href: `/profile/${follow.follower.id}`,
-        createdAt: follow.createdAt.toISOString(),
+        createdAt: follow.createdAt,
         isRead: false,
       })
     })
 
     // Add point transactions
-    recentPoints.forEach((transaction: any) => {
+    ;(recentPoints || []).forEach((transaction: any) => {
       notifications.push({
         id: `points-${transaction.id}`,
         type: 'points',
@@ -163,7 +147,7 @@ export async function GET() {
         message: transaction.description || `You earned points for ${transaction.action}`,
         avatar: undefined,
         href: '/dashboard',
-        createdAt: transaction.createdAt.toISOString(),
+        createdAt: transaction.createdAt,
         isRead: false,
       })
     })
@@ -189,7 +173,3 @@ export async function GET() {
     )
   }
 }
-
-
-
-

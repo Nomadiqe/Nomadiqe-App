@@ -1,6 +1,4 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 // DELETE /api/posts/[id]/comments/[commentId] - Delete a comment
@@ -9,9 +7,10 @@ export async function DELETE(
   { params }: { params: { id: string; commentId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'You must be signed in to delete comments' },
         { status: 401 }
@@ -21,16 +20,13 @@ export async function DELETE(
     const { commentId } = params
 
     // Find the comment
-    const comment = await prisma.postComment.findUnique({
-      where: { id: commentId },
-      select: {
-        id: true,
-        authorId: true,
-        postId: true,
-      }
-    })
+    const { data: comment, error: commentError } = await supabase
+      .from('post_comments')
+      .select('id, authorId, postId')
+      .eq('id', commentId)
+      .single()
 
-    if (!comment) {
+    if (commentError || !comment) {
       return NextResponse.json(
         { error: 'Comment not found' },
         { status: 404 }
@@ -38,7 +34,7 @@ export async function DELETE(
     }
 
     // Check if the user is the author of the comment
-    if (comment.authorId !== session.user.id) {
+    if (comment.authorId !== user.id) {
       return NextResponse.json(
         { error: 'You can only delete your own comments' },
         { status: 403 }
@@ -46,9 +42,14 @@ export async function DELETE(
     }
 
     // Delete the comment
-    await prisma.postComment.delete({
-      where: { id: commentId }
-    })
+    const { error: deleteError } = await supabase
+      .from('post_comments')
+      .delete()
+      .eq('id', commentId)
+
+    if (deleteError) {
+      throw deleteError
+    }
 
     return NextResponse.json({
       success: true,

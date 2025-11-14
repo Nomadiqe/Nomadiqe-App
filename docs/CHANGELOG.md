@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Supabase Migration Complete**: Full migration from NextAuth + Drizzle/Neon to Supabase Auth + Supabase Database
+  - Migrated authentication to Supabase Auth with `@supabase/ssr` for server-side rendering
+  - Replaced NextAuth.js with Supabase authentication flows (signup, signin, OAuth)
+  - Updated all API routes to use `supabase.auth.getUser()` for authentication
+  - Implemented cookie-based session management with automatic token refresh
+  - Migrated database from Neon PostgreSQL to Supabase PostgreSQL
+  - Updated middleware for Supabase auth with protected route enforcement
+  - Created comprehensive migration verification checklist and documentation
+  - All 100% automated checks passed successfully
+- **OAuth Account Linking**: Comprehensive OAuth account linking implementation and documentation
+  - Prevents duplicate users when same email used across different authentication methods
+  - Automatic identity linking in Supabase (email/password + OAuth providers)
+  - Google OAuth fully configured and tested
+  - Support for Facebook and Apple OAuth (configured in Supabase Dashboard)
+  - Email confirmation security to prevent unauthorized account linking
+  - Created detailed setup guides and test plans
+  - SQL verification queries for account linking validation
+  - Multiple identities (email, google, etc.) linked to single user account
 - **Automatic Geocoding Service**: Properties are now automatically geocoded using OpenStreetMap Nominatim API
   - Multi-level fallback strategy (exact address → street → city center)
   - Rate limiting compliance (1 request/second)
@@ -60,6 +78,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Favicons and logo assets
 
 ### Changed
+- **Authentication System**: Complete replacement of NextAuth with Supabase Auth
+  - Replaced `next-auth` package with `@supabase/supabase-js` and `@supabase/ssr`
+  - Removed `@auth/drizzle-adapter`, `drizzle-orm`, and `@neondatabase/serverless`
+  - Updated all auth imports from `@/lib/auth` to `@/lib/supabase/client` or `@/lib/supabase/server`
+  - Replaced `getServerSession()` with `supabase.auth.getUser()`
+  - Updated session management from NextAuth sessions to Supabase cookie-based sessions
+- **Database Connection**: Migrated from Neon to Supabase PostgreSQL
+  - Updated all database queries to use Supabase client
+  - Fixed column naming inconsistencies (snake_case vs camelCase)
+  - Updated connection strings to Supabase endpoints
 - Updated to Sicilian island color theme (azure blues, sandy tans, arabesque whites, terracotta accents)
 - Removed purple and pink gradients in favor of clean, Mediterranean-inspired palette
 - Light mode: Warm arabesque white backgrounds with azure blue accents
@@ -78,6 +106,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved image upload quality settings
 
 ### Fixed
+- **Supabase Migration Issues**: Resolved all migration-related errors
+  - Fixed database column naming errors in `app/search/page.tsx` (max_guests → maxGuests, is_active → isActive)
+  - Removed redundant property mappings after camelCase conversion
+  - Fixed all API routes to use Supabase authentication
+  - Resolved middleware authentication checks
+  - Updated environment variables to use Supabase configuration
 - TypeScript error in admin properties API route (added type annotation to properties.map)
 - Image upload stability and error handling
 - Theme consistency across all pages
@@ -127,6 +161,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Create-post component to fetch properties from database
 
 ### Removed
+- **NextAuth Dependencies and Files**: Complete removal of legacy authentication system
+  - Removed `next-auth`, `@auth/drizzle-adapter` packages
+  - Removed `drizzle-orm`, `@neondatabase/serverless` packages
+  - Deleted `lib/auth.ts` (NextAuth configuration)
+  - Deleted `lib/db.ts` (Drizzle database connection)
+  - Deleted `app/api/auth/[...nextauth]/route.ts` (NextAuth API routes)
+  - Deleted `types/next-auth.d.ts` (NextAuth type definitions)
+  - Deleted `prisma/schema.prisma` and all Prisma migration files
+  - Deleted `prisma/seed.ts` (database seeding script)
 - Old documentation files (onboarding plans, technical specs)
 - Legacy Cloudinary image upload code
 - Unused test data and demo files

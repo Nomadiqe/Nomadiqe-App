@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,7 +65,6 @@ interface ListingWizardProps {
 }
 
 export default function ListingWizard({ onComplete }: ListingWizardProps) {
-  const { update: updateSession } = useSession()
   const { role, completeStep, setStep } = useOnboarding()
   const router = useRouter()
   
@@ -182,16 +181,10 @@ export default function ListingWizard({ onComplete }: ListingWizardProps) {
         const nextStep = getNextStep('listing-creation', role!)
         setStep(nextStep)
 
-        // Update session after creating listing
-        await updateSession()
-        
-        // Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 300))
-
         if (onComplete) {
           onComplete()
         } else {
-          // Simple client-side navigation
+          // Navigate to next step
           router.push(`/onboarding/${nextStep}`)
         }
       } else {

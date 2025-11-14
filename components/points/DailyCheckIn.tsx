@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { Button } from '@/components/ui/button'
 
 interface StreakInfo {
@@ -11,16 +11,16 @@ interface StreakInfo {
 }
 
 export default function DailyCheckIn() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const [streakInfo, setStreakInfo] = useState<StreakInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       fetchStreakInfo()
     }
-  }, [session])
+  }, [user])
 
   const fetchStreakInfo = async () => {
     try {
@@ -62,7 +62,7 @@ export default function DailyCheckIn() {
     }
   }
 
-  if (!session?.user) {
+  if (!user) {
     return null
   }
 

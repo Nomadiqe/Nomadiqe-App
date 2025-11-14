@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 // PATCH - Toggle property active status
 export async function PATCH(
@@ -9,9 +7,10 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -19,12 +18,13 @@ export async function PATCH(
     }
 
     // Verify user is an admin
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'ADMIN') {
+    if (userError || !userData || userData.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -54,20 +54,25 @@ export async function PATCH(
     }
 
     // Update property status
-    const property = await prisma.property.update({
-      where: { id: params.id },
-      data: updateData,
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            fullName: true,
-            email: true,
-          }
-        }
-      }
-    })
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .update(updateData)
+      .eq('id', params.id)
+      .select(`
+        *,
+        host:users!hostId (
+          id, name, fullName, email
+        )
+      `)
+      .single()
+
+    if (propertyError) {
+      console.error('Property update error:', propertyError)
+      return NextResponse.json(
+        { error: 'Failed to update property' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -99,9 +104,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -109,12 +115,13 @@ export async function DELETE(
     }
 
     // Verify user is an admin
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'ADMIN') {
+    if (userError || !userData || userData.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -122,9 +129,18 @@ export async function DELETE(
     }
 
     // Delete the property
-    await prisma.property.delete({
-      where: { id: params.id }
-    })
+    const { error: deleteError } = await supabase
+      .from('properties')
+      .delete()
+      .eq('id', params.id)
+
+    if (deleteError) {
+      console.error('Property delete error:', deleteError)
+      return NextResponse.json(
+        { error: 'Failed to delete property' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

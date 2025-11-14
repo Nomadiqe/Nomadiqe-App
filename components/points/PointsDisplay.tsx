@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 
 interface PointsBalance {
   totalPoints: number
@@ -11,15 +11,15 @@ interface PointsBalance {
 }
 
 export default function PointsDisplay() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const [balance, setBalance] = useState<PointsBalance | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       fetchBalance()
     }
-  }, [session])
+  }, [user])
 
   const fetchBalance = async () => {
     try {
@@ -35,7 +35,7 @@ export default function PointsDisplay() {
     }
   }
 
-  if (!session?.user || loading) {
+  if (!user || loading) {
     return null
   }
 

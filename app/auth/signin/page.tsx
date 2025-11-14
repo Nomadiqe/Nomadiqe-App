@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -15,33 +15,34 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
+  const supabase = createClient()
+
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const result = await signIn('credentials', {
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        redirect: false,
       })
 
-      if (result?.error) {
+      if (error) {
         toast({
           title: "Autenticazione fallita",
           description: "Email o password non validi. Riprova.",
           variant: "destructive",
         })
-      } else if (result?.ok) {
-        // Get updated session
-        const session = await getSession()
+      } else if (data.user) {
         toast({
           title: "Bentornato!",
-          description: `Hai effettuato l'accesso come ${session?.user?.name || email}`,
+          description: `Hai effettuato l'accesso come ${data.user.email}`,
         })
-        router.push('/dashboard')
+        router.push(redirectTo)
         router.refresh()
       }
     } catch (error) {
@@ -58,21 +59,57 @@ export default function SignInPage() {
   const handleSocialSignIn = async (provider: 'google' | 'facebook' | 'apple') => {
     setIsLoading(true)
     try {
-      await signIn(provider, { callbackUrl: '/dashboard' })
+      console.log('Starting OAuth with provider:', provider)
+      console.log('Redirect URL:', `${window.location.origin}/auth/callback?next=${redirectTo}`)
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+        },
+      })
+
+      console.log('OAuth response:', { data, error })
+
+      if (error) {
+        console.error('OAuth error:', error)
+        toast({
+          title: "Errore",
+          description: error.message,
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return
+      }
+
+      // Manually redirect to the OAuth provider URL
+      if (data?.url) {
+        console.log('Redirecting to OAuth URL:', data.url)
+        window.location.href = data.url
+      } else {
+        console.error('No OAuth URL returned')
+        toast({
+          title: "Errore",
+          description: "OAuth URL non disponibile",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+      }
     } catch (error) {
+      console.error('OAuth exception:', error)
       toast({
         title: "Errore",
-        description: `Accesso con ${provider} fallito. Riprova.`,
+        description: error instanceof Error ? error.message : "Qualcosa è andato storto. Riprova.",
         variant: "destructive",
       })
       setIsLoading(false)
     }
   }
 
-  // Check which OAuth providers are configured
-  const hasGoogleAuth = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-  const hasFacebookAuth = process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID
-  const hasAppleAuth = process.env.NEXT_PUBLIC_APPLE_ID
+  // OAuth providers are configured in Supabase Dashboard
+  const hasGoogleAuth = true
+  const hasFacebookAuth = false
+  const hasAppleAuth = false
   const hasSocialAuth = hasGoogleAuth || hasFacebookAuth || hasAppleAuth
 
   return (
@@ -209,20 +246,12 @@ export default function SignInPage() {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
-              </div>
-              <div className="mt-2 text-right">
-                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
-                  Hai dimenticato la password?
-                </Link>
               </div>
             </div>
 

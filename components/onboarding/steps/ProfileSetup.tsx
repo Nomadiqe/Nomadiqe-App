@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { getNextStep } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,7 @@ interface ProfileSetupProps {
 }
 
 export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
-  const { data: session, update: updateSession } = useSession()
+  const { user } = useSupabase()
   const { error, setError, setStep, completeStep, progress } = useOnboarding()
   const { updateProfile, fetchProgress } = useOnboardingApi()
   const router = useRouter()
@@ -36,7 +36,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     username: '',
-    profilePicture: session?.user?.image || ''
+    profilePicture: ''
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
@@ -60,7 +60,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
           setFormData({
             fullName: progressData.userData.fullName || '',
             username: progressData.userData.username || '',
-            profilePicture: progressData.userData.profilePictureUrl || session?.user?.image || ''
+            profilePicture: progressData.userData.profilePictureUrl || ''
           })
         }
       } catch (error) {
@@ -72,7 +72,7 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
     }
 
     loadUserData()
-  }, [fetchProgress, session?.user?.image])
+  }, [fetchProgress])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -118,12 +118,6 @@ export default function ProfileSetup({ onNext }: ProfileSetupProps = {}) {
         // Update context first
         completeStep('profile-setup')
         setStep(result.nextStep)
-        
-        // Update the session token with fresh data from database
-        await updateSession()
-        
-        // Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 300))
 
         // Call onNext if provided (for wizard integration)
         if (onNext) {

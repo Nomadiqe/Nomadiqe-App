@@ -22,10 +22,24 @@ Welcome to the Nomadiqe App documentation! This directory contains comprehensive
   - Callback URL setup
   - Testing and troubleshooting
 
+- **[Points System](./POINTS_SYSTEM_DESIGN.md)** - Gamification and rewards system
+  - Points structure and rules
+  - Daily check-ins and bonuses
+  - Testing guide available in [POINTS_SYSTEM_TESTING_GUIDE.md](./POINTS_SYSTEM_TESTING_GUIDE.md)
+
+### Migration & Database
+
+- **[Supabase Migration](./migration/)** - Complete migration from NextAuth/Neon to Supabase
+  - Migration success report and verification
+  - OAuth account linking setup and testing
+  - SQL scripts and database configuration
+  - See [migration/README.md](./migration/README.md) for complete documentation
+
 ### Maintenance & Reference
 
 - **[Changelog](./CHANGELOG.md)** - Version history and feature additions
 - **[Fixes Applied](./FIXES_APPLIED.md)** - Historical bug fixes and solutions
+- **[Database Branch Merging](./DATABASE_BRANCH_MERGING.md)** - Neon database branch management
 
 ## 🚀 Quick Links
 
@@ -33,14 +47,18 @@ Welcome to the Nomadiqe App documentation! This directory contains comprehensive
 - Setting up OAuth? Start with [QUICKSTART_SOCIAL_AUTH.md](./QUICKSTART_SOCIAL_AUTH.md)
 - Working with maps? See [GEOCODING.md](./GEOCODING.md)
 - Deployment issues? Check [VERCEL_SETUP.md](./VERCEL_SETUP.md)
+- Understanding the migration? See [migration/SUPABASE_MIGRATION_SUCCESS.md](./migration/SUPABASE_MIGRATION_SUCCESS.md)
+- Configuring account linking? See [migration/ACCOUNT_LINKING_QUICK_REFERENCE.md](./migration/ACCOUNT_LINKING_QUICK_REFERENCE.md)
 
 ### For Administrators
 - Managing properties without map coordinates? See [Geocoding - Admin Interface](./GEOCODING.md#admin-interface)
 - Setting up social login? See [Social Auth Setup](./SOCIAL_AUTH_SETUP.md)
+- Enabling OAuth account linking? See [migration/OAUTH_ACCOUNT_LINKING_SETUP.md](./migration/OAUTH_ACCOUNT_LINKING_SETUP.md)
 
 ### For DevOps
 - Deploying to production? Follow [VERCEL_SETUP.md](./VERCEL_SETUP.md)
 - Environment variables? Check [Social Auth Setup - Environment Variables](./SOCIAL_AUTH_SETUP.md)
+- Supabase configuration? See [migration/](./migration/)
 
 ## 📖 Documentation Standards
 
@@ -72,5 +90,5 @@ If you can't find what you're looking for:
 
 ---
 
-**Last Updated**: October 2025
+**Last Updated**: November 2025
 **Maintained by**: Nomadiqe Development Team

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ArrowLeft, Send } from 'lucide-react'
 
 export default function ChatPage() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const router = useRouter()
   const params = useParams()
   const chatId = params?.id as string
@@ -20,15 +20,15 @@ export default function ChatPage() {
   const [otherUser, setOtherUser] = useState<any>(null)
 
   useEffect(() => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       router.push('/auth/signin')
       return
     }
-    
+
     // Fetch user and messages from API
     fetchMessages()
     fetchOtherUser()
-  }, [session, router, chatId])
+  }, [user, router, chatId])
 
   const fetchOtherUser = async () => {
     try {
@@ -65,12 +65,12 @@ export default function ChatPage() {
   }
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !session?.user?.id) return
+    if (!newMessage.trim() || !user?.id) return
 
     const tempMessage = {
       id: Date.now().toString(),
       content: newMessage,
-      senderId: session.user.id,
+      senderId: user.id,
       createdAt: new Date().toISOString()
     }
 
@@ -114,7 +114,7 @@ export default function ChatPage() {
   }
 
   const isOwnMessage = (senderId: string) => {
-    return senderId === session?.user?.id
+    return senderId === user?.id
   }
 
   return (

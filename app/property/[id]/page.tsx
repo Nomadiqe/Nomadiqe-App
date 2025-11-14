@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db"
+import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { MapPin, Users, Bed, Bath, Star, Heart, Share2, ChevronLeft } from "lucide-react"
@@ -19,36 +19,71 @@ interface PropertyPageProps {
 
 async function getProperty(id: string) {
   try {
-    const property = await prisma.property.findUnique({
-      where: { id },
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            email: true,
-          },
-        },
-        reviews: {
-          include: {
-            reviewer: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 10,
-        },
-      },
-    })
+    const supabase = await createClient()
+    
+    // Fetch property
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    return property
+    if (propertyError || !property) {
+      return null
+    }
+
+    // Fetch host info separately
+    const { data: host, error: hostError } = await supabase
+      .from('users')
+      .select('id, name, profilePictureUrl, email')
+      .eq('id', property.hostId)
+      .single()
+
+    // Fetch reviews
+    const { data: reviews, error: reviewsError } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('propertyId', id)
+      .order('createdAt', { ascending: false })
+      .limit(10)
+
+    // Fetch reviewer info for each review
+    const reviewerIds = reviews?.map(r => r.reviewerId).filter(Boolean) || []
+    const { data: reviewers } = reviewerIds.length > 0 ? await supabase
+      .from('users')
+      .select('id, name, profilePictureUrl')
+      .in('id', reviewerIds) : { data: [] }
+
+    const reviewersMap = new Map((reviewers || []).map(r => [r.id, r]))
+
+    // Map to expected format
+    const mappedProperty: any = {
+      ...property,
+      maxGuests: property.maxGuests || 0,
+      host: host ? {
+        id: host.id,
+        name: host.name,
+        email: host.email,
+        image: host.profilePictureUrl || null,
+      } : null,
+      reviews: (reviews || []).map((review: any) => {
+        const reviewer = reviewersMap.get(review.reviewerId)
+        return {
+          ...review,
+          createdAt: review.createdAt,
+          reviewer: reviewer ? {
+            id: reviewer.id,
+            name: reviewer.name,
+            image: reviewer.profilePictureUrl || null,
+          } : null,
+        }
+      }),
+      images: property.images || [],
+      amenities: property.amenities || [],
+      rules: property.rules || [],
+    }
+
+    return mappedProperty
   } catch (error) {
     console.error("Error fetching property:", error)
     return null
@@ -109,7 +144,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
 
         {/* Images Gallery */}
-        {property.images.length > 0 && (
+        {property.images && property.images.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8 rounded-xl overflow-hidden">
             <div className="relative h-96 md:h-[500px]">
               <Image
@@ -166,7 +201,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
 
             {/* Amenities */}
-            {property.amenities.length > 0 && (
+            {property.amenities && property.amenities.length > 0 && (
               <Card>
                 <CardHeader>
                   <h2 className="text-2xl font-semibold">Amenities</h2>
@@ -185,7 +220,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             )}
 
             {/* House Rules */}
-            {property.rules.length > 0 && (
+            {property.rules && property.rules.length > 0 && (
               <Card>
                 <CardHeader>
                   <h2 className="text-2xl font-semibold">House Rules</h2>
@@ -296,7 +331,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <div>
                     <Label htmlFor="guests">Guests</Label>
                     <select id="guests" className="w-full px-4 py-2 border border-border rounded-md mt-2">
-                      {Array.from({ length: property.maxGuests }, (_, i) => i + 1).map((num) => (
+                      {Array.from({ length: property.maxGuests || 1 }, (_, i) => i + 1).map((num) => (
                         <option key={num} value={num}>
                           {num} {num === 1 ? "guest" : "guests"}
                         </option>
@@ -316,29 +351,31 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <Separator className="my-6" />
 
                 {/* Host Info */}
-                <div>
-                  <h3 className="font-semibold mb-4">Hosted by</h3>
-                  <Link href={`/profile/${property.host.id}`}>
-                    <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={property.host.image} alt={property.host.name || "Host"} />
-                        <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white p-1">
-                          <Image 
-                            src="/nomadiqe-logo-transparent.png" 
-                            alt="Nomadiqe" 
-                            width={44} 
-                            height={44}
-                            className="object-contain"
-                          />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">{property.host.name}</p>
-                        <p className="text-sm text-muted-foreground">View profile</p>
+                {property.host && (
+                  <div>
+                    <h3 className="font-semibold mb-4">Hosted by</h3>
+                    <Link href={`/profile/${property.host.id}`}>
+                      <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={property.host.image || undefined} alt={property.host.name || "Host"} />
+                          <AvatarFallback className="bg-gradient-to-br from-nomadiqe-primary to-nomadiqe-700 text-white p-1">
+                            <Image 
+                              src="/nomadiqe-logo-transparent.png" 
+                              alt="Nomadiqe" 
+                              width={44} 
+                              height={44}
+                              className="object-contain"
+                            />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold">{property.host.name || "Host"}</p>
+                          <p className="text-sm text-muted-foreground">View profile</p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
+                    </Link>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

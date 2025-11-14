@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
 
-    if (!session?.user?.id) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -15,12 +15,13 @@ export async function GET(req: NextRequest) {
     }
 
     // Verify user is an influencer
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { influencerProfile: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, influencer_profiles(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'INFLUENCER' || !user.influencerProfile) {
+    if (userError || !userData || userData.role !== 'INFLUENCER' || !userData.influencer_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for influencers' },
         { status: 403 }
@@ -28,22 +29,23 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch all social connections for the user
-    const connections = await prisma.socialConnection.findMany({
-      where: { userId: session.user.id },
-      select: {
-        id: true,
-        platform: true,
-        username: true,
-        followerCount: true,
-        isPrimary: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+    const { data: connections, error: connectionsError } = await supabase
+      .from('social_connections')
+      .select('id, platform, username, followerCount, isPrimary, createdAt')
+      .eq('userId', user.id)
+      .order('createdAt', { ascending: false })
+
+    if (connectionsError) {
+      console.error('Failed to fetch social connections:', connectionsError)
+      return NextResponse.json(
+        { error: 'Failed to fetch social connections' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
-      connections,
-      count: connections.length
+      connections: connections || [],
+      count: connections?.length || 0
     })
 
   } catch (error) {

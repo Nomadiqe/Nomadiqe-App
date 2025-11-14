@@ -1,63 +1,24 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/lib/db'
 import { HostCalendarView } from '@/components/host/calendar-view'
 
 export default async function HostCalendarPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
 
-  if (!session?.user?.id) {
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !authUser) {
     redirect('/auth/signin')
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      properties: {
-        where: { isActive: true },
-        include: {
-          bookings: {
-            where: {
-              status: {
-                in: ['PENDING', 'CONFIRMED']
-              }
-            },
-            select: {
-              id: true,
-              checkIn: true,
-              checkOut: true,
-              guests: true,
-              totalPrice: true,
-              status: true,
-              traveler: {
-                select: {
-                  id: true,
-                  name: true,
-                  fullName: true,
-                }
-              }
-            }
-          },
-          availability: {
-            where: {
-              date: {
-                gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-                lte: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-              }
-            },
-            select: {
-              id: true,
-              date: true,
-              isAvailable: true,
-            }
-          }
-        }
-      }
-    }
-  })
+  // Get user with role check
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id, role')
+    .eq('id', authUser.id)
+    .single()
 
-  if (!user) {
+  if (userError || !user) {
     redirect('/auth/signin')
   }
 
@@ -72,17 +33,48 @@ export default async function HostCalendarPage() {
     }
   }
 
-  // Serialize dates to ISO strings for client component
-  const serializedProperties = user.properties.map((property: any) => ({
+  // Calculate date range for availability
+  const oneMonthAgo = new Date()
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+  const sixMonthsFromNow = new Date()
+  sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6)
+
+  // Get properties with bookings and availability
+  const { data: properties, error: propertiesError } = await supabase
+    .from('properties')
+    .select(`
+      *,
+      bookings:bookings(
+        id, checkIn, checkOut, guests, totalPrice, status,
+        traveler:users!travelerId(
+          id, name, fullName
+        )
+      ),
+      availability:availability(
+        id, date, isAvailable
+      )
+    `)
+    .eq('hostId', user.id)
+    .eq('isActive', true)
+    .in('bookings.status', ['PENDING', 'CONFIRMED'])
+    .gte('availability.date', oneMonthAgo.toISOString())
+    .lte('availability.date', sixMonthsFromNow.toISOString())
+
+  if (propertiesError) {
+    console.error('Error fetching properties:', propertiesError)
+  }
+
+  // Serialize dates to ISO strings for client component (dates are already ISO strings from Supabase)
+  const serializedProperties = (properties || []).map((property: any) => ({
     ...property,
-    bookings: property.bookings.map((booking: any) => ({
+    bookings: (property.bookings || []).map((booking: any) => ({
       ...booking,
-      checkIn: booking.checkIn.toISOString(),
-      checkOut: booking.checkOut.toISOString(),
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
     })),
-    availability: property.availability.map((avail: any) => ({
+    availability: (property.availability || []).map((avail: any) => ({
       ...avail,
-      date: avail.date.toISOString(),
+      date: avail.date,
     })),
   }))
 

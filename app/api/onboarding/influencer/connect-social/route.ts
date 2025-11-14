@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const socialConnectionSchema = z.object({
@@ -23,7 +21,7 @@ const socialConnectionSchema = z.object({
 const mockSocialMediaIntegration = async (platform: string, authCode: string, mockData?: any) => {
   // Simulate API call delay
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   if (mockData) {
     return {
       success: true,
@@ -54,9 +52,11 @@ const mockSocialMediaIntegration = async (platform: string, authCode: string, mo
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -64,12 +64,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is an influencer
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { influencerProfile: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, influencer_profiles(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'INFLUENCER' || !user.influencerProfile) {
+    if (userError || !userData || userData.role !== 'INFLUENCER' || !userData.influencer_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for influencers' },
         { status: 403 }
@@ -80,14 +81,12 @@ export async function POST(req: NextRequest) {
     const validatedData = socialConnectionSchema.parse(body)
 
     // Check if platform is already connected
-    const existingConnection = await prisma.socialConnection.findUnique({
-      where: {
-        userId_platform: {
-          userId: session.user.id,
-          platform: validatedData.platform
-        }
-      }
-    })
+    const { data: existingConnection } = await supabase
+      .from('social_connections')
+      .select('*')
+      .eq('userId', user.id)
+      .eq('platform', validatedData.platform)
+      .single()
 
     if (existingConnection) {
       return NextResponse.json(
@@ -98,7 +97,7 @@ export async function POST(req: NextRequest) {
 
     // Simulate social media API integration
     const socialResult = await mockSocialMediaIntegration(
-      validatedData.platform, 
+      validatedData.platform,
       validatedData.authCode,
       validatedData.mockData
     )
@@ -111,51 +110,64 @@ export async function POST(req: NextRequest) {
     }
 
     // Create social connection record
-    const socialConnection = await prisma.socialConnection.create({
-      data: {
-        userId: session.user.id,
+    const { data: socialConnection, error: connectionError } = await supabase
+      .from('social_connections')
+      .insert({
+        userId: user.id,
         platform: validatedData.platform,
         platformUserId: socialResult.profile.platformUserId,
         username: socialResult.profile.username,
         followerCount: socialResult.profile.followerCount,
         accessToken: socialResult.profile.accessToken, // Should be encrypted in production
         refreshToken: socialResult.profile.refreshToken, // Should be encrypted in production
-        tokenExpiresAt: socialResult.profile.tokenExpiresAt,
+        tokenExpiresAt: socialResult.profile.tokenExpiresAt.toISOString(),
         isPrimary: true // First connection is primary
-      }
-    })
+      })
+      .select()
+      .single()
+
+    if (connectionError) {
+      console.error('Failed to create social connection:', connectionError)
+      return NextResponse.json(
+        { error: 'Failed to connect social media account', code: 'ONBOARDING_004' },
+        { status: 500 }
+      )
+    }
 
     // Check if this is the first social connection
-    const connectionCount = await prisma.socialConnection.count({
-      where: { userId: session.user.id }
-    })
+    const { count } = await supabase
+      .from('social_connections')
+      .select('*', { count: 'exact', head: true })
+      .eq('userId', user.id)
 
     // Update user onboarding step
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    await supabase
+      .from('users')
+      .update({
         onboardingStep: 'media-kit-setup'
-      }
-    })
+      })
+      .eq('id', user.id)
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
-      if (connectionCount === 1) {
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
+      if (count === 1) {
         completedSteps.push('social-connect')
       }
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'media-kit-setup',
           completedSteps: JSON.stringify(completedSteps)
-        }
-      })
+        })
+        .eq('userId', user.id)
     }
 
     return NextResponse.json({

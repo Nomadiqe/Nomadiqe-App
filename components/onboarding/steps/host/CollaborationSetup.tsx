@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CONTENT_NICHES } from '@/lib/onboarding'
 import { Users, Gift, Star, Check, AlertCircle, Hash, Calendar } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 
 interface FormData {
   standardOffer: {
@@ -69,7 +69,6 @@ interface CollaborationSetupProps {
 export default function CollaborationSetup({ onComplete }: CollaborationSetupProps) {
   const { completeStep, setStep } = useOnboarding()
   const router = useRouter()
-  const { update } = useSession()
   
   const [formData, setFormData] = useState<FormData>({
     standardOffer: {
@@ -179,18 +178,11 @@ export default function CollaborationSetup({ onComplete }: CollaborationSetupPro
         completeStep('collaboration-setup')
         setStep('complete')
 
-        // Update session for the final redirect to dashboard
-        await update()
-        
-        // Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 300))
-
         if (onComplete) {
           onComplete()
         } else {
-          // For final dashboard redirect, use window.location to ensure
-          // session is fully refreshed since onboardingStatus changed to COMPLETED
-          window.location.href = '/dashboard/host'
+          // Navigate to host dashboard
+          router.push('/dashboard/host')
         }
       } else {
         // Display detailed error information

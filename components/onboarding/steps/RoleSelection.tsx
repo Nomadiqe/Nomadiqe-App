@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { UserRole } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
@@ -62,7 +62,7 @@ const roleOptions: RoleOption[] = [
 ]
 
 export default function RoleSelection() {
-  const { update: updateSession } = useSession()
+  const { user } = useSupabase()
   const { setRole, setStep, completeStep, error } = useOnboarding()
   const { selectRole } = useOnboardingApi()
   const router = useRouter()
@@ -88,10 +88,7 @@ export default function RoleSelection() {
         completeStep('role-selection')
         setStep(result.nextStep)
         
-        // Update the session token with fresh data from database
-        await updateSession()
-        
-        // Small delay to ensure session is fully updated
+        // Small delay to ensure context is fully updated
         await new Promise(resolve => setTimeout(resolve, 300))
         
         // Navigate to next step

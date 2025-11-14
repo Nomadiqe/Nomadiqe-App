@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { performDailyCheckIn } from '@/lib/services/points-service'
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    const result = await performDailyCheckIn(session.user.id)
+    const result = await performDailyCheckIn(user.id)
 
     if (!result.success) {
       return NextResponse.json(

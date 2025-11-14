@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -64,7 +64,6 @@ interface SocialMediaConnectProps {
 }
 
 export default function SocialMediaConnect({ onComplete }: SocialMediaConnectProps) {
-  const { update: updateSession } = useSession()
   const { role, completeStep, setStep } = useOnboarding()
   const router = useRouter()
 
@@ -166,17 +165,10 @@ export default function SocialMediaConnect({ onComplete }: SocialMediaConnectPro
     const nextStep = getNextStep('social-connect', role!)
     setStep(nextStep)
 
-    // Update session after connecting social accounts
-    await updateSession()
-    
-    // Small delay to ensure session is fully updated
-    await new Promise(resolve => setTimeout(resolve, 300))
-
     if (onComplete) {
       onComplete()
     } else {
-      // Simple client-side navigation - the database was already updated
-      // when the social connection was created, so just navigate
+      // Navigate to next step
       router.push(`/onboarding/${nextStep}`)
     }
   }

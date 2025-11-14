@@ -1,13 +1,13 @@
 import { handleUpload } from '@vercel/blob/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       request,
       onBeforeGenerateToken: async (pathname: string, clientPayload?: string) => {
         // Validate user is authenticated
-        if (!session?.user?.id) {
+        if (!user?.id) {
           throw new Error('Authentication required')
         }
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             'image/gif'
           ],
           tokenPayload: JSON.stringify({
-            userId: session.user.id,
+            userId: user.id,
             uploadedAt: new Date().toISOString(),
           }),
           addRandomSuffix: true,
@@ -61,13 +61,11 @@ export async function POST(request: NextRequest) {
 
         // Here you could store upload metadata in your database
         // For example:
-        // await prisma.uploadedFile.create({
-        //   data: {
-        //     url: blob.url,
-        //     size: blob.size,
-        //     userId: parsedPayload?.userId,
-        //     uploadedAt: new Date(parsedPayload?.uploadedAt),
-        //   }
+        // await supabase.from('uploaded_files').insert({
+        //   url: blob.url,
+        //   size: blob.size,
+        //   userId: parsedPayload?.userId,
+        //   uploadedAt: new Date(parsedPayload?.uploadedAt),
         // })
       },
     })

@@ -11,9 +11,7 @@ import {
   Star,
   CheckCircle
 } from 'lucide-react'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ProfileActions } from '@/components/profile-actions'
@@ -28,102 +26,104 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: params.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      fullName: true,
-      username: true,
-      image: true,
-      profilePictureUrl: true,
-      coverPhotoUrl: true,
-      bio: true,
-      location: true,
-      phone: true,
-      isVerified: true,
-      role: true,
-      createdAt: true,
-    }
-  })
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
-  if (!dbUser) {
+  const { data: dbUser, error: userError } = await supabase
+    .from('users')
+    .select(`
+      id, email, name, fullName, username, image, profilePictureUrl,
+      coverPhotoUrl, bio, location, phone, isVerified, role, createdAt
+    `)
+    .eq('id', params.id)
+    .single()
+
+  if (userError || !dbUser) {
     notFound()
   }
 
-  const [postsRaw, postsCount, followersCount, followingCount, propertiesCount, propertiesRaw, userCommentsRaw] = await Promise.all([
-    prisma.post.findMany({
-      where: { authorId: dbUser.id, isActive: true },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        property: { select: { id: true, title: true } },
-        ...(session?.user?.id ? { likes: { where: { userId: session.user.id }, select: { id: true } } } : {}),
-        _count: { select: { likes: true, comments: true } },
-      },
-    }),
-    prisma.post.count({ where: { authorId: dbUser.id, isActive: true } }),
-    prisma.follow.count({ where: { followingId: dbUser.id } }),
-    prisma.follow.count({ where: { followerId: dbUser.id } }),
-    prisma.property.count({ where: { hostId: dbUser.id, isActive: true } }),
-    dbUser.role === 'HOST' ? prisma.property.findMany({
-      where: { hostId: dbUser.id, isActive: true },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        type: true,
-        city: true,
-        country: true,
-        price: true,
-        currency: true,
-        images: true,
-        _count: {
-          select: {
-            bookings: true,
-            reviews: true,
-          }
-        }
-      }
-    }) : null,
-    // Fetch comments made by this user on other users' posts
-    prisma.postComment.findMany({
-      where: { authorId: dbUser.id },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        post: {
-          select: {
-            id: true,
-            content: true,
-            images: true,
-            author: {
-              select: {
-                id: true,
-                name: true,
-                fullName: true,
-                image: true,
-                profilePictureUrl: true,
-              }
-            }
-          }
-        }
-      }
-    }),
-  ])
+  // Fetch posts with likes and counts
+  const { data: postsRaw } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      property:properties(id, title),
+      likes(id),
+      comments:post_comments(count)
+    `)
+    .eq('authorId', dbUser.id)
+    .eq('isActive', true)
+    .order('createdAt', { ascending: false })
+
+  // Count posts
+  const { count: postsCount } = await supabase
+    .from('posts')
+    .select('*', { count: 'exact', head: true })
+    .eq('authorId', dbUser.id)
+    .eq('isActive', true)
+
+  // Count followers
+  const { count: followersCount } = await supabase
+    .from('follows')
+    .select('*', { count: 'exact', head: true })
+    .eq('followingId', dbUser.id)
+
+  // Count following
+  const { count: followingCount } = await supabase
+    .from('follows')
+    .select('*', { count: 'exact', head: true })
+    .eq('followerId', dbUser.id)
+
+  // Count properties
+  const { count: propertiesCount } = await supabase
+    .from('properties')
+    .select('*', { count: 'exact', head: true })
+    .eq('hostId', dbUser.id)
+    .eq('isActive', true)
+
+  // Fetch properties if user is a host
+  let propertiesRaw = null
+  if (dbUser.role === 'HOST') {
+    const { data } = await supabase
+      .from('properties')
+      .select(`
+        id, title, description, type, city, country, price, currency, images,
+        bookings(count),
+        reviews:property_reviews(count)
+      `)
+      .eq('hostId', dbUser.id)
+      .eq('isActive', true)
+      .order('createdAt', { ascending: false })
+
+    propertiesRaw = data
+  }
+
+  // Fetch comments made by this user
+  const { data: userCommentsRaw } = await supabase
+    .from('post_comments')
+    .select(`
+      *,
+      post:posts(
+        id, content, images,
+        author:users!authorId(
+          id, name, fullName, image, profilePictureUrl
+        )
+      )
+    `)
+    .eq('authorId', dbUser.id)
+    .order('createdAt', { ascending: false })
 
   const displayName = dbUser.fullName || dbUser.name || (dbUser.email ? dbUser.email.split('@')[0] : 'User')
   const avatarUrl = dbUser.profilePictureUrl || dbUser.image || undefined
-  const isOwnProfile = session?.user?.id === dbUser.id
+  const isOwnProfile = authUser?.id === dbUser.id
 
-  const posts = postsRaw.map((p: any) => ({
+  const posts = (postsRaw || []).map((p: any) => ({
     id: p.id,
     content: p.content,
     images: p.images as string[],
     location: p.location || undefined,
-    createdAt: p.createdAt.toISOString(),
+    createdAt: p.createdAt,
     author: {
       id: dbUser.id,
       name: displayName,
@@ -131,15 +131,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       role: dbUser.role,
     },
     property: p.property ? { id: p.property.id, title: p.property.title } : undefined,
-    likes: p._count?.likes || 0,
-    comments: p._count?.comments || 0,
-    isLiked: Array.isArray(p.likes) ? p.likes.length > 0 : false,
+    likes: Array.isArray(p.likes) ? p.likes.length : 0,
+    comments: Array.isArray(p.comments) ? p.comments.length : 0,
+    isLiked: authUser?.id ? (Array.isArray(p.likes) ? p.likes.some((like: any) => like.userId === authUser.id) : false) : false,
   }))
 
-  const userComments = userCommentsRaw.map((c: any) => ({
+  const userComments = (userCommentsRaw || []).map((c: any) => ({
     id: c.id,
     content: c.content,
-    createdAt: c.createdAt.toISOString(),
+    createdAt: c.createdAt,
     postId: c.post.id,
     postContent: c.post.content,
     postImages: c.post.images as string[],
@@ -160,7 +160,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     phone: dbUser.phone || '',
     email: dbUser.email,
     role: dbUser.role,
-    joinedDate: dbUser.createdAt.toISOString(),
+    joinedDate: dbUser.createdAt,
     isVerified: dbUser.isVerified,
     stats: {
       posts: postsCount,

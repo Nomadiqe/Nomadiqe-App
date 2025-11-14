@@ -1,33 +1,56 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
+    const userId = user.id
 
-    const conversations = await prisma.conversation.findMany({
-      where: { OR: [{ userAId: userId }, { userBId: userId }] },
-      include: {
-        messages: { orderBy: { createdAt: 'desc' }, take: 1 },
-        userA: { select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true } },
-        userB: { select: { id: true, name: true, fullName: true, username: true, image: true, profilePictureUrl: true } },
-      },
-      orderBy: { updatedAt: 'desc' },
-    })
+    // Fetch conversations with related data
+    const { data: conversations, error } = await supabase
+      .from('conversations')
+      .select(`
+        *,
+        userA:users!userAId (id, name, fullName, username, image, profilePictureUrl),
+        userB:users!userBId (id, name, fullName, username, image, profilePictureUrl),
+        messages (content, postId, createdAt)
+      `)
+      .or(`userAId.eq.${userId},userBId.eq.${userId}`)
+      .order('updatedAt', { ascending: false })
 
-    const chats = await Promise.all(conversations.map(async (c: any) => {
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({ error: 'Failed to fetch chats' }, { status: 500 })
+    }
+
+    // Process conversations
+    const chats = await Promise.all((conversations || []).map(async (c: any) => {
       const other = c.userAId === userId ? c.userB : c.userA
-      const unreadCount = await prisma.message.count({
-        where: { conversationId: c.id, senderId: { not: userId }, isRead: false },
-      })
-      const last = c.messages[0]
+      
+      // Get unread count
+      const { count: unreadCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('conversationId', c.id)
+        .neq('senderId', userId)
+        .eq('isRead', false)
+      
+      // Get latest message
+      const { data: latestMessages } = await supabase
+        .from('messages')
+        .select('content, postId, createdAt')
+        .eq('conversationId', c.id)
+        .order('createdAt', { ascending: false })
+        .limit(1)
+      
+      const last = latestMessages?.[0]
+      
       return {
         id: c.id,
         userId: other.id,
@@ -35,7 +58,7 @@ export async function GET() {
         avatar: other.profilePictureUrl || other.image || undefined,
         lastMessage: last?.content || (last?.postId ? 'Shared a post' : ''),
         lastMessageTime: last?.createdAt ?? c.updatedAt,
-        unreadCount,
+        unreadCount: unreadCount || 0,
         type: 'user',
       }
     }))

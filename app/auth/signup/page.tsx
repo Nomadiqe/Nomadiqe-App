@@ -1,16 +1,15 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { signIn, useSession } from 'next-auth/react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff, Mail } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function SignUpPage() {
-  const { data: session, status } = useSession()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -21,13 +20,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-
-  // Redirect to discover page if already authenticated
-  useEffect(() => {
-    if (status === 'authenticated' && session) {
-      router.push('/')
-    }
-  }, [status, session, router])
+  const supabase = createClient()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -85,51 +78,40 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      // Create account
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Create account with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
         },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
+      if (error) {
         toast({
           title: "Registrazione fallita",
-          description: data.message || "Qualcosa è andato storto. Riprova.",
+          description: error.message || "Qualcosa è andato storto. Riprova.",
           variant: "destructive",
         })
         return
       }
 
-      // Auto sign in after successful registration
-      const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      })
-
-      if (result?.ok) {
-        toast({
-          title: "Benvenuto su Nomadiqe!",
-          description: "Il tuo account è stato creato con successo.",
-        })
-
-        // Use NextAuth's built-in redirect after successful signin
-        // This ensures the session is fully established before navigation
-        window.location.href = '/onboarding'
-      } else {
-        toast({
-          title: "Account creato",
-          description: "Accedi con il tuo nuovo account.",
-        })
-        router.push('/auth/signin')
+      if (data.user) {
+        // Check if email confirmation is required
+        if (data.user.identities && data.user.identities.length === 0) {
+          toast({
+            title: "Verifica la tua email",
+            description: "Ti abbiamo inviato un'email di conferma. Clicca sul link per attivare il tuo account.",
+          })
+        } else {
+          toast({
+            title: "Benvenuto su Nomadiqe!",
+            description: "Il tuo account è stato creato con successo.",
+          })
+          // If email confirmation is not required, redirect to onboarding
+          router.push('/onboarding')
+          router.refresh()
+        }
       }
     } catch (error) {
       toast({
@@ -145,8 +127,34 @@ export default function SignUpPage() {
   const handleSocialSignUp = async (provider: 'google' | 'facebook' | 'apple') => {
     setIsLoading(true)
     try {
-      // New users will be automatically redirected to onboarding by NextAuth and middleware
-      await signIn(provider, { callbackUrl: '/onboarding' })
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+        },
+      })
+
+      if (error) {
+        toast({
+          title: "Errore",
+          description: `Registrazione con ${provider} fallita: ${error.message}`,
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return
+      }
+
+      // Manually redirect to the OAuth provider URL
+      if (data?.url) {
+        window.location.href = data.url
+      } else {
+        toast({
+          title: "Errore",
+          description: "OAuth URL non disponibile",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+      }
     } catch (error) {
       toast({
         title: "Errore",
@@ -157,27 +165,12 @@ export default function SignUpPage() {
     }
   }
 
-  // Check which OAuth providers are configured
-  const hasGoogleAuth = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-  const hasFacebookAuth = process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID
-  const hasAppleAuth = process.env.NEXT_PUBLIC_APPLE_ID
+  // OAuth providers are configured in Supabase Dashboard
+  // No need to check environment variables
+  const hasGoogleAuth = true // Google OAuth configured in Supabase
+  const hasFacebookAuth = false // Set to true when configured in Supabase
+  const hasAppleAuth = false // Set to true when configured in Supabase
   const hasSocialAuth = hasGoogleAuth || hasFacebookAuth || hasAppleAuth
-
-  // Show loading state while checking authentication
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        </div>
-      </div>
-    )
-  }
-
-  // Don't render form if already authenticated (will redirect via useEffect)
-  if (status === 'authenticated') {
-    return null
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">

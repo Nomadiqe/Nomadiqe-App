@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import { TRAVEL_INTERESTS } from '@/lib/onboarding'
 import { Button } from '@/components/ui/button'
@@ -61,7 +61,7 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
   const { completeStep, setStep } = useOnboarding()
   const { submitGuestInterests } = useOnboardingApi()
   const router = useRouter()
-  const { update: updateSession } = useSession()
+  const { user } = useSupabase()
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -85,12 +85,6 @@ export default function InterestSelection({ onComplete }: InterestSelectionProps
         // Update context
         completeStep('interest-selection')
         setStep('complete')
-
-        // Refresh the session to update the onboarding status in the token
-        await updateSession()
-        
-        // Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 300))
 
         if (onComplete) {
           onComplete(selectedInterests)

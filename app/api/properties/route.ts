@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 // Disable caching to always fetch latest properties
 export const dynamic = 'force-dynamic'
@@ -9,34 +7,31 @@ export const revalidate = 0
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Fetch all active properties
-    const properties = await prisma.property.findMany({
-      where: {
-        isActive: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        city: true,
-        country: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+    const { data: properties, error } = await supabase
+      .from('properties')
+      .select('id, title, city, country')
+      .eq('isActive', true)
+      .order('createdAt', { ascending: false })
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({ error: 'Failed to fetch properties' }, { status: 500 })
+    }
 
     // Format the response
-    const formattedProperties = properties.map((property: { id: string; title: string; city: string; country: string }) => ({
+    const formattedProperties = properties?.map((property) => ({
       id: property.id,
       title: property.title,
       location: `${property.city}, ${property.country}`,
-    }))
+    })) || []
 
     return NextResponse.json(formattedProperties)
   } catch (error) {

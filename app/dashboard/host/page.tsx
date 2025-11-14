@@ -1,54 +1,44 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import HostDashboard from '@/components/dashboard/HostDashboard'
 
 async function HostDashboardPageContent() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session) {
+  const supabase = await createClient()
+
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !authUser) {
     redirect('/auth/signin')
   }
 
   // Get user with host profile and properties
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      hostProfile: true,
-      properties: {
-        include: {
-          bookings: {
-            include: {
-              traveler: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true,
-                  email: true
-                }
-              }
-            }
-          },
-          reviews: {
-            include: {
-              reviewer: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select(`
+      *,
+      hostProfile:host_profiles(*),
+      properties:properties(
+        *,
+        bookings:bookings(
+          *,
+          traveler:users!travelerId(
+            id, name, image, email
+          )
+        ),
+        reviews:property_reviews(
+          *,
+          reviewer:users!reviewerId(
+            id, name, image
+          )
+        )
+      )
+    `)
+    .eq('id', authUser.id)
+    .single()
 
   // If user doesn't exist in DB, redirect to sign in
-  if (!user) {
+  if (userError || !user) {
     redirect('/auth/signin')
   }
 

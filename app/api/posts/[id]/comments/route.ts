@@ -1,8 +1,5 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { awardPoints } from '@/lib/services/points-service'
 
 // GET /api/posts/[id]/comments - Fetch comments for a post
 export async function GET(
@@ -10,14 +7,17 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const supabase = await createClient()
     const postId = params.id
 
     // Check if the post exists
-    const post = await prisma.post.findUnique({
-      where: { id: postId }
-    })
+    const { data: post, error: postError } = await supabase
+      .from('posts')
+      .select('id')
+      .eq('id', postId)
+      .single()
 
-    if (!post) {
+    if (postError || !post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
@@ -25,27 +25,34 @@ export async function GET(
     }
 
     // Fetch comments for the post
-    const comments = await prisma.postComment.findMany({
-      where: { postId: postId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            fullName: true,
-            image: true,
-            profilePictureUrl: true,
-          }
-        }
-      }
-    })
+    const { data: comments, error: commentsError } = await supabase
+      .from('post_comments')
+      .select(`
+        *,
+        author:users!authorId (
+          id,
+          name,
+          fullName,
+          image,
+          profilePictureUrl
+        )
+      `)
+      .eq('postId', postId)
+      .order('createdAt', { ascending: false })
+
+    if (commentsError) {
+      console.error('Error fetching comments:', commentsError)
+      return NextResponse.json(
+        { error: 'Failed to fetch comments' },
+        { status: 500 }
+      )
+    }
 
     // Format the comments
-    const formattedComments = comments.map((comment: any) => ({
+    const formattedComments = (comments || []).map((comment: any) => ({
       id: comment.id,
       content: comment.content,
-      createdAt: comment.createdAt.toISOString(),
+      createdAt: comment.createdAt,
       user: {
         id: comment.author.id,
         name: comment.author.fullName || comment.author.name || 'User',
@@ -71,9 +78,11 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
 
-    if (!session?.user?.id) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'You must be signed in to comment' },
         { status: 401 }
@@ -92,11 +101,13 @@ export async function POST(
     }
 
     // Check if the post exists
-    const post = await prisma.post.findUnique({
-      where: { id: postId }
-    })
+    const { data: post, error: postError } = await supabase
+      .from('posts')
+      .select('id, authorId')
+      .eq('id', postId)
+      .single()
 
-    if (!post) {
+    if (postError || !post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
@@ -104,43 +115,53 @@ export async function POST(
     }
 
     // Create the comment
-    const comment = await prisma.postComment.create({
-      data: {
+    const { data: comment, error: commentError } = await supabase
+      .from('post_comments')
+      .insert({
         content: content.trim(),
-        authorId: session.user.id,
+        authorId: user.id,
         postId: postId,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            fullName: true,
-            image: true,
-            profilePictureUrl: true,
-          }
-        }
-      }
-    })
+      })
+      .select(`
+        *,
+        author:users!authorId (
+          id,
+          name,
+          fullName,
+          image,
+          profilePictureUrl
+        )
+      `)
+      .single()
+
+    if (commentError) {
+      console.error('Error creating comment:', commentError)
+      return NextResponse.json(
+        { error: 'Failed to create comment' },
+        { status: 500 }
+      )
+    }
 
     // Award points for commenting
     // Award 3 points to commenter (daily limit of 10)
-    await awardPoints({
-      userId: session.user.id,
-      action: 'comment_created',
-      referenceId: comment.id,
-      referenceType: 'comment',
-      description: 'Wrote a comment',
+    await supabase.rpc('award_points', {
+      p_user_id: user.id,
+      p_action: 'comment_created',
+      p_points: 3,
+      p_reference_id: comment.id,
+      p_reference_type: 'comment',
+      p_description: 'Wrote a comment'
     })
 
     // Award 5 points to post author receiving comment (only if not own post, daily limit of 20)
-    if (session.user.id !== post.authorId) {
-      await awardPoints({
-        userId: post.authorId,
-        action: 'comment_received',
-        referenceId: comment.id,
-        referenceType: 'comment',
-        description: 'Received a comment on your post',
+    if (user.id !== post.authorId) {
+      await supabase.rpc('award_points', {
+        p_user_id: post.authorId,
+        p_action: 'comment_received',
+        p_points: 5,
+        p_reference_id: comment.id,
+        p_reference_type: 'comment',
+        p_description: 'Received a comment on your post'
       })
     }
 
@@ -148,7 +169,7 @@ export async function POST(
     const formattedComment = {
       id: comment.id,
       content: comment.content,
-      createdAt: comment.createdAt.toISOString(),
+      createdAt: comment.createdAt,
       user: {
         id: comment.author.id,
         name: comment.author.fullName || comment.author.name || 'User',

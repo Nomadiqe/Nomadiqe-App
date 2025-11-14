@@ -1,15 +1,15 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export default async function ProfileRedirectPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
   
-  if (!session?.user?.id) {
+  if (error || !user) {
     redirect('/auth/signin')
   }
   
-  redirect(`/profile/${session.user.id}`)
+  redirect(`/profile/${user.id}`)
 }
 
 

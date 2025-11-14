@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { PropertySearch } from '@/components/ui/property-search'
@@ -23,7 +23,7 @@ interface Property {
 
 export default function CreatePostPage() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const { toast } = useToast()
   const [content, setContent] = useState('')
   const [location, setLocation] = useState('')
@@ -36,7 +36,7 @@ export default function CreatePostPage() {
   // Fetch properties from database
   useEffect(() => {
     const fetchProperties = async () => {
-      if (!session?.user?.id) return
+      if (!user?.id) return
 
       setIsLoadingProperties(true)
       try {
@@ -53,13 +53,13 @@ export default function CreatePostPage() {
     }
 
     fetchProperties()
-  }, [session?.user?.id])
+  }, [user?.id])
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!session?.user?.id) {
+    if (!user?.id) {
       toast({
         title: 'Errore',
         description: 'Devi effettuare l\'accesso per creare un post',
@@ -97,7 +97,7 @@ export default function CreatePostPage() {
       })
 
       // Redirect to user's profile page
-      router.push(`/profile/${session.user.id}`)
+      router.push(`/profile/${user.id}`)
     } catch (error) {
       console.error('Error creating post:', error)
       toast({

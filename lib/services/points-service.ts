@@ -8,8 +8,7 @@
  * - Daily check-ins with streak tracking
  */
 
-import { prisma } from '@/lib/db'
-import { Prisma } from '@prisma/client'
+import { createClient } from '@/lib/supabase/server'
 import { startOfDay, subDays, differenceInDays } from 'date-fns'
 
 // Types
@@ -62,19 +61,23 @@ const STREAK_BONUSES: Record<number, number> = {
 
 /**
  * Check if user can be awarded points for an action today
- * Checks daily limits from PointsRule table
+ * Checks daily limits from points_rules table
  */
 export async function canAwardPoints(
   userId: string,
   action: string
 ): Promise<CanAwardResult> {
   try {
-    // Get the rule for this action
-    const rule = await prisma.pointsRule.findUnique({
-      where: { action },
-    })
+    const supabase = await createClient()
 
-    if (!rule) {
+    // Get the rule for this action
+    const { data: rule, error: ruleError } = await supabase
+      .from('points_rules')
+      .select('*')
+      .eq('action', action)
+      .single()
+
+    if (ruleError || !rule) {
       return { allowed: false, reason: 'No rule found for this action' }
     }
 
@@ -88,27 +91,31 @@ export async function canAwardPoints(
     }
 
     // Check how many times this action has been performed today
-    const startOfToday = startOfDay(new Date())
-    const count = await prisma.pointTransaction.count({
-      where: {
-        userId,
-        action,
-        createdAt: {
-          gte: startOfToday,
-        },
-      },
-    })
+    const startOfToday = startOfDay(new Date()).toISOString()
+    const { count, error: countError } = await supabase
+      .from('point_transactions')
+      .select('*', { count: 'exact', head: true })
+      .eq('userId', userId)
+      .eq('action', action)
+      .gte('createdAt', startOfToday)
 
-    if (count >= rule.dailyLimit) {
+    if (countError) {
+      console.error('Error counting transactions:', countError)
+      return { allowed: false, reason: 'Error checking eligibility' }
+    }
+
+    const transactionCount = count || 0
+
+    if (transactionCount >= rule.dailyLimit) {
       return {
         allowed: false,
         reason: `Daily limit reached for ${action}`,
-        currentCount: count,
+        currentCount: transactionCount,
         limit: rule.dailyLimit,
       }
     }
 
-    return { allowed: true, currentCount: count, limit: rule.dailyLimit }
+    return { allowed: true, currentCount: transactionCount, limit: rule.dailyLimit }
   } catch (error) {
     console.error('Error checking if points can be awarded:', error)
     return { allowed: false, reason: 'Error checking eligibility' }
@@ -117,14 +124,16 @@ export async function canAwardPoints(
 
 /**
  * Award points to a user for an action
- * Uses Prisma transactions for atomic operations
+ * Uses Supabase RPC for atomic operations
  */
 export async function awardPoints(
   params: AwardPointsParams
 ): Promise<AwardPointsResult> {
-  const { userId, action, points: customPoints, referenceId, referenceType, description, metadata } = params
+  const { userId, action, points: customPoints, referenceId, referenceType, description } = params
 
   try {
+    const supabase = await createClient()
+
     // Check if action is allowed (daily limits, etc.)
     const eligibility = await canAwardPoints(userId, action)
     if (!eligibility.allowed) {
@@ -136,11 +145,13 @@ export async function awardPoints(
     }
 
     // Get the rule for this action to determine points
-    const rule = await prisma.pointsRule.findUnique({
-      where: { action },
-    })
+    const { data: rule, error: ruleError } = await supabase
+      .from('points_rules')
+      .select('*')
+      .eq('action', action)
+      .single()
 
-    if (!rule) {
+    if (ruleError || !rule) {
       return {
         success: false,
         points: 0,
@@ -150,46 +161,37 @@ export async function awardPoints(
 
     const pointsToAward = customPoints !== undefined ? customPoints : rule.points
 
-    // Use a transaction to ensure atomicity
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // Create the point transaction record
-      await tx.pointTransaction.create({
-        data: {
-          userId,
-          points: pointsToAward,
-          action,
-          referenceId,
-          referenceType,
-          description: description || rule.description || `Points for ${action}`,
-          metadata,
-        },
-      })
-
-      // Update or create UserPoints record
-      const userPoints = await tx.userPoints.upsert({
-        where: { userId },
-        update: {
-          totalPoints: { increment: pointsToAward },
-          currentPoints: { increment: pointsToAward },
-          lifetimeEarned: { increment: pointsToAward },
-        },
-        create: {
-          userId,
-          totalPoints: pointsToAward,
-          currentPoints: pointsToAward,
-          lifetimeEarned: pointsToAward,
-          lifetimeRedeemed: 0,
-        },
-      })
-
-      return userPoints
+    // Use RPC to award points atomically
+    const { data, error: awardError } = await supabase.rpc('award_points', {
+      p_user_id: userId,
+      p_action: action,
+      p_points: pointsToAward,
+      p_reference_id: referenceId,
+      p_reference_type: referenceType,
+      p_description: description || rule.description || `Points for ${action}`,
     })
+
+    if (awardError) {
+      console.error('Error awarding points:', awardError)
+      return {
+        success: false,
+        points: 0,
+        message: 'Error awarding points',
+      }
+    }
+
+    // Get updated balance
+    const { data: userPoints } = await supabase
+      .from('user_points')
+      .select('currentPoints')
+      .eq('userId', userId)
+      .single()
 
     return {
       success: true,
       points: pointsToAward,
       message: `Awarded ${pointsToAward} points for ${action}`,
-      newBalance: result.currentPoints,
+      newBalance: userPoints?.currentPoints || 0,
     }
   } catch (error) {
     console.error('Error awarding points:', error)
@@ -206,9 +208,23 @@ export async function awardPoints(
  */
 export async function getPointsBalance(userId: string): Promise<PointsBalance> {
   try {
-    const userPoints = await prisma.userPoints.findUnique({
-      where: { userId },
-    })
+    const supabase = await createClient()
+
+    const { data: userPoints, error } = await supabase
+      .from('user_points')
+      .select('totalPoints, currentPoints, lifetimeEarned, lifetimeRedeemed')
+      .eq('userId', userId)
+      .maybeSingle()
+
+    if (error) {
+      console.error('Error getting points balance:', error)
+      return {
+        totalPoints: 0,
+        currentPoints: 0,
+        lifetimeEarned: 0,
+        lifetimeRedeemed: 0,
+      }
+    }
 
     if (!userPoints) {
       return {
@@ -220,10 +236,10 @@ export async function getPointsBalance(userId: string): Promise<PointsBalance> {
     }
 
     return {
-      totalPoints: userPoints.totalPoints,
-      currentPoints: userPoints.currentPoints,
-      lifetimeEarned: userPoints.lifetimeEarned,
-      lifetimeRedeemed: userPoints.lifetimeRedeemed,
+      totalPoints: userPoints.totalPoints || 0,
+      currentPoints: userPoints.currentPoints || 0,
+      lifetimeEarned: userPoints.lifetimeEarned || 0,
+      lifetimeRedeemed: userPoints.lifetimeRedeemed || 0,
     }
   } catch (error) {
     console.error('Error getting points balance:', error)
@@ -244,31 +260,36 @@ export async function getPointsHistory(
   options?: { limit?: number; offset?: number; action?: string }
 ) {
   try {
+    const supabase = await createClient()
     const { limit = 50, offset = 0, action } = options || {}
 
-    const transactions = await prisma.pointTransaction.findMany({
-      where: {
-        userId,
-        ...(action && { action }),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: limit,
-      skip: offset,
-    })
+    // Build query
+    let query = supabase
+      .from('point_transactions')
+      .select('*', { count: 'exact' })
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false })
+      .range(offset, offset + limit - 1)
 
-    const total = await prisma.pointTransaction.count({
-      where: {
-        userId,
-        ...(action && { action }),
-      },
-    })
+    if (action) {
+      query = query.eq('action', action)
+    }
+
+    const { data: transactions, error, count } = await query
+
+    if (error) {
+      console.error('Error getting points history:', error)
+      return {
+        transactions: [],
+        total: 0,
+        hasMore: false,
+      }
+    }
 
     return {
-      transactions,
-      total,
-      hasMore: offset + transactions.length < total,
+      transactions: transactions || [],
+      total: count || 0,
+      hasMore: offset + (transactions?.length || 0) < (count || 0),
     }
   } catch (error) {
     console.error('Error getting points history:', error)
@@ -285,13 +306,16 @@ export async function getPointsHistory(
  */
 async function calculateStreak(userId: string): Promise<number> {
   try {
-    const checkIns = await prisma.dailyCheckIn.findMany({
-      where: { userId },
-      orderBy: { checkInDate: 'desc' },
-      take: 100, // Get enough to calculate streak
-    })
+    const supabase = await createClient()
 
-    if (checkIns.length === 0) {
+    const { data: checkIns, error } = await supabase
+      .from('daily_check_ins')
+      .select('checkInDate')
+      .eq('userId', userId)
+      .order('checkInDate', { ascending: false })
+      .limit(100)
+
+    if (error || !checkIns || checkIns.length === 0) {
       return 0
     }
 
@@ -327,23 +351,22 @@ async function calculateStreak(userId: string): Promise<number> {
  */
 export async function performDailyCheckIn(userId: string): Promise<DailyCheckInResult> {
   try {
-    const today = startOfDay(new Date())
+    const supabase = await createClient()
+    const today = startOfDay(new Date()).toISOString()
 
     // Check if already checked in today
-    const existingCheckIn = await prisma.dailyCheckIn.findFirst({
-      where: {
-        userId,
-        checkInDate: {
-          gte: today,
-        },
-      },
-    })
+    const { data: existingCheckIn } = await supabase
+      .from('daily_check_ins')
+      .select('*')
+      .eq('userId', userId)
+      .gte('checkInDate', today)
+      .maybeSingle()
 
     if (existingCheckIn) {
       return {
         success: false,
         points: 0,
-        streakCount: existingCheckIn.streakCount,
+        streakCount: existingCheckIn.streakCount || 0,
         message: 'Already checked in today',
       }
     }
@@ -363,54 +386,46 @@ export async function performDailyCheckIn(userId: string): Promise<DailyCheckInR
 
     const totalPoints = basePoints + bonusPoints
 
-    // Use transaction for atomicity
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // Create check-in record
-      const checkIn = await tx.dailyCheckIn.create({
-        data: {
-          userId,
-          checkInDate: today,
-          pointsAwarded: totalPoints,
-          streakCount: newStreak,
-        },
+    // Create check-in record
+    const { error: checkInError } = await supabase
+      .from('daily_check_ins')
+      .insert({
+        userId,
+        checkInDate: today,
+        pointsAwarded: totalPoints,
+        streakCount: newStreak,
       })
 
-      // Award points using the awardPoints function
-      await tx.pointTransaction.create({
-        data: {
-          userId,
-          points: totalPoints,
-          action: 'daily_check_in',
-          description: bonusPoints > 0
-            ? `Daily check-in (${newStreak} day streak! +${bonusPoints} bonus)`
-            : `Daily check-in (${newStreak} day streak)`,
-          metadata: {
-            streak: newStreak,
-            basePoints,
-            bonusPoints,
-          },
-        },
-      })
+    if (checkInError) {
+      console.error('Check-in error:', checkInError)
+      return {
+        success: false,
+        points: 0,
+        streakCount: 0,
+        message: 'Error performing check-in',
+      }
+    }
 
-      // Update user points
-      await tx.userPoints.upsert({
-        where: { userId },
-        update: {
-          totalPoints: { increment: totalPoints },
-          currentPoints: { increment: totalPoints },
-          lifetimeEarned: { increment: totalPoints },
-        },
-        create: {
-          userId,
-          totalPoints,
-          currentPoints: totalPoints,
-          lifetimeEarned: totalPoints,
-          lifetimeRedeemed: 0,
-        },
-      })
-
-      return checkIn
+    // Award points using RPC
+    await supabase.rpc('award_points', {
+      p_user_id: userId,
+      p_action: 'daily_check_in',
+      p_points: totalPoints,
+      p_description: bonusPoints > 0
+        ? `Daily check-in (${newStreak} day streak! +${bonusPoints} bonus)`
+        : `Daily check-in (${newStreak} day streak)`,
     })
+
+    // Update user points streak info
+    // TODO: Implement streak tracking in database schema
+    // await supabase
+    //   .from('user_points')
+    //   .update({
+    //     currentStreak: newStreak,
+    //     longestStreak: newStreak,
+    //     lastCheckIn: today,
+    //   })
+    //   .eq('userId', userId)
 
     return {
       success: true,
@@ -437,17 +452,16 @@ export async function performDailyCheckIn(userId: string): Promise<DailyCheckInR
  */
 export async function getStreakInfo(userId: string) {
   try {
+    const supabase = await createClient()
     const currentStreak = await calculateStreak(userId)
-    const today = startOfDay(new Date())
+    const today = startOfDay(new Date()).toISOString()
 
-    const checkedInToday = await prisma.dailyCheckIn.findFirst({
-      where: {
-        userId,
-        checkInDate: {
-          gte: today,
-        },
-      },
-    })
+    const { data: checkedInToday } = await supabase
+      .from('daily_check_ins')
+      .select('id')
+      .eq('userId', userId)
+      .gte('checkInDate', today)
+      .maybeSingle()
 
     return {
       currentStreak,
@@ -480,10 +494,20 @@ export async function updatePointsRule(
   }
 ) {
   try {
-    const rule = await prisma.pointsRule.update({
-      where: { action },
-      data: updates,
-    })
+    const supabase = await createClient()
+
+    const { data: rule, error } = await supabase
+      .from('points_rules')
+      .update(updates)
+      .eq('action', action)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating points rule:', error)
+      return { success: false, error: 'Failed to update rule' }
+    }
+
     return { success: true, rule }
   } catch (error) {
     console.error('Error updating points rule:', error)
@@ -496,12 +520,19 @@ export async function updatePointsRule(
  */
 export async function getAllPointsRules() {
   try {
-    const rules = await prisma.pointsRule.findMany({
-      orderBy: {
-        points: 'desc',
-      },
-    })
-    return rules
+    const supabase = await createClient()
+
+    const { data: rules, error } = await supabase
+      .from('points_rules')
+      .select('*')
+      .order('points', { ascending: false })
+
+    if (error) {
+      console.error('Error getting points rules:', error)
+      return []
+    }
+
+    return rules || []
   } catch (error) {
     console.error('Error getting points rules:', error)
     return []
@@ -519,43 +550,64 @@ export async function adjustUserPoints(
   adminId: string
 ) {
   try {
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // Create transaction
-      await tx.pointTransaction.create({
-        data: {
-          userId,
-          points,
-          action: 'admin_adjustment',
-          description: reason,
-          metadata: {
-            adjustedBy: adminId,
-            timestamp: new Date().toISOString(),
-          },
+    const supabase = await createClient()
+
+    // Create transaction
+    const { error: txError } = await supabase
+      .from('point_transactions')
+      .insert({
+        userId,
+        points,
+        action: 'admin_adjustment',
+        description: reason,
+        metadata: {
+          adjustedBy: adminId,
+          timestamp: new Date().toISOString(),
         },
       })
 
-      // Update user points
-      const userPoints = await tx.userPoints.upsert({
-        where: { userId },
-        update: {
-          totalPoints: { increment: points },
-          currentPoints: { increment: points },
-          lifetimeEarned: points > 0 ? { increment: points } : undefined,
-          lifetimeRedeemed: points < 0 ? { increment: Math.abs(points) } : undefined,
-        },
-        create: {
-          userId,
-          totalPoints: points,
-          currentPoints: points,
-          lifetimeEarned: points > 0 ? points : 0,
-          lifetimeRedeemed: points < 0 ? Math.abs(points) : 0,
-        },
+    if (txError) {
+      console.error('Error creating transaction:', txError)
+      return { success: false, error: 'Failed to adjust points' }
+    }
+
+    // Update user points
+    const { data: currentPoints } = await supabase
+      .from('user_points')
+      .select('totalPoints, currentPoints, lifetimeEarned, lifetimeRedeemed')
+      .eq('userId', userId)
+      .maybeSingle()
+
+    const updateData: any = {
+      totalPoints: (currentPoints?.totalPoints || 0) + points,
+      currentPoints: (currentPoints?.currentPoints || 0) + points,
+    }
+
+    if (points > 0) {
+      updateData.lifetimeEarned = (currentPoints?.lifetimeEarned || 0) + points
+    } else {
+      updateData.lifetimeRedeemed = (currentPoints?.lifetimeRedeemed || 0) + Math.abs(points)
+    }
+
+    const { data: userPoints, error: updateError } = await supabase
+      .from('user_points')
+      .upsert({
+        userId,
+        ...updateData,
       })
+      .eq('userId', userId)
+      .select()
+      .single()
 
-      return userPoints
-    })
+    if (updateError) {
+      console.error('Error updating user points:', updateError)
+      return { success: false, error: 'Failed to adjust points' }
+    }
 
-    return { success: true, newBalance: result.currentPoints }
+    return {
+      success: true,
+      newBalance: userPoints?.currentPoints || 0
+    }
   } catch (error) {
     console.error('Error adjusting user points:', error)
     return { success: false, error: 'Failed to adjust points' }
@@ -567,29 +619,32 @@ export async function adjustUserPoints(
  */
 export async function getLeaderboard(limit: number = 10) {
   try {
-    const topUsers = await prisma.userPoints.findMany({
-      take: limit,
-      orderBy: {
-        totalPoints: 'desc',
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            image: true,
-          },
-        },
-      },
-    })
+    const supabase = await createClient()
 
-    return topUsers.map((entry: typeof topUsers[0], index: number) => ({
+    const { data: topUsers, error } = await supabase
+      .from('user_points')
+      .select(`
+        userId,
+        totalPoints,
+        currentPoints,
+        user:users!userId (
+          id, name, username, image, profilePictureUrl
+        )
+      `)
+      .order('totalPoints', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error getting leaderboard:', error)
+      return []
+    }
+
+    return (topUsers || []).map((entry, index) => ({
       rank: index + 1,
       userId: entry.userId,
       user: entry.user,
-      totalPoints: entry.totalPoints,
-      currentPoints: entry.currentPoints,
+      totalPoints: entry.totalPoints || 0,
+      currentPoints: entry.currentPoints || 0,
     }))
   } catch (error) {
     console.error('Error getting leaderboard:', error)

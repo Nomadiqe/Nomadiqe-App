@@ -1,23 +1,35 @@
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Calendar, Heart, MapPin, TrendingUp, Plus, User, Settings } from 'lucide-react'
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
   
-  if (!session) {
+  const { data: { user }, error } = await supabase.auth.getUser()
+  
+  if (error || !user) {
+    redirect('/auth/signin')
+  }
+
+  // Get user data from public.users table
+  const { data: userData } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (!userData) {
     redirect('/auth/signin')
   }
 
   // Helper variables for role-based UI
-  const isHost = session.user.role === 'HOST'
-  const isTraveler = ['GUEST', 'TRAVELER'].includes(session.user.role)
+  const isHost = userData.role === 'HOST'
+  const isTraveler = ['GUEST', 'TRAVELER'].includes(userData.role || 'TRAVELER')
 
   // Redirect to role-specific dashboard
-  switch (session.user.role) {
+  switch (userData.role) {
     case 'HOST':
       redirect('/dashboard/host')
     case 'INFLUENCER':
@@ -36,7 +48,7 @@ export default async function DashboardPage() {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">
-            Welcome back, {session.user.name}!
+            Welcome back, {userData.name || userData.fullName || 'there'}!
           </h1>
           <p className="text-muted-foreground mt-2">
             {isHost ? 'Manage your properties and bookings' : 'Discover your next adventure'}
@@ -192,7 +204,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Profile Completion Reminder */}
-        {(!session.user.image || !session.user.name) && (
+        {(!userData.profilePictureUrl || !userData.name) && (
           <div className="mt-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
             <div className="flex items-center">
               <User className="h-5 w-5 text-amber-600 mr-3" />

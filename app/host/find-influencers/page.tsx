@@ -1,22 +1,23 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/lib/db'
 import { FindInfluencersView } from '@/components/host/find-influencers-view'
 
 export default async function FindInfluencersPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
 
-  if (!session?.user?.id) {
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !authUser) {
     redirect('/auth/signin')
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, role: true },
-  })
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id, role')
+    .eq('id', authUser.id)
+    .single()
 
-  if (!user) {
+  if (userError || !user) {
     redirect('/auth/signin')
   }
 

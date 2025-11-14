@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -20,9 +19,11 @@ import {
 import Link from 'next/link'
 
 export default async function BrowseOpportunitiesPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
 
-  if (!session) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user) {
     redirect('/auth/signin')
   }
 

@@ -129,3 +129,4 @@ temp/
 .playwright-mcp/
 
 .env.backup
+env.nomadiqe-Nomadiqe-App

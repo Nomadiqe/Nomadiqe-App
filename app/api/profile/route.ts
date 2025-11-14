@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const profileUpdateSchema = z.object({
@@ -16,24 +14,33 @@ const profileUpdateSchema = z.object({
 
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     const body = await req.json()
     const data = profileUpdateSchema.parse(body)
 
+    // Check if username is already taken
     if (data.username) {
-      const existing = await prisma.user.findUnique({ where: { username: data.username } })
-      if (existing && existing.id !== session.user.id) {
+      const { data: existing } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', data.username)
+        .single()
+      
+      if (existing && existing.id !== user.id) {
         return NextResponse.json({ error: 'Username already taken' }, { status: 400 })
       }
     }
 
-    const updated = await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    // Update user profile
+    const { data: updated, error } = await supabase
+      .from('users')
+      .update({
         fullName: data.fullName,
         username: data.username,
         bio: data.bio ?? undefined,
@@ -41,8 +48,16 @@ export async function PUT(req: NextRequest) {
         phone: data.phone ?? undefined,
         profilePictureUrl: data.profilePicture,
         coverPhotoUrl: data.coverPhoto,
-      }
-    })
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true, userId: updated.id })
   } catch (err: any) {

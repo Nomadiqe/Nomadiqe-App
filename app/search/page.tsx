@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { SearchHeaderImproved } from '@/components/search-header-improved'
 import { SearchFiltersImproved } from '@/components/search-filters-improved'
 import { SearchResultsImproved } from '@/components/search-results-improved'
@@ -20,91 +20,90 @@ interface SearchParams {
 
 async function getProperties(searchParams: SearchParams) {
   try {
-    // Build where clause based on filters
-    const where: any = {
-      isActive: true,
-    }
+    const supabase = await createClient()
+    
+    // Build query
+    let query = supabase
+      .from('properties')
+      .select(`
+        id,
+        title,
+        city,
+        country,
+        latitude,
+        longitude,
+        price,
+        currency,
+        maxGuests,
+        bedrooms,
+        images,
+        type,
+        amenities,
+        reviews:reviews(rating)
+      `)
+      .eq('isActive', true)
 
     // Location filter
     if (searchParams.location) {
-      where.OR = [
-        { city: { contains: searchParams.location, mode: 'insensitive' as const } },
-        { country: { contains: searchParams.location, mode: 'insensitive' as const } },
-        { title: { contains: searchParams.location, mode: 'insensitive' as const } },
-      ]
+      query = query.or(`city.ilike.%${searchParams.location}%,country.ilike.%${searchParams.location}%,title.ilike.%${searchParams.location}%`)
     }
 
     // Guests filter
     if (searchParams.guests) {
       const guestCount = parseInt(searchParams.guests)
       if (!isNaN(guestCount)) {
-        where.maxGuests = { gte: guestCount }
+        query = query.gte('maxGuests', guestCount)
       }
     }
 
-    // Price range filter (handles formats like "0-100", "200+", etc.)
+    // Price range filter
     if (searchParams.priceRange && searchParams.priceRange !== 'any') {
-      where.price = {}
       if (searchParams.priceRange.includes('+')) {
-        // Format: "200+"
         const min = parseInt(searchParams.priceRange.replace('+', ''))
-        where.price.gte = min
+        query = query.gte('price', min)
       } else if (searchParams.priceRange.includes('-')) {
-        // Format: "0-100"
         const [min, max] = searchParams.priceRange.split('-').map(Number)
-        if (!isNaN(min)) where.price.gte = min
-        if (!isNaN(max)) where.price.lte = max
+        if (!isNaN(min)) query = query.gte('price', min)
+        if (!isNaN(max)) query = query.lte('price', max)
       }
     }
 
     // Property type filter
     if (searchParams.propertyType && searchParams.propertyType !== 'any') {
-      where.type = {
-        equals: searchParams.propertyType,
-        mode: 'insensitive' as const,
-      }
+      query = query.eq('type', searchParams.propertyType as any)
     }
 
-    // Amenities filter (handles comma-separated values)
-    if (searchParams.amenities && searchParams.amenities !== 'any') {
-      const amenitiesList = searchParams.amenities.split(',')
-      where.amenities = {
-        hasEvery: amenitiesList,
-      }
+    // Note: Amenities filter would need to be handled differently in Supabase
+    // For now, we'll filter in memory after fetching
+
+    query = query.order('created_at', { ascending: false })
+
+    const { data: properties, error } = await query
+
+    if (error) {
+      throw error
     }
 
-    const properties = await prisma.property.findMany({
-      where,
-      select: {
-        id: true,
-        title: true,
-        city: true,
-        country: true,
-        latitude: true,
-        longitude: true,
-        price: true,
-        currency: true,
-        maxGuests: true,
-        bedrooms: true,
-        images: true,
-        reviews: {
-          select: {
-            rating: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    // Process properties and calculate ratings
+    let filteredProperties = (properties || []).map((property: any) => {
+      const reviews = property.reviews || []
+      return {
+        ...property,
+        averageRating:
+          reviews.length > 0
+            ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviews.length
+            : 0,
+      }
     })
 
-    let filteredProperties = properties.map((property: any) => ({
-      ...property,
-      averageRating:
-        property.reviews.length > 0
-          ? property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / property.reviews.length
-          : 0,
-    }))
+    // Amenities filter (in memory)
+    if (searchParams.amenities && searchParams.amenities !== 'any') {
+      const amenitiesList = searchParams.amenities.split(',')
+      filteredProperties = filteredProperties.filter((p: any) => {
+        const propertyAmenities = Array.isArray(p.amenities) ? p.amenities : []
+        return amenitiesList.every(amenity => propertyAmenities.includes(amenity))
+      })
+    }
 
     // Rating filter (applied after fetching since it's calculated)
     if (searchParams.rating && searchParams.rating !== 'any') {

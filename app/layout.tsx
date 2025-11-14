@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Poppins, Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
-import { AuthProvider } from '@/components/auth-provider'
+import { SupabaseAuthProvider } from '@/components/providers/supabase-auth-provider'
 import { Navigation } from '@/components/navigation'
 import { Toaster } from '@/components/ui/toaster'
 
@@ -20,7 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: 'Nomadiqe - Fairer Stays, Deeper Connections',
   description: 'Revolutionary travel booking platform with blockchain integration, low fees, and authentic local experiences.',
   keywords: 'travel, booking, blockchain, crypto, accommodation, local experiences',
@@ -91,20 +91,20 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${poppins.variable} ${inter.variable} font-sans antialiased`}>
+      <body className={`${poppins.variable} ${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
+          <SupabaseAuthProvider>
             <Navigation />
             <main className="pb-16 md:pb-0">
               {children}
             </main>
             <Toaster />
-          </AuthProvider>
+          </SupabaseAuthProvider>
         </ThemeProvider>
       </body>
     </html>

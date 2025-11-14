@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -69,7 +69,7 @@ export function PostCard({
   isLiked = false,
   layout = 'discover' // Default to discover layout
 }: PostCardProps) {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const router = useRouter()
   const [liked, setLiked] = useState(isLiked)
   const [likeCount, setLikeCount] = useState(likes)
@@ -91,7 +91,7 @@ export function PostCard({
 
   const handleLike = async () => {
     // Check if user is authenticated
-    if (!session?.user?.id) {
+    if (!user?.id) {
       router.push('/auth/signin')
       return
     }
@@ -129,7 +129,7 @@ export function PostCard({
 
   const handleCommentClick = () => {
     // Check if user is authenticated
-    if (!session?.user?.id) {
+    if (!user?.id) {
       router.push('/auth/signin')
       return
     }
@@ -137,7 +137,7 @@ export function PostCard({
   }
 
   const handleShare = () => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       router.push('/auth/signin')
       return
     }
@@ -202,10 +202,10 @@ export function PostCard({
     }
   }
 
-  const isOwnPost = session?.user?.id === author.id
+  const isOwnPost = user?.id === author.id
 
   const handleDelete = async () => {
-    if (!isOwnPost || !session?.user?.id) return
+    if (!isOwnPost || !user?.id) return
     
     if (!confirm('Sei sicuro di voler eliminare questo post?')) return
 

@@ -1,27 +1,29 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import GuestDashboard from '@/components/dashboard/GuestDashboard'
 
 async function GuestDashboardPageContent() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session) {
+  const supabase = await createClient()
+
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !authUser) {
     redirect('/auth/signin')
   }
 
   // Get user with guest preferences
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      guestPreferences: true
-    }
-  })
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select(`
+      *,
+      guestPreferences:guest_preferences(*)
+    `)
+    .eq('id', authUser.id)
+    .single()
 
   // If user doesn't exist in DB, redirect to sign in
-  if (!user) {
+  if (userError || !user) {
     redirect('/auth/signin')
   }
 

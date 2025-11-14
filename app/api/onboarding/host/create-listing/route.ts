@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { geocodingService } from '@/lib/geocoding'
 import { z } from 'zod'
 
@@ -66,9 +64,11 @@ const listingSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -76,12 +76,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is a host
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { hostProfile: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, host_profiles(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'HOST' || !user.hostProfile) {
+    if (userError || !userData || userData.role !== 'HOST' || !userData.host_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for hosts' },
         { status: 403 }
@@ -134,8 +135,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the property listing
-    const property = await prisma.property.create({
-      data: {
+    const { data: property, error: propertyError } = await supabase
+      .from('properties')
+      .insert({
         title: validatedData.title,
         description: validatedData.description,
         type: validatedData.propertyType,
@@ -154,36 +156,47 @@ export async function POST(req: NextRequest) {
         amenities: amenitiesArray,
         images: validatedData.photos,
         rules: validatedData.rules,
-        hostId: session.user.id,
-        isActive: true, // Properties are immediately visible
+        hostId: user.id,
+        isActive: true,
         isVerified: false
-      }
-    })
+      })
+      .select()
+      .single()
+
+    if (propertyError) {
+      console.error('Failed to create property:', propertyError)
+      return NextResponse.json(
+        { error: 'Failed to create listing', code: 'ONBOARDING_005' },
+        { status: 500 }
+      )
+    }
 
     // Update user onboarding step
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    await supabase
+      .from('users')
+      .update({
         onboardingStep: 'collaboration-setup'
-      }
-    })
+      })
+      .eq('id', user.id)
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
       completedSteps.push('listing-creation')
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'collaboration-setup',
           completedSteps: JSON.stringify(completedSteps)
-        }
-      })
+        })
+        .eq('userId', user.id)
     }
 
     return NextResponse.json({

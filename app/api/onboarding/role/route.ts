@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const roleSchema = z.object({
@@ -25,9 +23,10 @@ const getNextStep = (role: string): string => {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -38,79 +37,102 @@ export async function POST(req: NextRequest) {
     const validatedData = roleSchema.parse(body)
 
     // Update user role
-    const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({
         role: validatedData.role,
-        onboardingStep: getNextStep(validatedData.role)
-      }
-    })
+        onboardingStep: getNextStep(validatedData.role),
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+      .select()
+      .single()
+
+    if (updateError) {
+      throw updateError
+    }
 
     // Update onboarding progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
-      completedSteps.push('role-selection')
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
+      if (!completedSteps.includes('role-selection')) {
+        completedSteps.push('role-selection')
+      }
       
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: getNextStep(validatedData.role),
           completedSteps: JSON.stringify(completedSteps)
-        }
-      })
+        })
+        .eq('userId', user.id)
     }
 
     // Create role-specific profile if needed
     try {
       if (validatedData.role === 'HOST') {
         // Check if host profile already exists
-        const existingHostProfile = await prisma.hostProfile.findUnique({
-          where: { userId: session.user.id }
-        })
+        const { data: existingHostProfile } = await supabase
+          .from('host_profiles')
+          .select('id')
+          .eq('userId', user.id)
+          .single()
         
         if (!existingHostProfile) {
           // Generate unique referral code
           const referralCode = `HOST_${Math.random().toString(36).substring(2, 12).toUpperCase()}`
           
-          await prisma.hostProfile.create({
-            data: {
-              userId: session.user.id,
+          await supabase
+            .from('host_profiles')
+            .insert({
+              userId: user.id,
               referralCode,
-              preferredNiches: [] // Initialize as empty array
-            }
-          })
+              preferredNiches: [],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            })
         }
       } else if (validatedData.role === 'INFLUENCER') {
         // Check if influencer profile already exists
-        const existingInfluencerProfile = await prisma.influencerProfile.findUnique({
-          where: { userId: session.user.id }
-        })
+        const { data: existingInfluencerProfile } = await supabase
+          .from('influencer_profiles')
+          .select('id')
+          .eq('userId', user.id)
+          .single()
         
         if (!existingInfluencerProfile) {
-          await prisma.influencerProfile.create({
-            data: {
-              userId: session.user.id,
-              contentNiches: [] // Will be filled during profile setup
-            }
-          })
+          await supabase
+            .from('influencer_profiles')
+            .insert({
+              userId: user.id,
+              contentNiches: [],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            })
         }
       } else if (validatedData.role === 'GUEST') {
         // Check if guest preferences already exist
-        const existingGuestPrefs = await prisma.guestPreferences.findUnique({
-          where: { userId: session.user.id }
-        })
+        const { data: existingGuestPrefs } = await supabase
+          .from('guest_preferences')
+          .select('id')
+          .eq('userId', user.id)
+          .single()
         
         if (!existingGuestPrefs) {
-          await prisma.guestPreferences.create({
-            data: {
-              userId: session.user.id,
-              travelInterests: []
-            }
-          })
+          await supabase
+            .from('guest_preferences')
+            .insert({
+              userId: user.id,
+              travelInterests: [],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            })
         }
       }
     } catch (profileError) {

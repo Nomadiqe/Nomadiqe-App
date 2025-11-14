@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FeatureCard } from '@/components/feature-card'
 import { PropertyCard } from '@/components/property-card'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
 import {
   Globe,
@@ -17,39 +17,48 @@ import {
 
 async function getFeaturedProperties() {
   try {
-    const properties = await prisma.property.findMany({
-      where: {
-        isActive: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        city: true,
-        country: true,
-        price: true,
-        currency: true,
-        maxGuests: true,
-        bedrooms: true,
-        images: true,
-        reviews: {
-          select: {
-            rating: true,
-          },
-        },
-      },
-      take: 3,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+    const supabase = await createClient()
+    
+    // Fetch properties
+    const { data: properties, error: propertiesError } = await supabase
+      .from('properties')
+      .select(`
+        id,
+        title,
+        city,
+        country,
+        price,
+        currency,
+        maxGuests,
+        bedrooms,
+        images,
+        reviews:reviews(rating)
+      `)
+      .eq('isActive', true)
+      .order('createdAt', { ascending: false })
+      .limit(3)
 
-    return properties.map((property: any) => ({
-      ...property,
-      averageRating:
-        property.reviews.length > 0
-          ? property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / property.reviews.length
-          : 0,
-    }))
+    if (propertiesError) {
+      throw propertiesError
+    }
+
+    // Fetch reviews for rating calculation
+    const propertyIds = properties?.map(p => p.id) || []
+    const { data: reviews } = await supabase
+      .from('reviews')
+      .select('property_id, rating')
+      .in('property_id', propertyIds)
+
+    return (properties || []).map((property: any) => {
+      const propertyReviews = reviews?.filter((r: any) => r.property_id === property.id) || []
+      return {
+        ...property,
+        averageRating:
+          propertyReviews.length > 0
+            ? propertyReviews.reduce((acc: number, r: any) => acc + r.rating, 0) / propertyReviews.length
+            : 0,
+      }
+    })
   } catch (error) {
     console.error('Error fetching featured properties:', error)
     return []

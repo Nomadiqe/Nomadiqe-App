@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 // GET - List all properties (admin only)
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
 
-    if (!session?.user?.id) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -16,12 +16,13 @@ export async function GET(req: NextRequest) {
     }
 
     // Verify user is an admin
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'ADMIN') {
+    if (userError || !userData || userData.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -32,60 +33,71 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const statusFilter = searchParams.get('status') // 'active', 'inactive', 'all'
 
-    const where: any = {}
+    // Build query
+    let query = supabase
+      .from('properties')
+      .select(`
+        *,
+        host:users!hostId (id, name, fullName, email)
+      `)
+
+    // Apply filter
     if (statusFilter === 'active') {
-      where.isActive = true
+      query = query.eq('isActive', true)
     } else if (statusFilter === 'inactive') {
-      where.isActive = false
+      query = query.eq('isActive', false)
     }
 
-    // Fetch all properties with host information
-    const properties = await prisma.property.findMany({
-      where,
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            fullName: true,
-            email: true,
-          }
-        },
-        _count: {
-          select: {
-            bookings: true,
-            reviews: true,
-          }
+    const { data: properties, error: propertiesError } = await query.order('createdAt', { ascending: false })
+
+    if (propertiesError) {
+      console.error('Fetch properties error:', propertiesError)
+      return NextResponse.json(
+        { error: 'Failed to fetch properties' },
+        { status: 500 }
+      )
+    }
+
+    // Get counts for each property
+    const propertiesWithCounts = await Promise.all(
+      (properties || []).map(async (p: any) => {
+        const { count: bookingsCount } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: true })
+          .eq('propertyId', p.id)
+
+        const { count: reviewsCount } = await supabase
+          .from('reviews')
+          .select('*', { count: 'exact', head: true })
+          .eq('propertyId', p.id)
+
+        return {
+          id: p.id,
+          title: p.title,
+          city: p.city,
+          country: p.country,
+          price: p.price,
+          currency: p.currency,
+          maxGuests: p.maxGuests,
+          bedrooms: p.bedrooms,
+          images: p.images,
+          isActive: p.isActive,
+          isVerified: p.isVerified,
+          latitude: p.latitude,
+          longitude: p.longitude,
+          geocodingAccuracy: p.geocodingAccuracy,
+          geocodingFailed: p.geocodingFailed,
+          createdAt: p.createdAt,
+          host: p.host,
+          bookingsCount: bookingsCount || 0,
+          reviewsCount: reviewsCount || 0,
         }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
+      })
+    )
 
     return NextResponse.json({
       success: true,
-      properties: properties.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        city: p.city,
-        country: p.country,
-        price: p.price,
-        currency: p.currency,
-        maxGuests: p.maxGuests,
-        bedrooms: p.bedrooms,
-        images: p.images,
-        isActive: p.isActive,
-        isVerified: p.isVerified,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        geocodingAccuracy: p.geocodingAccuracy,
-        geocodingFailed: p.geocodingFailed,
-        createdAt: p.createdAt,
-        host: p.host,
-        bookingsCount: p._count.bookings,
-        reviewsCount: p._count.reviews,
-      }))
+      properties: propertiesWithCounts
     })
 
   } catch (error) {

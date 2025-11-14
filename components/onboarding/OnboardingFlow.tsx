@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter } from 'next/navigation'
 import { OnboardingProvider, useOnboarding, useOnboardingApi } from '@/contexts/OnboardingContext'
 import OnboardingWizard from './OnboardingWizard'
@@ -53,7 +53,7 @@ function OnboardingStepRenderer({ step }: { step: string }) {
 }
 
 function WelcomeStep() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const { setStep } = useOnboarding()
   const router = useRouter()
 
@@ -69,7 +69,7 @@ function WelcomeStep() {
           Welcome to Nomadiqe! 👋
         </h2>
         <p className="text-lg text-muted-foreground">
-          Hi {session?.user?.name?.split(' ')[0] || 'there'}! Let&apos;s get you set up in just a few quick steps.
+          Hi {user?.user_metadata?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'there'}! Let&apos;s get you set up in just a few quick steps.
         </p>
       </div>
 

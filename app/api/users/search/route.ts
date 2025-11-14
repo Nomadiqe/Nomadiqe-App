@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
 
@@ -14,28 +12,18 @@ export async function GET(request: Request) {
     }
 
     // Search for users by username (case-insensitive)
-    const users = await prisma.user.findMany({
-      where: {
-        username: {
-          contains: query,
-          mode: 'insensitive'
-        }
-      },
-      select: {
-        id: true,
-        name: true,
-        fullName: true,
-        username: true,
-        image: true,
-        profilePictureUrl: true,
-      },
-      orderBy: {
-        username: 'asc'
-      },
-      take: 20,
-    })
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('id, name, fullName, username, image, profilePictureUrl')
+      .ilike('username', `%${query}%`)
+      .order('username', { ascending: true })
+      .limit(20)
 
-    return NextResponse.json({ users })
+    if (error) {
+      throw error
+    }
+
+    return NextResponse.json({ users: users || [] })
   } catch (error) {
     console.error('Error searching users:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

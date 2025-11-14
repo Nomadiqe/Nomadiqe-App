@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 // DELETE endpoint to delete a post
 export async function DELETE(
@@ -9,9 +7,11 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
 
-    if (!session?.user?.id) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -21,15 +21,13 @@ export async function DELETE(
     const postId = params.id
 
     // Find the post
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-      select: {
-        id: true,
-        authorId: true,
-      },
-    })
+    const { data: post, error: postError } = await supabase
+      .from('posts')
+      .select('id, authorId')
+      .eq('id', postId)
+      .single()
 
-    if (!post) {
+    if (postError || !post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
@@ -37,7 +35,7 @@ export async function DELETE(
     }
 
     // Check if user is the author
-    if (post.authorId !== session.user.id) {
+    if (post.authorId !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden: You can only delete your own posts' },
         { status: 403 }
@@ -45,12 +43,18 @@ export async function DELETE(
     }
 
     // Soft delete: set isActive to false instead of actually deleting
-    await prisma.post.update({
-      where: { id: postId },
-      data: {
-        isActive: false,
-      },
-    })
+    const { error: deleteError } = await supabase
+      .from('posts')
+      .update({ isActive: false })
+      .eq('id', postId)
+
+    if (deleteError) {
+      console.error('Error deleting post:', deleteError)
+      return NextResponse.json(
+        { error: 'Failed to delete post' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -71,9 +75,11 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
 
-    if (!session?.user?.id) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -85,15 +91,13 @@ export async function PATCH(
     const { content, images, location } = body
 
     // Find the post
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-      select: {
-        id: true,
-        authorId: true,
-      },
-    })
+    const { data: post, error: postError } = await supabase
+      .from('posts')
+      .select('id, authorId')
+      .eq('id', postId)
+      .single()
 
-    if (!post) {
+    if (postError || !post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
@@ -101,46 +105,59 @@ export async function PATCH(
     }
 
     // Check if user is the author
-    if (post.authorId !== session.user.id) {
+    if (post.authorId !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden: You can only edit your own posts' },
         { status: 403 }
       )
     }
 
+    // Build update object
+    const updateData: any = {}
+    if (content !== undefined) updateData.content = content
+    if (images !== undefined) updateData.images = images
+    if (location !== undefined) updateData.location = location
+
     // Update the post
-    const updatedPost = await prisma.post.update({
-      where: { id: postId },
-      data: {
-        ...(content !== undefined && { content }),
-        ...(images !== undefined && { images }),
-        ...(location !== undefined && { location }),
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            fullName: true,
-            image: true,
-            profilePictureUrl: true,
-            role: true,
-          },
-        },
-        property: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-        _count: {
-          select: {
-            likes: true,
-            comments: true,
-          },
-        },
-      },
-    })
+    const { data: updatedPost, error: updateError } = await supabase
+      .from('posts')
+      .update(updateData)
+      .eq('id', postId)
+      .select(`
+        *,
+        author:users!authorId (
+          id,
+          name,
+          fullName,
+          image,
+          profilePictureUrl,
+          role
+        ),
+        property:properties (
+          id,
+          title
+        )
+      `)
+      .single()
+
+    if (updateError) {
+      console.error('Error updating post:', updateError)
+      return NextResponse.json(
+        { error: 'Failed to update post' },
+        { status: 500 }
+      )
+    }
+
+    // Get counts for likes and comments
+    const { count: likesCount } = await supabase
+      .from('post_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('postId', postId)
+
+    const { count: commentsCount } = await supabase
+      .from('post_comments')
+      .select('*', { count: 'exact', head: true })
+      .eq('postId', postId)
 
     return NextResponse.json({
       success: true,
@@ -149,7 +166,7 @@ export async function PATCH(
         content: updatedPost.content,
         images: updatedPost.images as string[],
         location: updatedPost.location || undefined,
-        createdAt: updatedPost.createdAt.toISOString(),
+        createdAt: updatedPost.createdAt,
         author: {
           id: updatedPost.author.id,
           name: updatedPost.author.fullName || updatedPost.author.name || 'User',
@@ -160,8 +177,8 @@ export async function PATCH(
           id: updatedPost.property.id,
           title: updatedPost.property.title,
         } : undefined,
-        likes: updatedPost._count.likes,
-        comments: updatedPost._count.comments,
+        likes: likesCount || 0,
+        comments: commentsCount || 0,
       },
     })
   } catch (error) {

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const verificationSchema = z.object({
@@ -14,9 +12,11 @@ const verificationSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -24,12 +24,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is a host
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { hostProfile: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, host_profiles(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'HOST' || !user.hostProfile) {
+    if (userError || !userData || userData.role !== 'HOST' || !userData.host_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for hosts' },
         { status: 403 }
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     // In production, integrate with identity verification service
     // For demo purposes, we'll allow skipping verification or simulate success
     const verificationId = `verify_${Date.now()}_${Math.random().toString(36).substring(7)}`
-    
+
     let verificationStatus: 'PENDING' | 'VERIFIED' = 'PENDING'
     let identityVerified = false
 
@@ -52,51 +53,63 @@ export async function POST(req: NextRequest) {
     }
 
     // Update host profile
-    await prisma.hostProfile.update({
-      where: { userId: session.user.id },
-      data: {
+    const { error: updateError } = await supabase
+      .from('host_profiles')
+      .update({
         verificationStatus,
         identityVerified,
-        verificationDate: identityVerified ? new Date() : null
-      }
-    })
+        verificationDate: identityVerified ? new Date().toISOString() : null
+      })
+      .eq('userId', user.id)
+
+    if (updateError) {
+      console.error('Failed to update host profile:', updateError)
+      return NextResponse.json(
+        { error: 'Identity verification failed', code: 'ONBOARDING_003' },
+        { status: 500 }
+      )
+    }
 
     // Update user onboarding step
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    await supabase
+      .from('users')
+      .update({
         onboardingStep: 'listing-creation'
-      }
-    })
+      })
+      .eq('id', user.id)
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
       if (identityVerified) {
         completedSteps.push('identity-verification')
       }
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      const metadata = (progress.metadata as object || {})
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'listing-creation',
           completedSteps: JSON.stringify(completedSteps),
           metadata: {
-            ...progress.metadata as object,
+            ...metadata,
             verificationId
           }
-        }
-      })
+        })
+        .eq('userId', user.id)
     }
 
     return NextResponse.json({
       verificationId,
       status: verificationStatus,
-      message: identityVerified 
+      message: identityVerified
         ? 'Identity verification completed successfully'
         : 'Identity verification initiated. You will be notified once complete.',
       nextStep: 'listing-creation'

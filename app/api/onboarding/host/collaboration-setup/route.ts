@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
-import { awardPoints } from '@/lib/services/points-service'
 
 const collaborationSchema = z.object({
   standardOffer: z.object({
@@ -38,9 +35,11 @@ const AVAILABLE_NICHES = [
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -48,12 +47,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is a host
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { hostProfile: true }
-    })
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*, host_profiles(*)')
+      .eq('id', user.id)
+      .single()
 
-    if (!user || user.role !== 'HOST' || !user.hostProfile) {
+    if (userError || !userData || userData.role !== 'HOST' || !userData.host_profiles) {
       return NextResponse.json(
         { error: 'This endpoint is only for hosts' },
         { status: 403 }
@@ -68,10 +68,10 @@ export async function POST(req: NextRequest) {
       const invalidNiches = validatedData.preferredNiches.filter(
         niche => !AVAILABLE_NICHES.includes(niche.toLowerCase())
       )
-      
+
       if (invalidNiches.length > 0) {
         return NextResponse.json(
-          { 
+          {
             error: 'Invalid niches selected',
             details: { invalidNiches, availableNiches: AVAILABLE_NICHES }
           },
@@ -81,56 +81,78 @@ export async function POST(req: NextRequest) {
     }
 
     // Update host profile with collaboration preferences
-    await prisma.hostProfile.update({
-      where: { userId: session.user.id },
-      data: {
+    const { error: updateError } = await supabase
+      .from('host_profiles')
+      .update({
         standardOffer: validatedData.standardOffer,
         minFollowerCount: validatedData.minFollowerCount,
         preferredNiches: validatedData.preferredNiches || []
-      }
-    })
+      })
+      .eq('userId', user.id)
+
+    if (updateError) {
+      console.error('Failed to update host profile:', updateError)
+      return NextResponse.json(
+        { error: 'Failed to update collaboration preferences' },
+        { status: 500 }
+      )
+    }
 
     // Complete onboarding for host
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
+    const { error: userUpdateError } = await supabase
+      .from('users')
+      .update({
         onboardingStatus: 'COMPLETED',
         onboardingStep: null
-      }
-    })
+      })
+      .eq('id', user.id)
 
-    // Award onboarding completion points
-    await awardPoints({
-      userId: session.user.id,
-      action: 'onboarding_complete',
-      description: 'Host onboarding completed successfully!',
+    if (userUpdateError) {
+      console.error('Failed to update user onboarding status:', userUpdateError)
+    }
+
+    // Award onboarding completion points via RPC
+    await supabase.rpc('award_points', {
+      p_user_id: user.id,
+      p_action: 'onboarding_complete',
+      p_points: 50,
+      p_description: 'Host onboarding completed successfully!'
     })
 
     // Update progress
-    const progress = await prisma.onboardingProgress.findUnique({
-      where: { userId: session.user.id }
-    })
+    const { data: progress } = await supabase
+      .from('onboarding_progress')
+      .select('*')
+      .eq('userId', user.id)
+      .single()
 
     if (progress) {
-      const completedSteps = JSON.parse(progress.completedSteps as string)
+      const completedSteps = JSON.parse(progress.completedSteps as string || '[]')
       completedSteps.push('collaboration-setup')
-      
-      await prisma.onboardingProgress.update({
-        where: { userId: session.user.id },
-        data: {
+
+      await supabase
+        .from('onboarding_progress')
+        .update({
           currentStep: 'completed',
           completedSteps: JSON.stringify(completedSteps),
-          completedAt: new Date()
-        }
-      })
+          completedAt: new Date().toISOString()
+        })
+        .eq('userId', user.id)
     }
+
+    // Get referral code from host profile
+    const { data: hostProfile } = await supabase
+      .from('host_profiles')
+      .select('referralCode')
+      .eq('userId', user.id)
+      .single()
 
     return NextResponse.json({
       success: true,
       onboardingComplete: true,
       redirectTo: '/dashboard/host',
       message: 'Host onboarding completed successfully! Welcome to Nomadiqe.',
-      referralCode: user.hostProfile.referralCode
+      referralCode: hostProfile?.referralCode
     })
 
   } catch (error) {

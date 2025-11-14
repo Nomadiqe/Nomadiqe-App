@@ -1,22 +1,22 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/supabase-auth-provider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import ListingWizard from '@/components/onboarding/steps/host/ListingWizard'
 import { OnboardingProvider } from '@/contexts/OnboardingContext'
 
 export default function CreatePropertyPage() {
-  const { data: session, status } = useSession()
+  const { user, isLoading } = useSupabase()
   const router = useRouter()
   
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!isLoading && !user) {
       router.push('/auth/signin')
     }
-  }, [status, router])
+  }, [isLoading, user, router])
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-2 border-pink-500 border-t-transparent"></div>
@@ -24,7 +24,7 @@ export default function CreatePropertyPage() {
     )
   }
 
-  if (!session) {
+  if (!user) {
     return null
   }
 
@@ -48,7 +48,7 @@ export default function CreatePropertyPage() {
 
           <ListingWizard onComplete={() => {
             // Redirect to profile after completion
-            router.push(`/profile/${session.user.id}`)
+            router.push(`/profile/${user.id}`)
           }} />
         </div>
       </div>

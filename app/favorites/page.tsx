@@ -1,14 +1,15 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PropertyCard } from '@/components/property-card'
 import { Heart, Filter } from 'lucide-react'
 
 export default async function FavoritesPage() {
-  const session = await getServerSession(authOptions)
+  const supabase = await createClient()
 
-  if (!session?.user?.id) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user) {
     redirect('/auth/signin')
   }
 

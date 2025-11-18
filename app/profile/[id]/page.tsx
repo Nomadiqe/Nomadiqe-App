@@ -99,6 +99,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     propertiesRaw = data
   }
 
+  // Fetch influencer profile if user is an influencer
+  let influencerProfile = null
+  if (dbUser.role === 'INFLUENCER') {
+    const { data } = await supabase
+      .from('influencer_profiles')
+      .select('*')
+      .eq('userId', dbUser.id)
+      .single()
+
+    influencerProfile = data
+  }
+
   // Fetch comments made by this user
   const { data: userCommentsRaw } = await supabase
     .from('post_comments')
@@ -296,6 +308,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           userRole={user.role}
           isOwnProfile={isOwnProfile}
           userName={user.name}
+          influencerProfile={influencerProfile}
         />
       </section>
     </div>

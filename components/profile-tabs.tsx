@@ -3,7 +3,8 @@
 import { PostCard } from '@/components/post-card'
 import { PropertyCard } from '@/components/property-card'
 import { MessagesExpandableCard } from '@/components/messages-expandable-card'
-import { Camera, Home, Star, Plus, MessageSquare } from 'lucide-react'
+import { MediaKitDisplay } from '@/components/MediaKitDisplay'
+import { Camera, Home, Star, Plus, MessageSquare, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
@@ -18,9 +19,10 @@ interface ProfileTabsProps {
   userRole: string
   isOwnProfile: boolean
   userName: string
+  influencerProfile?: any
 }
 
-export function ProfileTabs({ posts, properties = [], userComments = [], userRole, isOwnProfile, userName }: ProfileTabsProps) {
+export function ProfileTabs({ posts, properties = [], userComments = [], userRole, isOwnProfile, userName, influencerProfile }: ProfileTabsProps) {
   const [messages, setMessages] = useState<any[]>([])
   const [messagesLoading, setMessagesLoading] = useState(false)
 
@@ -63,9 +65,9 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
     </Card>
   )
 
-  const tabCols = isOwnProfile 
-    ? (userRole === 'HOST' ? 'grid-cols-4' : 'grid-cols-3')
-    : (userRole === 'HOST' ? 'grid-cols-3' : 'grid-cols-2')
+  const tabCols = isOwnProfile
+    ? (userRole === 'HOST' || userRole === 'INFLUENCER' ? 'grid-cols-4' : 'grid-cols-3')
+    : (userRole === 'HOST' || userRole === 'INFLUENCER' ? 'grid-cols-3' : 'grid-cols-2')
 
   return (
     <Tabs defaultValue="posts" className="w-full overflow-x-hidden">
@@ -85,14 +87,22 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
               Proprietà
             </TabsTrigger>
           )}
-          <TabsTrigger 
+          <TabsTrigger
             value="comments"
             className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
           >
             Commenti
           </TabsTrigger>
+          {userRole === 'INFLUENCER' && (
+            <TabsTrigger
+              value="mediakit"
+              className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
+            >
+              Media Kit
+            </TabsTrigger>
+          )}
           {isOwnProfile && (
-            <TabsTrigger 
+            <TabsTrigger
               value="messages"
               className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-xs sm:text-sm"
             >
@@ -234,6 +244,18 @@ export function ProfileTabs({ posts, properties = [], userComments = [], userRol
           />
         )}
       </TabsContent>
+
+      {userRole === 'INFLUENCER' && (
+        <TabsContent value="mediakit" className="mt-6">
+          <MediaKitDisplay
+            contentNiches={influencerProfile?.contentNiches}
+            deliverables={influencerProfile?.deliverables}
+            portfolioUrl={influencerProfile?.portfolioUrl}
+            verificationStatus={influencerProfile?.verificationStatus}
+            isVerified={influencerProfile?.identityVerified}
+          />
+        </TabsContent>
+      )}
 
       {isOwnProfile && (
         <TabsContent value="messages" className="mt-6">

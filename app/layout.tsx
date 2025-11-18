@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   description: 'Revolutionary travel booking platform with blockchain integration, low fees, and authentic local experiences.',
   keywords: 'travel, booking, blockchain, crypto, accommodation, local experiences',
   authors: [{ name: 'Nomadiqe Team' }],
+  manifest: '/manifest.json',
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

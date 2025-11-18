@@ -29,10 +29,10 @@ export default async function OnboardingIndexPage() {
         id: user.id,
         email: user.email || '',
         name: user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-        full_name: user.user_metadata?.full_name || user.user_metadata?.name,
-        email_verified: user.email_confirmed_at ? true : false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        fullName: user.user_metadata?.full_name || user.user_metadata?.name,
+        emailVerified: user.email_confirmed_at ? new Date().toISOString() : null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       })
       .select()
       .single()

@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { MapPin, Users, Bed, Bath, Star, Heart, Share2, ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { BackButton } from "@/components/back-button"
+import { PropertyActionButtons } from "@/components/property/PropertyActionButtons"
+import { ReserveButton } from "@/components/property/ReserveButton"
 
 interface PropertyPageProps {
   params: {
@@ -130,16 +131,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 )}
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm">
-                <Heart className="w-4 h-4 mr-2" />
-                Save
-              </Button>
-            </div>
+            <PropertyActionButtons
+              propertyId={property.id}
+              propertyTitle={property.title}
+            />
           </div>
         </div>
 
@@ -340,9 +335,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   </div>
                 </div>
 
-                <Button className="w-full" size="lg">
-                  Reserve
-                </Button>
+                <ReserveButton
+                  propertyId={property.id}
+                  className="w-full"
+                  size="lg"
+                />
 
                 <p className="text-center text-sm text-muted-foreground mt-4">
                   You won&apos;t be charged yet
